@@ -39,7 +39,7 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Video Fullscreen Terbuka Penuh */
+    /* VIDEO FULLSCREEN LANGSUNG DI LAYER BELAKANG */
     #bg-video {
       position: fixed;
       top: 0;
@@ -74,16 +74,16 @@
 
 <body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <!-- VIDEO BACKGROUND -->
-  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline></video>
+  <!-- 1. VIDEO LANGSUNG DENGAN FILE ANDA (LANGSUNG MEMUAT TANPA MENUNGGU API) -->
+  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
   <div id="bg-overlay"></div>
 
-  <!-- KOTAK DIAGNOSTIK KEPALA TEKNIS (Pojok Kiri Bawah) -->
+  <!-- KOTAK DIAGNOSTIK PEMANTAU (Pojok Kiri Bawah) -->
   <div id="debug-panel" style="position:fixed;bottom:15px;left:15px;background:#000000ee;color:#00ff66;padding:12px 16px;border-radius:12px;font-family:monospace;font-size:11px;z-index:99999;border:1px solid #00ff66;max-width:90vw;box-shadow:0 0 15px rgba(0,255,102,0.3);">
     <div style="font-weight:bold;margin-bottom:4px;color:#fff;">[PEMANTAU TEKNIS VIDEO]</div>
     <div id="dbg-api">API GAS: Menghubungkan...</div>
-    <div id="dbg-src">File Video: Memeriksa...</div>
-    <div id="dbg-status" style="font-weight:bold;margin-top:2px;">Status: Memulai...</div>
+    <div id="dbg-src">File: https://bata7878via.github.io/bpkadkonawe/bg_video.mp4</div>
+    <div id="dbg-status" style="font-weight:bold;margin-top:2px;">Status: Memuat Video...</div>
     <button onclick="manualPlay()" style="margin-top:8px;background:#00ff66;color:#000;font-weight:bold;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;">▶ Paksa Putar Video</button>
   </div>
 
@@ -178,7 +178,7 @@
     <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- ENGINE JAVASCRIPT & PEMANTAU -->
+  <!-- SCRIPT ENGINE -->
   <script>
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
     const video = document.getElementById('bg-video');
@@ -188,16 +188,16 @@
     const dbgSrc = document.getElementById('dbg-src');
     const dbgStatus = document.getElementById('dbg-status');
 
-    // Deteksi Status Video di Browser
+    // Pemantau Mesin Video
     video.addEventListener('loadstart', () => { dbgStatus.innerText = "Status: Mengunduh data video..."; dbgStatus.style.color = "#ffcc00"; });
     video.addEventListener('loadeddata', () => { dbgStatus.innerText = "Status: Video siap..."; });
     video.addEventListener('playing', () => { dbgStatus.innerText = "Status: BERPUTAR NORMAL (Playing)!"; dbgStatus.style.color = "#00ff66"; });
-    video.addEventListener('pause', () => { dbgStatus.innerText = "Status: DITAHAN (Autoplay Dicegat Browser)"; dbgStatus.style.color = "#ffcc00"; });
+    video.addEventListener('pause', () => { dbgStatus.innerText = "Status: DITAHAN (Autoplay Dicegat Browser, Klik tombol Paksa Putar)"; dbgStatus.style.color = "#ffcc00"; });
     video.addEventListener('error', () => {
       const err = video.error;
       let alasan = "Gagal memuat video.";
       if (err) {
-        if (err.code === 2) alasan = "Error Jaringan (File tidak dapat dijangkau).";
+        if (err.code === 2) alasan = "Error Jaringan (File video tidak dapat dijangkau).";
         if (err.code === 3) alasan = "File video rusak (Decode error).";
         if (err.code === 4) alasan = "CODEC TIDAK DIDUKUNG! (Format video bukan H.264 standar, misal HEVC/H.265).";
       }
@@ -205,10 +205,32 @@
       dbgStatus.style.color = "#ff4444";
     });
 
+    // Jalankan Video Otomatis Seketika
+    function autoStart() {
+      video.muted = true;
+      video.defaultMuted = true;
+      const p = video.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          // Jika browser menahan, jalankan saat layar pertama kali disentuh/diklik/scroll
+          const unblock = () => {
+            video.play();
+            window.removeEventListener('click', unblock);
+            window.removeEventListener('touchstart', unblock);
+            window.removeEventListener('scroll', unblock);
+          };
+          window.addEventListener('click', unblock, { once: true });
+          window.addEventListener('touchstart', unblock, { once: true });
+          window.addEventListener('scroll', unblock, { once: true });
+        });
+      }
+    }
+    autoStart();
+
     function manualPlay() {
       video.muted = true;
       video.play().then(() => {
-        dbgStatus.innerText = "Status: BERPUTAR SETELAH DITEKAN MANUAL!";
+        dbgStatus.innerText = "Status: BERPUTAR NORMAL!";
         dbgStatus.style.color = "#00ff66";
       }).catch(err => {
         dbgStatus.innerText = "Gagal: " + err.message;
@@ -226,7 +248,6 @@
       { title: "RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
       { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" }
     ];
-    let activeCategory = 'ALL';
 
     function runClock() {
       const clockEl = document.getElementById('live-clock');
@@ -249,50 +270,3 @@
                 <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-slate-100 text-sm">${app.title}</h3>
-                <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">${app.category || 'Layanan'}</span>
-              </div>
-            </div>
-            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-white/5 text-indigo-300 border border-indigo-500/20">${app.badge}</span>` : ''}
-          </div>
-          <p class="text-xs text-slate-400 line-clamp-2 mb-4">${app.desc || ''}</p>
-          <div class="flex items-center text-[11px] font-semibold text-slate-400 gap-1 self-end mt-auto">
-            <span>Akses Aplikasi</span>
-            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-          </div>
-        </a>
-      `).join('');
-      if (window.lucide) lucide.createIcons();
-    }
-    renderApps();
-
-    // Mengambil Pengaturan dari Spreadsheet
-    async function loadSettings() {
-      try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=mem_${Date.now()}`);
-        const data = await res.json();
-        dbgApi.innerText = "API GAS: Terhubung OK";
-
-        if (data.status === "success" && data.settings) {
-          const videoUrl = data.settings.bg_body;
-          dbgSrc.innerText = "File: " + videoUrl;
-
-          if (videoUrl && videoUrl.includes(".mp4")) {
-            video.src = videoUrl;
-            video.muted = true;
-            video.load();
-            video.play().catch(() => {
-              dbgStatus.innerText = "Status: DITAHAN BROWSER (Klik tombol Paksa Putar)";
-              dbgStatus.style.color = "#ffcc00";
-            });
-          }
-        }
-      } catch (e) {
-        dbgApi.innerText = "API GAS: Gagal menghubungi server";
-        dbgApi.style.color = "#ff4444";
-      }
-    }
-    loadSettings();
-  </script>
-</body>
-</html>
