@@ -49,53 +49,16 @@
       user-select: text !important;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
+    body {
+      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030712 90%);
       min-height: 100vh;
-      background-color: #030712;
       -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
+      transition: background 0.5s ease;
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* VIDEO BACKGROUND (LAYER 0 - MENYALA MULUS) */
-    #bg-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* OVERLAY GELAP ELEGANT (LAYER 1 - TEKS TETAP TAJAM) */
-    #bg-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
-      background: radial-gradient(circle at 50% 10%, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.8) 95%);
-      pointer-events: none;
-    }
-
-    /* AMBIENT CANVAS (LAYER 2) */
-    #ambient-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 2;
-      pointer-events: none;
-    }
 
     /* Efek Kartu Emboss Tactile */
     .card-emboss {
@@ -114,19 +77,54 @@
                   0 18px 35px -5px rgba(0, 0, 0, 0.8),
                   0 0 25px rgba(99, 102, 241, 0.3);
     }
+
+    /* Video Background Container */
+    #bg-video-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+      overflow: hidden;
+      display: none;
+    }
+    #bg-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      filter: brightness(0.4) contrast(1.1);
+    }
+
+    /* Ambient Canvas */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
   </style>
 </head>
 
-<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
+<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen relative">
 
-  <!-- 1. Video Background Resmi Anda (Layer 0) -->
-  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
+  <!-- Background Video Engine -->
+  <div id="bg-video-wrapper">
+    <video id="bg-video" autoplay loop muted playsinline></video>
+  </div>
 
-  <!-- 2. Overlay Transparan & Animasi Partikel (Layer 1 & 2) -->
-  <div id="bg-overlay"></div>
+  <!-- Ambient Particle Animation Engine -->
   <canvas id="ambient-canvas"></canvas>
 
-  <!-- 3. Konten Utama Portal (Layer 10) -->
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
 
     <!-- HEADER RESMI -->
@@ -216,7 +214,7 @@
             <i data-lucide="eye" class="w-5 h-5"></i>
           </div>
           <div>
-            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">152</div>
+            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">150</div>
             <p class="text-[11px] text-slate-400 font-medium">Total Kunjungan</p>
           </div>
         </div>
@@ -242,10 +240,10 @@
     <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- SCRIPT ENGINE LENGKAP -->
+  <!-- SCRIPT ENGINE -->
   <script>
     /* =====================================================================
-     * 1. PROTEKSI BOT & ANTI-INSPECT
+     * 1. PROTEKSI BOT & INSPEKSI
      * ===================================================================== */
     (function initSecurityShield() {
       const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
@@ -259,48 +257,4 @@
       document.addEventListener('keydown', e => {
         if (
           e.key === 'F12' ||
-          (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) ||
-          (e.ctrlKey && ['U','u','S','s','P','p'].includes(e.key))
-        ) {
-          e.preventDefault();
-          return false;
-        }
-      });
-    })();
-
-    /* =====================================================================
-     * 2. VIDEO AUTOPLAY ENGINE (PASTI BERPUTAR)
-     * ===================================================================== */
-    const video = document.getElementById('bg-video');
-    function startVideo() {
-      if (!video) return;
-      video.muted = true;
-      video.defaultMuted = true;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          const trigger = () => {
-            video.play();
-            window.removeEventListener('click', trigger);
-            window.removeEventListener('touchstart', trigger);
-            window.removeEventListener('scroll', trigger);
-          };
-          window.addEventListener('click', trigger, { once: true });
-          window.addEventListener('touchstart', trigger, { once: true });
-          window.addEventListener('scroll', trigger, { once: true });
-        });
-      }
-    }
-    startVideo();
-
-    /* =====================================================================
-     * 3. DATA & INITIAL STATE (ZERO LOCALSTORAGE)
-     * ===================================================================== */
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-    const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
-
-    let allApps = [
-      { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
-      { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
-      { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
-      { title: "Portal Konawe", category: "Pemda", url
+          (e.ctrlKey && e.shiftKey && ['I','i','J','j','C
