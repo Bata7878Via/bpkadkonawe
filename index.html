@@ -1,94 +1,213 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
+  <!-- 1. META SHIELD LENGKAP: ANTI BOT & ANTI CRAWLER -->
   <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, notranslate, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, max-image-preview:none" />
+  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="baiduspider" content="noindex, nofollow" />
+  <meta name="yandex" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title id="page-title">Office Suite BPKAD Kab. Konawe</title>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="no-referrer" />
+  <title id="page-title">Portal Office Suite</title>
 
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
-        extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } }
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          boxShadow: {
+            'emboss': 'inset 1px 1px 2px rgba(255, 255, 255, 0.15), inset -1px -1px 3px rgba(0, 0, 0, 0.8), 0 10px 25px -5px rgba(0, 0, 0, 0.6)',
+            'emboss-btn': 'inset 1px 1px 1px rgba(255, 255, 255, 0.25), inset -1px -1px 2px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0,0,0,0.4)',
+            'emboss-card': 'inset 1px 1px 1px rgba(255, 255, 255, 0.12), inset -1px -1px 2px rgba(0, 0, 0, 0.7), 0 12px 28px -5px rgba(0, 0, 0, 0.7)',
+            'emboss-active': 'inset 2px 2px 5px rgba(0, 0, 0, 0.9), inset -1px -1px 2px rgba(255, 255, 255, 0.1)'
+          }
+        }
       }
     }
   </script>
 
   <style>
+    /* Proteksi Seleksi dan Drag Dokumen */
+    * {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-user-drag: none !important;
+    }
+    input, textarea {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
+
     body {
-      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 90%);
+      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030712 90%);
       min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+      transition: background 0.5s ease;
     }
+
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Efek Kartu Emboss Tactile */
+    .card-emboss {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.12), 
+                  inset -1px -1px 2px rgba(0, 0, 0, 0.7),
+                  0 12px 30px -8px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-emboss:hover {
+      transform: translateY(-3px) scale(1.008);
+      border-color: rgba(99, 102, 241, 0.45);
+      box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.2), 
+                  0 18px 35px -5px rgba(0, 0, 0, 0.8),
+                  0 0 25px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Video Background Container */
+    #bg-video-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+      overflow: hidden;
+      display: none;
+    }
+    #bg-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      filter: brightness(0.35) contrast(1.1);
+    }
+
+    /* Ambient Canvas */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Skeleton Loading Animasi */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+    }
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
   </style>
 </head>
-<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6">
+<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen relative">
+
+  <!-- Background Video Engine -->
+  <div id="bg-video-wrapper">
+    <video id="bg-video" autoplay loop muted playsinline></video>
+  </div>
+
+  <!-- Ambient Particle Animation Engine -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
 
     <!-- HEADER RESMI -->
-    <header id="main-header" class="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl transition-all">
+    <header id="main-header" class="card-emboss flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl backdrop-blur-2xl">
       <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
-        <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
-          <img id="app-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" alt="Lambang Kabupaten Konawe" class="h-full w-full object-contain" />
+        <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-black/40 rounded-2xl border border-white/10 shadow-inner">
+          <img id="app-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3C/svg%3E" alt="Logo Portal" class="h-full w-full object-contain filter drop-shadow-md transition-opacity duration-300 opacity-0" />
         </div>
 
         <div class="flex-1 min-w-0">
-          <h1 id="app-title" class="text-lg sm:text-2xl font-bold tracking-tight text-white leading-tight">
-            Office Suite BPKAD Kab. Konawe
+          <h1 id="app-title" class="text-lg sm:text-2xl font-extrabold tracking-tight text-white leading-tight">
+            <span class="inline-block w-48 h-6 rounded-lg skeleton"></span>
           </h1>
-          <p id="app-subtitle" class="text-xs text-slate-400 mt-1 line-clamp-1">
-            Badan Pengelola Keuangan dan Aset Daerah
+          <p id="app-subtitle" class="text-xs text-slate-300 font-medium mt-1">
+            <span class="inline-block w-64 h-3.5 rounded skeleton mt-1"></span>
           </p>
-          <p id="live-clock" class="text-[11px] text-indigo-400 font-mono mt-1"></p>
+          <div class="inline-flex items-center gap-2 mt-2 px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <p id="live-clock" class="text-[11px] text-slate-300 font-mono"></p>
+          </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 text-xs font-medium px-3.5 py-1.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        <span id="total-apps">Portal Aktif</span>
+      <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-2xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 shadow-emboss-btn">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="total-apps">Sinkronisasi...</span>
       </div>
     </header>
 
-    <!-- PENCARIAN & KATEGORI -->
+    <!-- SEARCH & KATEGORI -->
     <div class="space-y-3">
       <div class="relative">
-        <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
         <input 
           type="text" 
           id="searchInput" 
-          placeholder="Cari tautan aplikasi atau layanan BPKAD..." 
-          class="w-full pl-11 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-2xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-md placeholder:text-slate-500 text-white"
+          autocomplete="off" 
+          spellcheck="false"
+          placeholder="Cari tautan aplikasi atau layanan dinas..." 
+          class="w-full pl-11 pr-4 py-3.5 bg-slate-900/80 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-xl text-white placeholder:text-slate-400 shadow-emboss"
         />
       </div>
 
-      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
+      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
+        <!-- Skeleton Tabs -->
+        <div class="w-20 h-8 rounded-xl skeleton"></div>
+        <div class="w-20 h-8 rounded-xl skeleton"></div>
+        <div class="w-20 h-8 rounded-xl skeleton"></div>
+      </div>
     </div>
 
-    <!-- GRID MENU APLIKASI -->
-    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4"></main>
+    <!-- GRID MENU APLIKASI (DEFAULT: SKELETON EMBOSS CARDS) -->
+    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="p-5 rounded-2xl card-emboss h-36 flex flex-col justify-between"><div class="w-2/3 h-5 rounded skeleton"></div><div class="w-full h-8 rounded skeleton"></div><div class="w-1/3 h-3 rounded skeleton self-end"></div></div>
+      <div class="p-5 rounded-2xl card-emboss h-36 flex flex-col justify-between"><div class="w-2/3 h-5 rounded skeleton"></div><div class="w-full h-8 rounded skeleton"></div><div class="w-1/3 h-3 rounded skeleton self-end"></div></div>
+      <div class="p-5 rounded-2xl card-emboss h-36 flex flex-col justify-between"><div class="w-2/3 h-5 rounded skeleton"></div><div class="w-full h-8 rounded skeleton"></div><div class="w-1/3 h-3 rounded skeleton self-end"></div></div>
+    </main>
 
     <!-- GRUP DISKUSI WHATSAPP -->
     <section id="waSection">
-      <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
-         class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 shadow-lg active:scale-[0.99]">
+      <a id="waGroupLink" href="#" target="_blank" rel="noopener noreferrer" 
+         class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/30 hover:border-emerald-400/60 transition-all duration-300 shadow-emboss active:scale-[0.99]">
         <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 shadow-emboss-btn transition-transform">
             <i data-lucide="message-circle" class="w-6 h-6"></i>
           </div>
           <div>
-            <h2 id="waGroupTitle" class="text-sm sm:text-base font-semibold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi BPKAD Konawe</h2>
-            <p class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
+            <h2 id="waGroupTitle" class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi Portal</h2>
+            <p id="waGroupDesc" class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
           </div>
         </div>
-        <div class="flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 group-hover:bg-emerald-400 transition-all flex-shrink-0">
+        <div class="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emboss-btn transition-all flex-shrink-0">
           <span>Gabung</span>
           <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </div>
@@ -96,37 +215,39 @@
     </section>
 
     <!-- LIVE ANALITIK PORTAL REAL-TIME -->
-    <section class="p-5 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl">
-      <div class="flex items-center justify-between mb-3.5">
+    <section class="p-5 rounded-3xl card-emboss backdrop-blur-2xl">
+      <div class="flex items-center justify-between mb-4">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-          <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
-          Live Analitik Portal
+          <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i>
+          Live Real-Time Engine
         </h3>
-        <div class="flex items-center gap-1.5 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium font-mono">
+        <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold font-mono">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Live Sync</span>
+          <span id="sync-status">Sinkronisasi</span>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:gap-4">
         <!-- Total Kunjungan -->
-        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-          <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="eye" class="w-5 h-5"></i></div>
+        <div class="p-4 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-3.5 shadow-emboss">
+          <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-emboss-btn">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </div>
           <div>
-            <div id="stat-total" class="text-lg sm:text-2xl font-bold text-white tracking-tight">--</div>
-            <p class="text-[11px] text-slate-400">Total Kunjungan</p>
+            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">--</div>
+            <p class="text-[11px] text-slate-400 font-medium">Total Kunjungan</p>
           </div>
         </div>
 
         <!-- Pengunjung Online Real-Time -->
-        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-          <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 relative">
+        <div class="p-4 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-3.5 shadow-emboss">
+          <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 relative shadow-emboss-btn">
             <i data-lucide="users" class="w-5 h-5"></i>
             <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div>
-            <div id="stat-online" class="text-lg sm:text-2xl font-bold text-emerald-400 tracking-tight">1</div>
-            <p class="text-[11px] text-slate-400">Online Saat Ini</p>
+            <div id="stat-online" class="text-xl sm:text-2xl font-extrabold text-emerald-400 tracking-tight">1</div>
+            <p class="text-[11px] text-slate-400 font-medium">Online Saat Ini</p>
           </div>
         </div>
       </div>
@@ -134,34 +255,126 @@
 
   </div>
 
-  <!-- FOOTER -->
-  <footer class="w-full text-center text-xs text-slate-500 py-6 mt-6">
-    <p id="footer-text">©Copyright 2026 Irman_Aset. All rights reserved.</p>
+  <!-- FOOTER RESMI (DIPERBARUI DINAMIS DARI SPREADSHEET) -->
+  <footer class="w-full text-center text-xs text-slate-500 py-6 mt-6 relative z-10">
+    <p id="footer-text" class="font-medium tracking-wide">Menghubungkan ke server...</p>
   </footer>
 
+  <!-- CORE JAVASCRIPT ENGINE -->
   <script>
-    // URL Web App GAS Anda yang Resmi
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
+    /* =====================================================================
+     * 1. PROTEKSI TOTAL: BOT FILTER, ANTI-INSPECT, ANTI-COPY, DEBUGGER TRAP
+     * ===================================================================== */
+    (function initSecurityShield() {
+      // Deteksi Bot & Automated Runner (Puppeteer, Selenium, Phantom)
+      const isBot = navigator.webdriver || 
+                    window.__nightmare || 
+                    window.callPhantom || 
+                    window._phantom || 
+                    /HeadlessChrome|spider|bot|crawl/i.test(navigator.userAgent);
 
-    // Session ID Unik Perangkat
-    let mySessionId = sessionStorage.getItem('bpkad_sid');
-    if (!mySessionId) {
-      mySessionId = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
-      sessionStorage.setItem('bpkad_sid', mySessionId);
-    }
+      if (isBot) {
+        document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
+        throw new Error("Bot access rejected.");
+      }
 
-    // Data BPKAD Siap Pakai (Tampil Cepat 0 Detik)
-    let allApps = [
-      { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
-      { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
-      { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
-      { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" }
-    ];
+      // Blokir Klik Kanan & Seleksi Konteks
+      document.addEventListener('contextmenu', e => e.preventDefault());
 
+      // Blokir Drag Objek Gambar & Link
+      document.addEventListener('dragstart', e => e.preventDefault());
+
+      // Blokir Tombol Pintas Devtools & View Source
+      document.addEventListener('keydown', e => {
+        if (
+          e.key === 'F12' ||
+          (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) ||
+          (e.ctrlKey && ['U','u','S','s','P','p'].includes(e.key))
+        ) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Anti-Debugger Loop (Constructor Trap)
+      setInterval(() => {
+        (function() { return false; }["constructor"]("debugger")());
+      }, 1000);
+    })();
+
+    /* =====================================================================
+     * 2. ZERO STORAGE ARCHITECTURE & ENCRYPTED GAS ENDPOINT
+     * ===================================================================== */
+    // Endpoint GAS Terfragmentasi & Ter-obfuscate Base64
+    const _segA = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=";
+    const _segB = "QUtmeWNieV9La3hfeTF3YnhvbzFiMDdlelVzTFN5VFVpSUFnU0hTRk5JSlliZlRwcWdjUk1rSE1vUVFzTXRpTkRLRFNEUDBTQQ==";
+    const _segC = "L2V4ZWM=";
+    const GAS_ENDPOINT = atob(_segA) + atob(_segB) + atob(_segC);
+
+    // Runtime Session Murni di Memori RAM (Tanpa localStorage / sessionStorage)
+    const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+
+    // State Lokal RAM (Default kosong, diisi 100% dari spreadsheet)
+    let allApps = [];
     let activeCategory = 'ALL';
 
-    // Jam Digital
-    function startClock() {
+    /* =====================================================================
+     * 3. AMBIENT PARTICLE BACKGROUND ANIMATION ENGINE
+     * ===================================================================== */
+    const canvas = document.getElementById('ambient-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function setupCanvasSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', setupCanvasSize);
+    setupCanvasSize();
+
+    class AmbientDot {
+      constructor() {
+        this.init();
+      }
+      init() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.2 + 0.6;
+        this.vx = (Math.random() - 0.5) * 0.35;
+        this.vy = (Math.random() - 0.5) * 0.35;
+        this.alpha = Math.random() * 0.45 + 0.15;
+      }
+      step() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.init();
+        }
+      }
+      render() {
+        ctx.fillStyle = `rgba(129, 140, 248, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 35; i++) particles.push(new AmbientDot());
+
+    function loopCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.step();
+        p.render();
+      });
+      requestAnimationFrame(loopCanvas);
+    }
+    loopCanvas();
+
+    /* =====================================================================
+     * 4. JAM DIGITAL & UI RENDERING ENGINE
+     * ===================================================================== */
+    function runLiveClock() {
       const clockEl = document.getElementById('live-clock');
       function update() {
         const now = new Date();
@@ -173,162 +386,204 @@
       setInterval(update, 1000);
       update();
     }
-    startClock();
+    runLiveClock();
 
-    // Render Kategori
-    function renderCategories() {
+    function renderCategoryTabs() {
       const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
       container.innerHTML = categories.map(cat => `
-        <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-xl border border-white/10 font-medium whitespace-nowrap transition-all active:scale-95 ${cat === activeCategory ? 'bg-indigo-600 text-white border-transparent' : 'bg-slate-900/50 text-slate-400 hover:bg-white/10'}">
-          ${cat === 'ALL' ? 'Semua' : cat}
+        <button onclick="changeCategory('${cat}')" 
+          class="px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all duration-200 ${
+            cat === activeCategory 
+              ? 'bg-indigo-600 text-white shadow-emboss-btn border-transparent scale-100' 
+              : 'bg-slate-900/70 text-slate-400 hover:text-white border border-white/5 hover:border-white/10 active:scale-95'
+          }">
+          ${cat === 'ALL' ? 'Semua Kategori' : cat}
         </button>
       `).join('');
     }
 
-    function filterCategory(cat) {
+    function changeCategory(cat) {
       activeCategory = cat;
-      renderCategories();
-      renderApps();
+      renderCategoryTabs();
+      renderAppCards();
     }
 
-    // Render Daftar Aplikasi
-    function renderApps() {
-      const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
+    // Tracker Klik Aplikasi (Bekerja di Background tanpa mengganggu navigasi)
+    function trackClick(appName) {
+      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}`;
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(trackUrl);
+      } else {
+        fetch(trackUrl, { keepalive: true, mode: 'no-cors' }).catch(() => {});
+      }
+      return true;
+    }
+
+    function renderAppCards() {
+      const searchKey = (document.getElementById('searchInput').value || '').toLowerCase();
       const grid = document.getElementById('appGrid');
-      const filtered = allApps.filter(app => {
-        const matchesCategory = activeCategory === 'ALL' || (app.category && app.category.toUpperCase() === activeCategory.toUpperCase());
-        const matchesKeyword = (app.title || '').toLowerCase().includes(keyword) || (app.desc || '').toLowerCase().includes(keyword);
-        return matchesCategory && matchesKeyword;
+      const filtered = allApps.filter(item => {
+        const matchCat = activeCategory === 'ALL' || (item.category && item.category.toUpperCase() === activeCategory.toUpperCase());
+        const matchKey = (item.title || '').toLowerCase().includes(searchKey) || (item.desc || '').toLowerCase().includes(searchKey);
+        return matchCat && matchKey;
       });
 
       document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-500"><i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-40"></i><p class="text-sm">Aplikasi tidak ditemukan.</p></div>`;
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-400 card-emboss rounded-3xl">
+            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-30 text-indigo-400"></i>
+            <p class="text-sm font-semibold">Tidak ada layanan atau aplikasi yang sesuai.</p>
+          </div>`;
         lucide.createIcons();
         return;
       }
 
       grid.innerHTML = filtered.map(app => `
-        <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="group p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.07] backdrop-blur-xl transition-all duration-300 flex flex-col justify-between active:scale-[0.98]">
+        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
+           onclick="trackClick('${app.title}')"
+           class="group p-5 rounded-2xl card-emboss backdrop-blur-xl flex flex-col justify-between active:scale-[0.98]">
           <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex items-center gap-3">
-              <div class="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+              <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white shadow-emboss-btn transition-all duration-300">
                 <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-semibold text-slate-100 text-sm group-hover:text-indigo-300 transition-colors">${app.title}</h3>
-                <span class="text-[10px] text-slate-400 uppercase tracking-wider">${app.category || 'Layanan'}</span>
+                <h3 class="font-bold text-slate-100 text-sm group-hover:text-indigo-300 transition-colors">${app.title}</h3>
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">${app.category || 'Layanan'}</span>
               </div>
             </div>
-            ${app.badge ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-white/10 text-slate-300 border border-white/5">${app.badge}</span>` : ''}
+            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-white/5 text-indigo-300 border border-indigo-500/20 shadow-emboss-btn">${app.badge}</span>` : ''}
           </div>
-          <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">${app.desc || ''}</p>
-          <div class="flex items-center text-[11px] font-medium text-slate-500 group-hover:text-indigo-400 transition-colors gap-1 self-end mt-auto">
-            <span>Buka Akses</span>
-            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">${app.desc || ''}</p>
+          <div class="flex items-center text-[11px] font-semibold text-slate-400 group-hover:text-indigo-400 transition-colors gap-1 self-end mt-auto">
+            <span>Akses Aplikasi</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
           </div>
         </a>
       `).join('');
       lucide.createIcons();
     }
 
-    // Terapkan Pengaturan dari Spreadsheet
-    function applyCustomization(settings) {
+    /* =====================================================================
+     * 5. SINKRONISASI PENGATURAN SPREADSHEET (BACKGROUND & THEME)
+     * ===================================================================== */
+    function applySpreadsheetSettings(settings) {
       if (!settings) return;
+
       if (settings.title) {
         document.getElementById('app-title').textContent = settings.title;
         document.getElementById('page-title').textContent = settings.title;
       }
       if (settings.subtitle) document.getElementById('app-subtitle').textContent = settings.subtitle;
-      if (settings.logo_url) document.getElementById('app-logo').src = settings.logo_url;
+      
+      if (settings.logo_url) {
+        const logo = document.getElementById('app-logo');
+        logo.src = settings.logo_url;
+        logo.classList.remove('opacity-0');
+      }
+
       if (settings.wa_group_url) document.getElementById('waGroupLink').href = settings.wa_group_url;
       if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
       if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
 
-      // Background Custom
+      // Dynamic Background Engine: Otomatis memutar Video jika link video, atau Gambar/Warna Hidup
       const bodyEl = document.getElementById('body-container');
+      const bgVideoWrapper = document.getElementById('bg-video-wrapper');
+      const bgVideo = document.getElementById('bg-video');
+
       if (settings.bg_body) {
-        if (settings.bg_body.startsWith('http')) {
-          bodyEl.style.backgroundImage = `linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.9)), url('${settings.bg_body}')`;
-          bodyEl.style.backgroundSize = 'cover';
-          bodyEl.style.backgroundPosition = 'center';
-          bodyEl.style.backgroundAttachment = 'fixed';
-        } else {
-          bodyEl.style.background = settings.bg_body;
+        const val = settings.bg_body.trim();
+
+        // 1. Jika bernilai URL Video Direct (.mp4 / .webm)
+        if (val.match(/\.(mp4|webm|ogg)$/i)) {
+          bgVideo.src = val;
+          bgVideoWrapper.style.display = "block";
+          bodyEl.style.background = "transparent";
+        } 
+        // 2. Jika bernilai URL Gambar Web
+        else if (val.startsWith("http")) {
+          bgVideoWrapper.style.display = "none";
+          bodyEl.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.75) 0%, rgba(3, 7, 18, 0.95) 100%), url('${val}')`;
+          bodyEl.style.backgroundSize = "cover";
+          bodyEl.style.backgroundPosition = "center";
+          bodyEl.style.backgroundAttachment = "fixed";
+        } 
+        // 3. Jika berupa Kode Warna / Gradient CSS (Contoh: linear-gradient / #0b1120)
+        else {
+          bgVideoWrapper.style.display = "none";
+          bodyEl.style.background = val;
         }
       }
 
-      const headerEl = document.getElementById('main-header');
+      // Kustomisasi Header Background jika diisi
       if (settings.bg_header) {
-        if (settings.bg_header.startsWith('http')) {
-          headerEl.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('${settings.bg_header}')`;
-          headerEl.style.backgroundSize = 'cover';
-        } else {
-          headerEl.style.background = settings.bg_header;
-        }
+        document.getElementById('main-header').style.background = settings.bg_header;
       }
     }
 
-    // Pembaruan Angka Analitik Real-Time
-    function updateAnalytics(analytics) {
+    function syncAnalyticsUI(analytics) {
       if (!analytics) return;
       if (analytics.total !== undefined) {
         document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
       }
       if (analytics.online !== undefined) {
-        const onlineEl = document.getElementById('stat-online');
-        if (onlineEl.textContent !== String(analytics.online)) {
-          onlineEl.classList.add('text-emerald-200');
-          setTimeout(() => onlineEl.classList.remove('text-emerald-200'), 500);
-        }
-        onlineEl.textContent = Number(analytics.online).toLocaleString('id-ID');
+        const el = document.getElementById('stat-online');
+        el.textContent = Number(analytics.online).toLocaleString('id-ID');
       }
     }
 
-    // 1. KONEKSI PERTAMA (Ambil Data Lengkap & Catat Kunjungan Baru)
-    async function loadInitialData() {
+    /* =====================================================================
+     * 6. KOMUNIKASI API NETWORK (FETCH INITIAL & HEARTBEAT SYNC)
+     * ===================================================================== */
+    async function fetchPortalDatabase() {
       try {
-        const res = await fetch(`${GAS_API_URL}?sid=${mySessionId}`, { method: 'GET', redirect: 'follow' });
+        const ua = encodeURIComponent(navigator.userAgent);
+        const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&ua=${ua}`, {
+          method: 'GET',
+          redirect: 'follow'
+        });
         const data = await res.json();
+
         if (data.status === "success") {
-          applyCustomization(data.settings);
-          updateAnalytics(data.analytics);
+          applySpreadsheetSettings(data.settings);
+          syncAnalyticsUI(data.analytics);
+
           if (data.apps && data.apps.length > 0) {
             allApps = data.apps;
-            renderCategories();
-            renderApps();
+            renderCategoryTabs();
+            renderAppCards();
           }
+          document.getElementById('sync-status').textContent = "Live Sync";
         }
       } catch (err) {
-        console.log("Portal online dengan data stabil:", err);
+        document.getElementById('sync-status').textContent = "Terhubung Lokal";
       }
     }
 
-    // 2. DETAK JANTUNG ANALITIK REAL-TIME (Kirim Sinyal Tiap 15 Detik)
+    // Heartbeat Pengunjung (Setiap 20 detik tanpa membebani server)
     setInterval(async () => {
       try {
-        const res = await fetch(`${GAS_API_URL}?action=heartbeat&sid=${mySessionId}`, {
+        const res = await fetch(`${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`, {
           method: 'GET',
           redirect: 'follow'
         });
         const data = await res.json();
         if (data.status === "success" && data.analytics) {
-          updateAnalytics(data.analytics);
+          syncAnalyticsUI(data.analytics);
           document.getElementById('sync-status').textContent = "Live Sync";
         }
       } catch (e) {
         document.getElementById('sync-status').textContent = "Reconnecting";
       }
-    }, 15000); // 15 detik
+    }, 20000);
 
-    // Inisialisasi Tampilan
-    renderCategories();
-    renderApps();
+    // Initial Event Listeners & Boot
+    document.getElementById('searchInput').addEventListener('input', renderAppCards);
     lucide.createIcons();
-    document.getElementById('searchInput').addEventListener('input', renderApps);
-    loadInitialData();
+    fetchPortalDatabase();
   </script>
 </body>
 </html>
