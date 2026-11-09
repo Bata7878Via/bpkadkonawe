@@ -33,7 +33,7 @@
 
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6">
 
-    <!-- HEADER -->
+    <!-- HEADER RESMI -->
     <header id="main-header" class="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl transition-all">
       <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
         <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
@@ -72,10 +72,10 @@
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
-    <!-- GRID APLIKASI -->
+    <!-- GRID MENU APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4"></main>
 
-    <!-- GRUP WHATSAPP -->
+    <!-- GRUP DISKUSI WHATSAPP -->
     <section id="waSection">
       <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
          class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 shadow-lg active:scale-[0.99]">
@@ -95,7 +95,7 @@
       </a>
     </section>
 
-    <!-- LIVE ANALITIK REAL-TIME DENGAN STATUS DETAK JANTUNG -->
+    <!-- LIVE ANALITIK PORTAL REAL-TIME -->
     <section class="p-5 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl">
       <div class="flex items-center justify-between mb-3.5">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
@@ -118,7 +118,7 @@
           </div>
         </div>
 
-        <!-- Online Real-Time -->
+        <!-- Pengunjung Online Real-Time -->
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
           <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 relative">
             <i data-lucide="users" class="w-5 h-5"></i>
@@ -140,17 +140,17 @@
   </footer>
 
   <script>
+    // URL Web App GAS Anda yang Resmi
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
-    // 1. GENERATE SESSION ID UNIK PERANGKAT
-    // Setiap tab/HP memiliki nomor sesi sendiri untuk mencatat online secara nyata
+    // Session ID Unik Perangkat
     let mySessionId = sessionStorage.getItem('bpkad_sid');
     if (!mySessionId) {
       mySessionId = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
       sessionStorage.setItem('bpkad_sid', mySessionId);
     }
 
-    // Data BPKAD Siap Pakai
+    // Data BPKAD Siap Pakai (Tampil Cepat 0 Detik)
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
       { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
@@ -192,7 +192,7 @@
       renderApps();
     }
 
-    // Render Aplikasi
+    // Render Daftar Aplikasi
     function renderApps() {
       const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
       const grid = document.getElementById('appGrid');
@@ -234,7 +234,7 @@
       lucide.createIcons();
     }
 
-    // Terapkan Pengaturan
+    // Terapkan Pengaturan dari Spreadsheet
     function applyCustomization(settings) {
       if (!settings) return;
       if (settings.title) {
@@ -246,9 +246,32 @@
       if (settings.wa_group_url) document.getElementById('waGroupLink').href = settings.wa_group_url;
       if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
       if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
+
+      // Background Custom
+      const bodyEl = document.getElementById('body-container');
+      if (settings.bg_body) {
+        if (settings.bg_body.startsWith('http')) {
+          bodyEl.style.backgroundImage = `linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.9)), url('${settings.bg_body}')`;
+          bodyEl.style.backgroundSize = 'cover';
+          bodyEl.style.backgroundPosition = 'center';
+          bodyEl.style.backgroundAttachment = 'fixed';
+        } else {
+          bodyEl.style.background = settings.bg_body;
+        }
+      }
+
+      const headerEl = document.getElementById('main-header');
+      if (settings.bg_header) {
+        if (settings.bg_header.startsWith('http')) {
+          headerEl.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('${settings.bg_header}')`;
+          headerEl.style.backgroundSize = 'cover';
+        } else {
+          headerEl.style.background = settings.bg_header;
+        }
+      }
     }
 
-    // Pembaruan Angka Analitik Halus (Real-Time Counter)
+    // Pembaruan Angka Analitik Real-Time
     function updateAnalytics(analytics) {
       if (!analytics) return;
       if (analytics.total !== undefined) {
@@ -256,7 +279,6 @@
       }
       if (analytics.online !== undefined) {
         const onlineEl = document.getElementById('stat-online');
-        // Berikan efek kilap warna hijau saat angka berubah
         if (onlineEl.textContent !== String(analytics.online)) {
           onlineEl.classList.add('text-emerald-200');
           setTimeout(() => onlineEl.classList.remove('text-emerald-200'), 500);
@@ -265,7 +287,7 @@
       }
     }
 
-    // 2. KONEKSI PERTAMA: Ambil Data Lengkap & Daftarkan Kunjungan Baru
+    // 1. KONEKSI PERTAMA (Ambil Data Lengkap & Catat Kunjungan Baru)
     async function loadInitialData() {
       try {
         const res = await fetch(`${GAS_API_URL}?sid=${mySessionId}`, { method: 'GET', redirect: 'follow' });
@@ -280,11 +302,11 @@
           }
         }
       } catch (err) {
-        console.log("Menjalankan data stabil:", err);
+        console.log("Portal online dengan data stabil:", err);
       }
     }
 
-    // 3. MESIN REAL-TIME HEARTBEAT (Kirim Sinyal Tiap 15 Detik)
+    // 2. DETAK JANTUNG ANALITIK REAL-TIME (Kirim Sinyal Tiap 15 Detik)
     setInterval(async () => {
       try {
         const res = await fetch(`${GAS_API_URL}?action=heartbeat&sid=${mySessionId}`, {
