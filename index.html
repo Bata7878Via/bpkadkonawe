@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Memuat Dashboard...</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 80%);
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body class="text-slate-100 antialiased p-4 sm:p-8 flex flex-col justify-between min-h-screen">
+
+  <div class="max-w-4xl mx-auto w-full space-y-6">
+    
+    <!-- HEADER -->
+    <header class="flex flex-col sm:flex-row items-center justify-between gap-5 p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl">
+      <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+        <!-- Lambang Daerah Konawe -->
+        <div class="w-16 h-20 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
+          <img id="app-logo" src="" alt="Lambang Daerah" class="h-full w-full object-contain hidden" />
+          <div id="logo-skeleton" class="w-12 h-14 bg-white/10 animate-pulse rounded-lg"></div>
+        </div>
+
+        <div>
+          <!-- Title & Subtitle Dinamis dari Spreadsheet -->
+          <h1 id="app-title" class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            <span class="inline-block w-48 h-6 bg-white/10 animate-pulse rounded"></span>
+          </h1>
+          <p id="app-subtitle" class="text-xs text-slate-400 mt-1">
+            <span class="inline-block w-32 h-3.5 bg-white/5 animate-pulse rounded"></span>
+          </p>
+          <p id="live-clock" class="text-[11px] text-indigo-400 font-mono mt-1"></p>
+        </div>
+      </div>
+
+      <!-- Total Akses Indicator -->
+      <div class="flex items-center gap-2 text-xs font-medium px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span id="total-apps">Sinkronisasi Data...</span>
+      </div>
+    </header>
+
+    <!-- SEARCH & KATEGORI -->
+    <div class="space-y-4">
+      <div class="relative">
+        <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Cari tautan aplikasi atau layanan..." 
+          class="w-full pl-12 pr-4 py-3.5 bg-slate-900/50 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-md placeholder:text-slate-500 transition-all text-white"
+        />
+      </div>
+
+      <!-- Kategori Filter -->
+      <div id="categoryTabs" class="flex flex-wrap gap-2 text-xs">
+        <button class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium">Semua</button>
+      </div>
+    </div>
+
+    <!-- APP GRID -->
+    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Loading Skeletons -->
+      <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
+      <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
+      <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
+    </main>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="w-full text-center text-xs text-slate-500 py-6 mt-8">
+    <p id="footer-text">Memuat informasi hak cipta...</p>
+  </footer>
+
+  <script>
+    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+    const GAS_API_URL = "MASUKKAN_URL_WEB_APP_GAS_DISINI";
+
+    let allApps = [];
+    let activeCategory = 'ALL';
+
+    // Jam Digital
+    function startClock() {
+      const clockEl = document.getElementById('live-clock');
+      function update() {
+        const now = new Date();
+        clockEl.textContent = now.toLocaleDateString('id-ID', { 
+          weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit' 
+        });
+      }
+      setInterval(update, 1000);
+      update();
+    }
+    startClock();
+
+    // Fetch Data Langsung dari GAS (Tanpa LocalStorage)
+    async function fetchData() {
+      try {
+        const res = await fetch(GAS_API_URL);
+        const json = await res.json();
+
+        if (json.status === "success") {
+          applySettings(json.settings);
+          allApps = json.apps || [];
+          renderCategories();
+          renderApps();
+        }
+      } catch (err) {
+        console.error("Gagal memuat data dari Spreadsheet:", err);
+        document.getElementById('total-apps').textContent = "Koneksi Terputus";
+        document.getElementById('appGrid').innerHTML = `
+          <div class="col-span-full py-10 text-center text-rose-400 bg-rose-500/10 rounded-2xl border border-rose-500/20">
+            <p class="font-medium text-sm">Gagal memuat data dari Google Spreadsheet.</p>
+            <p class="text-xs text-slate-400 mt-1">Pastikan Web App GAS telah di-deploy dengan akses "Anyone".</p>
+          </div>
+        `;
+      }
+    }
+
+    // Terapkan Pengaturan dari Sheet "Pengaturan"
+    function applySettings(settings) {
+      if (!settings) return;
+
+      // Title & Page Title
+      const title = settings.title || "Office Suite BPKAD Kab. Konawe";
+      document.getElementById('app-title').textContent = title;
+      document.getElementById('page-title').textContent = title;
+
+      // Subtitle
+      document.getElementById('app-subtitle').textContent = settings.subtitle || "";
+
+      // Logo Lambang Daerah
+      const logoEl = document.getElementById('app-logo');
+      const skeletonEl = document.getElementById('logo-skeleton');
+      if (settings.logo_url) {
+        logoEl.src = settings.logo_url;
+        logoEl.onload = () => {
+          logoEl.classList.remove('hidden');
+          skeletonEl.classList.add('hidden');
+        };
+      }
+
+      // Footer
+      document.getElementById('footer-text').textContent = settings.footer || "©Copyright 2026 Irman_Aset. All rights reserved.";
+    }
+
+    // Render Kategori
+    function renderCategories() {
+      const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
+      const container = document.getElementById('categoryTabs');
+
+      container.innerHTML = categories.map(cat => `
+        <button 
+          onclick="filterCategory('${cat}')" 
+          class="category-btn px-4 py-2 rounded-xl border border-white/10 font-medium transition-all ${
+            cat === activeCategory 
+              ? 'bg-indigo-600 text-white border-transparent' 
+              : 'bg-white/5 text-slate-400 hover:bg-white/10'
+          }"
+        >
+          ${cat === 'ALL' ? 'Semua' : cat}
+        </button>
+      `).join('');
+    }
+
+    function filterCategory(cat) {
+      activeCategory = cat;
+      renderCategories();
+      renderApps();
+    }
+
+    // Render Card Aplikasi
+    function renderApps() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('appGrid');
+
+      const filtered = allApps.filter(app => {
+        const matchesCategory = activeCategory === 'ALL' || (app.category && app.category.toUpperCase() === activeCategory.toUpperCase());
+        const matchesKeyword = (app.title || '').toLowerCase().includes(keyword) || 
+                               (app.desc || '').toLowerCase().includes(keyword);
+        return matchesCategory && matchesKeyword;
+      });
+
+      document.getElementById('total-apps').textContent = `${allApps.length} Aplikasi Aktif`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500">
+            <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
+            <p class="text-sm">Aplikasi tidak ditemukan.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(app => `
+        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
+           class="group p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.07] backdrop-blur-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/5">
+          
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3">
+              <div class="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-slate-100 text-sm group-hover:text-indigo-300 transition-colors">${app.title}</h3>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider">${app.category || 'Layanan'}</span>
+              </div>
+            </div>
+
+            ${app.badge ? `
+              <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-white/10 text-slate-300 border border-white/5">
+                ${app.badge}
+              </span>
+            ` : ''}
+          </div>
+
+          <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">${app.desc || ''}</p>
+
+          <div class="flex items-center text-[11px] font-medium text-slate-500 group-hover:text-indigo-400 transition-colors gap-1 self-end mt-auto">
+            <span>Buka Akses</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </div>
+        </a>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // Pencarian Interaktif
+    document.getElementById('searchInput').addEventListener('input', renderApps);
+
+    // Jalankan permintaan data
+    fetchData();
+  </script>
+</body>
+</html>
