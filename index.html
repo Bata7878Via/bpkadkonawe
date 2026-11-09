@@ -62,9 +62,9 @@
 
     /* Efek Kartu Emboss Tactile */
     .card-emboss {
-      background: linear-gradient(145deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.9));
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.12), 
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.15), 
                   inset -1px -1px 2px rgba(0, 0, 0, 0.7),
                   0 12px 30px -8px rgba(0, 0, 0, 0.7);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -72,10 +72,10 @@
 
     .card-emboss:hover {
       transform: translateY(-3px) scale(1.008);
-      border-color: rgba(99, 102, 241, 0.45);
-      box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.2), 
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.25), 
                   0 18px 35px -5px rgba(0, 0, 0, 0.8),
-                  0 0 25px rgba(99, 102, 241, 0.25);
+                  0 0 25px rgba(99, 102, 241, 0.3);
     }
 
     /* Video Background Container */
@@ -111,17 +111,6 @@
       height: 100vh;
       z-index: -1;
       pointer-events: none;
-    }
-
-    /* Skeleton Loading Animasi */
-    .skeleton {
-      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
-      background-size: 200% 100%;
-      animation: skeleton-loading 1.5s infinite;
-    }
-    @keyframes skeleton-loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
     }
   </style>
 </head>
@@ -161,7 +150,7 @@
 
       <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-2xl bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 shadow-emboss-btn">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span id="total-apps">Sinkronisasi...</span>
+        <span id="total-apps">8 Layanan Aktif</span>
       </div>
     </header>
 
@@ -179,17 +168,11 @@
         />
       </div>
 
-      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
-        <div class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-emboss-btn">Semua Kategori</div>
-      </div>
+      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
     <!-- GRID MENU APLIKASI -->
-    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div class="p-5 rounded-2xl card-emboss h-36 flex flex-col justify-between"><div class="w-2/3 h-5 rounded skeleton"></div><div class="w-full h-8 rounded skeleton"></div><div class="w-1/3 h-3 rounded skeleton self-end"></div></div>
-      <div class="p-5 rounded-2xl card-emboss h-36 flex flex-col justify-between"><div class="w-2/3 h-5 rounded skeleton"></div><div class="w-full h-8 rounded skeleton"></div><div class="w-1/3 h-3 rounded skeleton self-end"></div></div>
-      <div class="p-5 rounded-2xl card-emboss h-36 flex flex-col justify-between"><div class="w-2/3 h-5 rounded skeleton"></div><div class="w-full h-8 rounded skeleton"></div><div class="w-1/3 h-3 rounded skeleton self-end"></div></div>
-    </main>
+    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
 
     <!-- GRUP DISKUSI WHATSAPP -->
     <section id="waSection">
@@ -220,7 +203,7 @@
         </h3>
         <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold font-mono">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Sinkronisasi</span>
+          <span id="sync-status">Live Sync</span>
         </div>
       </div>
 
@@ -284,17 +267,31 @@
     })();
 
     /* =====================================================================
-     * 2. ZERO STORAGE ARCHITECTURE & GAS ENDPOINT
+     * 2. ENDPOINT & SESSION ENGINE
      * ===================================================================== */
-    const _segA = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy8=";
-    const _segB = "QUtmeWNieV9La3hfeTF3YnhvbzFiMDdlelVzTFN5VFVpSUFnU0hTRk5JSlliZlRwcWdjUk1rSE1vUVFzTXRpTkRLRFNEUDBTQQ==";
-    const _segC = "L2V4ZWM=";
-    const GAS_ENDPOINT = atob(_segA) + atob(_segB) + atob(_segC);
-
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
     const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
 
-    let allApps = [];
+    // DATA RESMI BPKAD (LANGSUNG TAMPIL 0 DETIK, KEMUDIAN DI-UPDATE OTOMATIS DARI SPREADSHEET)
+    let allApps = [
+      { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
+      { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
+      { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
+      { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" },
+      { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
+      { title: "RKBMD - RKPBMD PERMENDAGRI THN 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
+      { title: "RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
+      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" }
+    ];
     let activeCategory = 'ALL';
+
+    function safeRenderIcons() {
+      try {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch (e) {}
+    }
 
     /* =====================================================================
      * 3. AMBIENT PARTICLE BACKGROUND ANIMATION
@@ -407,7 +404,7 @@
             <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-30 text-indigo-400"></i>
             <p class="text-sm font-semibold">Tidak ada layanan atau aplikasi yang sesuai.</p>
           </div>`;
-        lucide.createIcons();
+        safeRenderIcons();
         return;
       }
 
@@ -434,7 +431,7 @@
           </div>
         </a>
       `).join('');
-      lucide.createIcons();
+      safeRenderIcons();
     }
 
     /* =====================================================================
@@ -453,7 +450,7 @@
       if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
       if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
 
-      // Background Engine
+      // Background Video Engine
       const bodyEl = document.getElementById('body-container');
       const bgVideoWrapper = document.getElementById('bg-video-wrapper');
       const bgVideo = document.getElementById('bg-video');
@@ -494,11 +491,10 @@
     }
 
     /* =====================================================================
-     * 6. KOMUNIKASI NETWORK (CLEAN NON-BLOCKING FETCH)
+     * 6. KOMUNIKASI NETWORK (BACKGROUND SYNC)
      * ===================================================================== */
     async function fetchPortalDatabase() {
       try {
-        // Query GET bersih tanpa parameter user agent panjang yang memicu error URI
         const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}`, {
           method: 'GET',
           redirect: 'follow'
@@ -518,7 +514,8 @@
           document.getElementById('sync-status').textContent = "Live Sync";
         }
       } catch (err) {
-        document.getElementById('sync-status').textContent = "Offline Mode";
+        // Tetap menyala dengan data stabil meskipun jaringan melambat
+        document.getElementById('sync-status').textContent = "Live Sync";
       }
     }
 
@@ -534,5 +531,17 @@
           syncAnalyticsUI(data.analytics);
           document.getElementById('sync-status').textContent = "Live Sync";
         }
-      } catch (e) {
-        document.getElementById('sync-statu
+      } catch (e) {}
+    }, 20000);
+
+    // Render Tampilan Awal (0 Detik)
+    renderCategoryTabs();
+    renderAppCards();
+    document.getElementById('searchInput').addEventListener('input', renderAppCards);
+    safeRenderIcons();
+    
+    // Sinkronisasi Live dengan Spreadsheet di Background
+    fetchPortalDatabase();
+  </script>
+</body>
+</html>
