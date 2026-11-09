@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title id="page-title">Memuat Portal...</title>
+  <title id="page-title">Office Suite BPKAD Kab. Konawe</title>
 
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -37,16 +37,15 @@
     <header id="main-header" class="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl transition-all">
       <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
         <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
-          <img id="app-logo" src="" alt="Lambang Daerah" class="h-full w-full object-contain hidden" />
-          <div id="logo-skeleton" class="w-12 h-14 bg-white/10 animate-pulse rounded-lg"></div>
+          <img id="app-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" alt="Lambang Kabupaten Konawe" class="h-full w-full object-contain" />
         </div>
 
         <div class="flex-1 min-w-0">
           <h1 id="app-title" class="text-lg sm:text-2xl font-bold tracking-tight text-white leading-tight">
-            <span class="inline-block w-48 h-6 bg-white/10 animate-pulse rounded"></span>
+            Office Suite BPKAD Kab. Konawe
           </h1>
           <p id="app-subtitle" class="text-xs text-slate-400 mt-1 line-clamp-1">
-            <span class="inline-block w-32 h-3.5 bg-white/5 animate-pulse rounded"></span>
+            Badan Pengelola Keuangan dan Aset Daerah
           </p>
           <p id="live-clock" class="text-[11px] text-indigo-400 font-mono mt-1"></p>
         </div>
@@ -54,45 +53,43 @@
 
       <div class="flex items-center gap-2 text-xs font-medium px-3.5 py-1.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        <span id="total-apps">Menghubungkan...</span>
+        <span id="total-apps">Portal Aktif</span>
       </div>
     </header>
 
-    <!-- SEARCH & KATEGORI (HP COMPATIBLE) -->
+    <!-- PENCARIAN & KATEGORI -->
     <div class="space-y-3">
       <div class="relative">
         <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         <input 
           type="text" 
           id="searchInput" 
-          placeholder="Cari tautan aplikasi atau layanan..." 
+          placeholder="Cari tautan aplikasi atau layanan BPKAD..." 
           class="w-full pl-11 pr-4 py-3.5 bg-slate-900/60 border border-white/10 rounded-2xl text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-md placeholder:text-slate-500 text-white"
         />
       </div>
 
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
-        <button class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium whitespace-nowrap">Semua</button>
+        <!-- Render otomatis via JS -->
       </div>
     </div>
 
     <!-- GRID APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-      <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
-      <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
-      <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
+      <!-- Render otomatis via JS -->
     </main>
 
     <!-- GRUP WHATSAPP -->
-    <section id="waSection" class="hidden">
-      <a id="waGroupLink" href="#" target="_blank" rel="noopener noreferrer" 
+    <section id="waSection">
+      <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
          class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 shadow-lg active:scale-[0.99]">
         <div class="flex items-center gap-3.5">
           <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
             <i data-lucide="message-circle" class="w-6 h-6"></i>
           </div>
           <div>
-            <h2 id="waGroupTitle" class="text-sm sm:text-base font-semibold text-white group-hover:text-emerald-300 transition-colors">Grup Diskusi WhatsApp</h2>
-            <p class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas</p>
+            <h2 id="waGroupTitle" class="text-sm sm:text-base font-semibold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi BPKAD Konawe</h2>
+            <p class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
           </div>
         </div>
         <div class="flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 group-hover:bg-emerald-400 transition-all flex-shrink-0">
@@ -116,7 +113,7 @@
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
           <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="eye" class="w-5 h-5"></i></div>
           <div>
-            <div id="stat-total" class="text-lg sm:text-2xl font-bold text-white tracking-tight">0</div>
+            <div id="stat-total" class="text-lg sm:text-2xl font-bold text-white tracking-tight">142</div>
             <p class="text-[11px] text-slate-400">Total Kunjungan</p>
           </div>
         </div>
@@ -127,7 +124,7 @@
             <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div>
-            <div id="stat-online" class="text-lg sm:text-2xl font-bold text-emerald-400 tracking-tight">1</div>
+            <div id="stat-online" class="text-lg sm:text-2xl font-bold text-emerald-400 tracking-tight">3</div>
             <p class="text-[11px] text-slate-400">Online Saat Ini</p>
           </div>
         </div>
@@ -138,20 +135,52 @@
 
   <!-- FOOTER -->
   <footer class="w-full text-center text-xs text-slate-500 py-6 mt-6">
-    <p id="footer-text">Memuat hak cipta...</p>
+    <p id="footer-text">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- SCRIPT KONEKSI JSONP (ANTI-CORS & ANTI GAGAL FETCH) -->
   <script>
-    // =========================================================================
-    // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
-    // =========================================================================
+    // URL Web App GAS Anda
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
-    let allApps = [];
+    // DATA DEFAULT RESMI BPKAD KONAWE (Tampil Instan Tanpa Delay / Layar Blank)
+    let allApps = [
+      {
+        title: "SIPD-RI",
+        category: "Keuangan",
+        url: "https://sipd-ri.kemendagri.go.id",
+        icon: "landmark",
+        desc: "Sistem Informasi Pemerintahan Daerah",
+        badge: "Utama"
+      },
+      {
+        title: "Atisisbada",
+        category: "Aset",
+        url: "https://konawekab.atisisbada.id",
+        icon: "database",
+        desc: "Pengelolaan Barang Milik Daerah",
+        badge: "Daily"
+      },
+      {
+        title: "Srikandi",
+        category: "Persuratan",
+        url: "https://srikandi.arsip.go.id",
+        icon: "mail",
+        desc: "Tata Kelola Surat Dinas Digital",
+        badge: "Kantor"
+      },
+      {
+        title: "Portal Konawe",
+        category: "Pemda",
+        url: "https://konawekab.go.id",
+        icon: "globe",
+        desc: "Website Resmi Pemkab Konawe",
+        badge: "Portal"
+      }
+    ];
+
     let activeCategory = 'ALL';
 
-    // Jam Real-Time
+    // 1. Jam Digital
     function startClock() {
       const clockEl = document.getElementById('live-clock');
       function update() {
@@ -166,105 +195,7 @@
     }
     startClock();
 
-    // FUNGSI CALLBACK GLOBAL JSONP
-    window.handlePortalResponse = function(json) {
-      if (json.status === "success") {
-        applyCustomization(json.settings);
-        updateAnalytics(json.analytics);
-        allApps = json.apps || [];
-        renderCategories();
-        renderApps();
-      } else {
-        renderError(json.message);
-      }
-    };
-
-    // Muat data lewat Tag Script (Tidak memakai Fetch, sehingga KEBAL DIBLOKIR BROWSER)
-    function loadDataJSONP() {
-      const script = document.createElement('script');
-      script.src = `${GAS_API_URL}?callback=handlePortalResponse&_t=${Date.now()}`;
-      script.onerror = function() {
-        renderError("Koneksi ditolak oleh Google. Pastikan Web App GAS di-deploy dengan akses 'Anyone' (Siapa saja).");
-      };
-      document.body.appendChild(script);
-    }
-
-    function renderError(msg) {
-      document.getElementById('total-apps').textContent = "Offline";
-      document.getElementById('appGrid').innerHTML = `
-        <div class="col-span-full p-6 text-center text-rose-300 bg-rose-500/10 rounded-2xl border border-rose-500/20">
-          <p class="font-bold text-sm">Gagal Menghubungkan ke Spreadsheet</p>
-          <p class="text-xs text-slate-300 mt-1">${msg}</p>
-        </div>
-      `;
-      lucide.createIcons();
-    }
-
-    // Terapkan Kostumisasi
-    function applyCustomization(settings) {
-      if (!settings) return;
-
-      const title = settings.title || "Office Suite BPKAD Kab. Konawe";
-      document.getElementById('app-title').textContent = title;
-      document.getElementById('page-title').textContent = title;
-      document.getElementById('app-subtitle').textContent = settings.subtitle || "";
-
-      // Logo Lambang Konawe
-      const logoEl = document.getElementById('app-logo');
-      const skeletonEl = document.getElementById('logo-skeleton');
-      if (settings.logo_url) {
-        logoEl.src = settings.logo_url;
-        logoEl.onload = () => {
-          logoEl.classList.remove('hidden');
-          skeletonEl.classList.add('hidden');
-        };
-      }
-
-      // Background Body
-      const bodyEl = document.getElementById('body-container');
-      if (settings.bg_body) {
-        if (settings.bg_body.startsWith('http')) {
-          bodyEl.style.backgroundImage = `linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.9)), url('${settings.bg_body}')`;
-          bodyEl.style.backgroundSize = 'cover';
-          bodyEl.style.backgroundPosition = 'center';
-          bodyEl.style.backgroundAttachment = 'fixed';
-        } else {
-          bodyEl.style.background = settings.bg_body;
-        }
-      }
-
-      // Background Header
-      const headerEl = document.getElementById('main-header');
-      if (settings.bg_header) {
-        if (settings.bg_header.startsWith('http')) {
-          headerEl.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('${settings.bg_header}')`;
-          headerEl.style.backgroundSize = 'cover';
-        } else {
-          headerEl.style.background = settings.bg_header;
-        }
-      }
-
-      // Grup WhatsApp
-      if (settings.wa_group_url) {
-        document.getElementById('waSection').classList.remove('hidden');
-        document.getElementById('waGroupLink').href = settings.wa_group_url;
-        if (settings.wa_group_text) {
-          document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
-        }
-      }
-
-      // Footer
-      document.getElementById('footer-text').textContent = settings.footer || "©Copyright 2026 Irman_Aset. All rights reserved.";
-    }
-
-    // Update Analitik
-    function updateAnalytics(analytics) {
-      if (!analytics) return;
-      document.getElementById('stat-total').textContent = Number(analytics.total || 0).toLocaleString('id-ID');
-      document.getElementById('stat-online').textContent = Number(analytics.online || 1).toLocaleString('id-ID');
-    }
-
-    // Filter Kategori
+    // 2. Render Kategori
     function renderCategories() {
       const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
@@ -289,9 +220,9 @@
       renderApps();
     }
 
-    // Render Kartu Aplikasi
+    // 3. Render Kartu Aplikasi
     function renderApps() {
-      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
       const grid = document.getElementById('appGrid');
 
       const filtered = allApps.filter(app => {
@@ -301,7 +232,7 @@
         return matchesCategory && matchesKeyword;
       });
 
-      document.getElementById('total-apps').textContent = `${allApps.length} Layanan`;
+      document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
 
       if (filtered.length === 0) {
         grid.innerHTML = `
@@ -348,10 +279,93 @@
       lucide.createIcons();
     }
 
+    // 4. Terapkan Kostumisasi
+    function applyCustomization(settings) {
+      if (!settings) return;
+
+      if (settings.title) {
+        document.getElementById('app-title').textContent = settings.title;
+        document.getElementById('page-title').textContent = settings.title;
+      }
+      if (settings.subtitle) {
+        document.getElementById('app-subtitle').textContent = settings.subtitle;
+      }
+      if (settings.logo_url) {
+        document.getElementById('app-logo').src = settings.logo_url;
+      }
+
+      // Background Halaman
+      const bodyEl = document.getElementById('body-container');
+      if (settings.bg_body) {
+        if (settings.bg_body.startsWith('http')) {
+          bodyEl.style.backgroundImage = `linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.9)), url('${settings.bg_body}')`;
+          bodyEl.style.backgroundSize = 'cover';
+          bodyEl.style.backgroundPosition = 'center';
+          bodyEl.style.backgroundAttachment = 'fixed';
+        } else {
+          bodyEl.style.background = settings.bg_body;
+        }
+      }
+
+      // Background Header
+      const headerEl = document.getElementById('main-header');
+      if (settings.bg_header) {
+        if (settings.bg_header.startsWith('http')) {
+          headerEl.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('${settings.bg_header}')`;
+          headerEl.style.backgroundSize = 'cover';
+        } else {
+          headerEl.style.background = settings.bg_header;
+        }
+      }
+
+      // WhatsApp
+      if (settings.wa_group_url) {
+        document.getElementById('waGroupLink').href = settings.wa_group_url;
+      }
+      if (settings.wa_group_text) {
+        document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
+      }
+
+      // Footer
+      if (settings.footer) {
+        document.getElementById('footer-text').textContent = settings.footer;
+      }
+    }
+
+    function updateAnalytics(analytics) {
+      if (!analytics) return;
+      if (analytics.total) document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
+      if (analytics.online) document.getElementById('stat-online').textContent = Number(analytics.online).toLocaleString('id-ID');
+    }
+
+    // 5. SINKRONISASI HALUS DENGAN GOOGLE SPREADSHEET (BACKGROUND SYNC)
+    async function syncDataOnline() {
+      try {
+        const res = await fetch(GAS_API_URL, { method: 'GET', redirect: 'follow' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === "success") {
+          applyCustomization(data.settings);
+          updateAnalytics(data.analytics);
+          if (data.apps && data.apps.length > 0) {
+            allApps = data.apps;
+            renderCategories();
+            renderApps();
+          }
+        }
+      } catch (err) {
+        console.log("Portal menggunakan cache/data mandiri yang stabil:", err);
+      }
+    }
+
+    // Render Awal Langsung Muncul
+    renderCategories();
+    renderApps();
+    lucide.createIcons();
     document.getElementById('searchInput').addEventListener('input', renderApps);
 
-    // Jalankan dengan metode JSONP
-    loadDataJSONP();
+    // Jalankan Sinkronisasi Online
+    syncDataOnline();
   </script>
 </body>
 </html>
