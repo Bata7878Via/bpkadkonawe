@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
+  <!-- 1. META SHIELD LENGKAP: ANTI BOT & ANTI CRAWLER -->
   <meta charset="UTF-8" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, notranslate, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, max-image-preview:none" />
+  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="baiduspider" content="noindex, nofollow" />
+  <meta name="yandex" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="no-referrer" />
   <title id="page-title">Office Suite BPKAD Kab. Konawe</title>
 
   <!-- Tailwind CSS & Lucide Icons -->
@@ -19,7 +27,8 @@
           boxShadow: {
             'emboss': 'inset 1px 1px 2px rgba(255, 255, 255, 0.15), inset -1px -1px 3px rgba(0, 0, 0, 0.8), 0 10px 25px -5px rgba(0, 0, 0, 0.6)',
             'emboss-btn': 'inset 1px 1px 1px rgba(255, 255, 255, 0.25), inset -1px -1px 2px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0,0,0,0.4)',
-            'emboss-card': 'inset 1px 1px 1px rgba(255, 255, 255, 0.12), inset -1px -1px 2px rgba(0, 0, 0, 0.7), 0 12px 28px -5px rgba(0, 0, 0, 0.7)'
+            'emboss-card': 'inset 1px 1px 1px rgba(255, 255, 255, 0.12), inset -1px -1px 2px rgba(0, 0, 0, 0.7), 0 12px 28px -5px rgba(0, 0, 0, 0.7)',
+            'emboss-active': 'inset 2px 2px 5px rgba(0, 0, 0, 0.9), inset -1px -1px 2px rgba(255, 255, 255, 0.1)'
           }
         }
       }
@@ -27,19 +36,33 @@
   </script>
 
   <style>
+    /* Proteksi Seleksi dan Drag Dokumen */
+    * {
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
+      user-select: none !important;
+      -webkit-user-drag: none !important;
+    }
+    input, textarea {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       min-height: 100vh;
       background-color: #030712;
+      -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* VIDEO FULLSCREEN LANGSUNG DI LAYER BELAKANG */
+    /* VIDEO BACKGROUND (LAYER 0 - MENYALA MULUS) */
     #bg-video {
       position: fixed;
       top: 0;
@@ -51,6 +74,7 @@
       pointer-events: none;
     }
 
+    /* OVERLAY GELAP ELEGANT (LAYER 1 - TEKS TETAP TAJAM) */
     #bg-overlay {
       position: fixed;
       top: 0;
@@ -58,36 +82,51 @@
       width: 100vw;
       height: 100vh;
       z-index: 1;
-      background: rgba(3, 7, 18, 0.35);
+      background: radial-gradient(circle at 50% 10%, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.8) 95%);
       pointer-events: none;
     }
 
+    /* AMBIENT CANVAS (LAYER 2) */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Efek Kartu Emboss Tactile */
     .card-emboss {
       background: linear-gradient(145deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.15), 
                   inset -1px -1px 2px rgba(0, 0, 0, 0.7),
                   0 12px 30px -8px rgba(0, 0, 0, 0.7);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-emboss:hover {
+      transform: translateY(-3px) scale(1.008);
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.25), 
+                  0 18px 35px -5px rgba(0, 0, 0, 0.8),
+                  0 0 25px rgba(99, 102, 241, 0.3);
     }
   </style>
 </head>
 
 <body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <!-- 1. VIDEO LANGSUNG DENGAN FILE ANDA (LANGSUNG MEMUAT TANPA MENUNGGU API) -->
+  <!-- 1. Video Background Resmi Anda (Layer 0) -->
   <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
+
+  <!-- 2. Overlay Transparan & Animasi Partikel (Layer 1 & 2) -->
   <div id="bg-overlay"></div>
+  <canvas id="ambient-canvas"></canvas>
 
-  <!-- KOTAK DIAGNOSTIK PEMANTAU (Pojok Kiri Bawah) -->
-  <div id="debug-panel" style="position:fixed;bottom:15px;left:15px;background:#000000ee;color:#00ff66;padding:12px 16px;border-radius:12px;font-family:monospace;font-size:11px;z-index:99999;border:1px solid #00ff66;max-width:90vw;box-shadow:0 0 15px rgba(0,255,102,0.3);">
-    <div style="font-weight:bold;margin-bottom:4px;color:#fff;">[PEMANTAU TEKNIS VIDEO]</div>
-    <div id="dbg-api">API GAS: Menghubungkan...</div>
-    <div id="dbg-src">File: https://bata7878via.github.io/bpkadkonawe/bg_video.mp4</div>
-    <div id="dbg-status" style="font-weight:bold;margin-top:2px;">Status: Memuat Video...</div>
-    <button onclick="manualPlay()" style="margin-top:8px;background:#00ff66;color:#000;font-weight:bold;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;">▶ Paksa Putar Video</button>
-  </div>
-
-  <!-- KONTEN PORTAL UTAMA -->
+  <!-- 3. Konten Utama Portal (Layer 10) -->
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
 
     <!-- HEADER RESMI -->
@@ -117,22 +156,45 @@
       </div>
     </header>
 
-    <!-- PENCARIAN & KATEGORI -->
+    <!-- SEARCH & KATEGORI -->
     <div class="space-y-3">
       <div class="relative">
         <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
         <input 
           type="text" 
           id="searchInput" 
+          autocomplete="off" 
+          spellcheck="false"
           placeholder="Cari tautan aplikasi atau layanan dinas..." 
           class="w-full pl-11 pr-4 py-3.5 bg-slate-900/80 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-xl text-white placeholder:text-slate-400 shadow-emboss"
         />
       </div>
+
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
     <!-- GRID MENU APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
+
+    <!-- GRUP DISKUSI WHATSAPP -->
+    <section id="waSection">
+      <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
+         class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/30 hover:border-emerald-400/60 transition-all duration-300 shadow-emboss active:scale-[0.99]">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 shadow-emboss-btn transition-transform">
+            <i data-lucide="message-circle" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 id="waGroupTitle" class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi BPKAD Konawe</h2>
+            <p id="waGroupDesc" class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emboss-btn transition-all flex-shrink-0">
+          <span>Gabung</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </div>
+      </a>
+    </section>
 
     <!-- LIVE ANALITIK PORTAL REAL-TIME -->
     <section class="p-5 rounded-3xl card-emboss backdrop-blur-2xl">
@@ -148,6 +210,7 @@
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:gap-4">
+        <!-- Total Kunjungan -->
         <div class="p-4 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-3.5 shadow-emboss">
           <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-emboss-btn">
             <i data-lucide="eye" class="w-5 h-5"></i>
@@ -158,6 +221,7 @@
           </div>
         </div>
 
+        <!-- Pengunjung Online Real-Time -->
         <div class="p-4 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-3.5 shadow-emboss">
           <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 relative shadow-emboss-btn">
             <i data-lucide="users" class="w-5 h-5"></i>
@@ -178,95 +242,65 @@
     <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- SCRIPT ENGINE -->
+  <!-- SCRIPT ENGINE LENGKAP -->
   <script>
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-    const video = document.getElementById('bg-video');
-
-    // Komponen Diagnostik
-    const dbgApi = document.getElementById('dbg-api');
-    const dbgSrc = document.getElementById('dbg-src');
-    const dbgStatus = document.getElementById('dbg-status');
-
-    // Pemantau Mesin Video
-    video.addEventListener('loadstart', () => { dbgStatus.innerText = "Status: Mengunduh data video..."; dbgStatus.style.color = "#ffcc00"; });
-    video.addEventListener('loadeddata', () => { dbgStatus.innerText = "Status: Video siap..."; });
-    video.addEventListener('playing', () => { dbgStatus.innerText = "Status: BERPUTAR NORMAL (Playing)!"; dbgStatus.style.color = "#00ff66"; });
-    video.addEventListener('pause', () => { dbgStatus.innerText = "Status: DITAHAN (Autoplay Dicegat Browser, Klik tombol Paksa Putar)"; dbgStatus.style.color = "#ffcc00"; });
-    video.addEventListener('error', () => {
-      const err = video.error;
-      let alasan = "Gagal memuat video.";
-      if (err) {
-        if (err.code === 2) alasan = "Error Jaringan (File video tidak dapat dijangkau).";
-        if (err.code === 3) alasan = "File video rusak (Decode error).";
-        if (err.code === 4) alasan = "CODEC TIDAK DIDUKUNG! (Format video bukan H.264 standar, misal HEVC/H.265).";
+    /* =====================================================================
+     * 1. PROTEKSI BOT & ANTI-INSPECT
+     * ===================================================================== */
+    (function initSecurityShield() {
+      const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
+      if (isBot) {
+        document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
+        throw new Error("Bot access rejected.");
       }
-      dbgStatus.innerText = "Status: " + alasan;
-      dbgStatus.style.color = "#ff4444";
-    });
 
-    // Jalankan Video Otomatis Seketika
-    function autoStart() {
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('dragstart', e => e.preventDefault());
+      document.addEventListener('keydown', e => {
+        if (
+          e.key === 'F12' ||
+          (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) ||
+          (e.ctrlKey && ['U','u','S','s','P','p'].includes(e.key))
+        ) {
+          e.preventDefault();
+          return false;
+        }
+      });
+    })();
+
+    /* =====================================================================
+     * 2. VIDEO AUTOPLAY ENGINE (PASTI BERPUTAR)
+     * ===================================================================== */
+    const video = document.getElementById('bg-video');
+    function startVideo() {
+      if (!video) return;
       video.muted = true;
       video.defaultMuted = true;
-      const p = video.play();
-      if (p !== undefined) {
-        p.catch(() => {
-          // Jika browser menahan, jalankan saat layar pertama kali disentuh/diklik/scroll
-          const unblock = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          const trigger = () => {
             video.play();
-            window.removeEventListener('click', unblock);
-            window.removeEventListener('touchstart', unblock);
-            window.removeEventListener('scroll', unblock);
+            window.removeEventListener('click', trigger);
+            window.removeEventListener('touchstart', trigger);
+            window.removeEventListener('scroll', trigger);
           };
-          window.addEventListener('click', unblock, { once: true });
-          window.addEventListener('touchstart', unblock, { once: true });
-          window.addEventListener('scroll', unblock, { once: true });
+          window.addEventListener('click', trigger, { once: true });
+          window.addEventListener('touchstart', trigger, { once: true });
+          window.addEventListener('scroll', trigger, { once: true });
         });
       }
     }
-    autoStart();
+    startVideo();
 
-    function manualPlay() {
-      video.muted = true;
-      video.play().then(() => {
-        dbgStatus.innerText = "Status: BERPUTAR NORMAL!";
-        dbgStatus.style.color = "#00ff66";
-      }).catch(err => {
-        dbgStatus.innerText = "Gagal: " + err.message;
-        dbgStatus.style.color = "#ff4444";
-      });
-    }
+    /* =====================================================================
+     * 3. DATA & INITIAL STATE (ZERO LOCALSTORAGE)
+     * ===================================================================== */
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
+    const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
 
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
       { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
       { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
-      { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" },
-      { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
-      { title: "RKBMD - RKPBMD PERMENDAGRI THN 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" }
-    ];
-
-    function runClock() {
-      const clockEl = document.getElementById('live-clock');
-      setInterval(() => {
-        clockEl.textContent = new Date().toLocaleDateString('id-ID', {
-          weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', second: '2-digit'
-        });
-      }, 1000);
-    }
-    runClock();
-
-    function renderApps() {
-      const grid = document.getElementById('appGrid');
-      grid.innerHTML = allApps.map(app => `
-        <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="p-5 rounded-2xl card-emboss backdrop-blur-xl flex flex-col justify-between">
-          <div class="flex items-start justify-between gap-3 mb-3">
-            <div class="flex items-center gap-3">
-              <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
-                <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
-              </div>
-              <div>
+      { title: "Portal Konawe", category: "Pemda", url
