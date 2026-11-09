@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="page-title">Memuat Dashboard...</title>
-  
+  <title id="page-title">Memuat Portal...</title>
+
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
@@ -20,53 +20,55 @@
       }
     }
   </script>
+
   <style>
     body {
-      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 80%);
+      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 85%);
       min-height: 100vh;
     }
   </style>
 </head>
 <body class="text-slate-100 antialiased p-4 sm:p-8 flex flex-col justify-between min-h-screen">
 
+  <!-- CONTAINER UTAMA -->
   <div class="max-w-4xl mx-auto w-full space-y-6">
-    
-    <!-- HEADER -->
+
+    <!-- HEADER / BANNER -->
     <header class="flex flex-col sm:flex-row items-center justify-between gap-5 p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl">
       <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
-        <!-- Lambang Daerah Konawe -->
-        <div class="w-16 h-20 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
-          <img id="app-logo" src="" alt="Lambang Daerah" class="h-full w-full object-contain hidden" />
-          <div id="logo-skeleton" class="w-12 h-14 bg-white/10 animate-pulse rounded-lg"></div>
+        <!-- Logo Daerah Konawe -->
+        <div class="w-16 h-20 sm:w-20 sm:h-24 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
+          <img id="app-logo" src="" alt="Lambang Daerah" class="h-full w-full object-contain hidden transition-opacity duration-300" />
+          <div id="logo-skeleton" class="w-12 h-16 bg-white/10 animate-pulse rounded-lg"></div>
         </div>
 
         <div>
-          <!-- Title & Subtitle Dinamis dari Spreadsheet -->
+          <!-- Judul & Subjudul Dinamis (Tanpa Bintang) -->
           <h1 id="app-title" class="text-xl sm:text-2xl font-bold tracking-tight text-white">
-            <span class="inline-block w-48 h-6 bg-white/10 animate-pulse rounded"></span>
+            <span class="inline-block w-52 h-7 bg-white/10 animate-pulse rounded-lg"></span>
           </h1>
           <p id="app-subtitle" class="text-xs text-slate-400 mt-1">
-            <span class="inline-block w-32 h-3.5 bg-white/5 animate-pulse rounded"></span>
+            <span class="inline-block w-36 h-4 bg-white/5 animate-pulse rounded-md"></span>
           </p>
-          <p id="live-clock" class="text-[11px] text-indigo-400 font-mono mt-1"></p>
+          <p id="live-clock" class="text-[11px] text-indigo-400 font-mono mt-1.5"></p>
         </div>
       </div>
 
-      <!-- Total Akses Indicator -->
+      <!-- Indikator Data -->
       <div class="flex items-center gap-2 text-xs font-medium px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        <span id="total-apps">Sinkronisasi Data...</span>
+        <span id="total-apps">Menghubungkan...</span>
       </div>
     </header>
 
-    <!-- SEARCH & KATEGORI -->
+    <!-- PENCARIAN & KATEGORI -->
     <div class="space-y-4">
       <div class="relative">
         <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         <input 
           type="text" 
           id="searchInput" 
-          placeholder="Cari tautan aplikasi atau layanan..." 
+          placeholder="Cari aplikasi atau layanan..." 
           class="w-full pl-12 pr-4 py-3.5 bg-slate-900/50 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-md placeholder:text-slate-500 transition-all text-white"
         />
       </div>
@@ -77,9 +79,9 @@
       </div>
     </div>
 
-    <!-- APP GRID -->
+    <!-- GRID DAFTAR APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Loading Skeletons -->
+      <!-- Loading Skeleton Awal -->
       <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
       <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
       <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
@@ -89,60 +91,86 @@
 
   <!-- FOOTER -->
   <footer class="w-full text-center text-xs text-slate-500 py-6 mt-8">
-    <p id="footer-text">Memuat informasi hak cipta...</p>
+    <p id="footer-text">Memuat hak cipta...</p>
   </footer>
 
+  <!-- LOGIKA SCRIPT (CLEAN JAVASCRIPT) -->
   <script>
-    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+    // =========================================================================
+    // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
+    // =========================================================================
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
     let allApps = [];
     let activeCategory = 'ALL';
 
-    // Jam Digital
-    function startClock() {
+    // 1. Jam Real-Time
+    function initClock() {
       const clockEl = document.getElementById('live-clock');
       function update() {
         const now = new Date();
-        clockEl.textContent = now.toLocaleDateString('id-ID', { 
+        clockEl.textContent = now.toLocaleDateString('id-ID', {
           weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', second: '2-digit' 
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
       }
       setInterval(update, 1000);
       update();
     }
-    startClock();
+    initClock();
 
-    // Fetch Data Langsung dari GAS (Tanpa LocalStorage)
+    // 2. Fetch Data dari GAS (Dengan Follow Redirect, Tanpa LocalStorage)
     async function fetchData() {
       try {
-        const res = await fetch(GAS_API_URL);
-        const json = await res.json();
+        const res = await fetch(GAS_API_URL, {
+          method: 'GET',
+          redirect: 'follow'
+        });
 
-        if (json.status === "success") {
-          applySettings(json.settings);
-          allApps = json.apps || [];
+        if (!res.ok) {
+          throw new Error(`Server memberikan status: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          applySettings(data.settings);
+          allApps = data.apps || [];
           renderCategories();
           renderApps();
+        } else {
+          throw new Error(data.message || "Gagal memproses struktur data");
         }
+
       } catch (err) {
-        console.error("Gagal memuat data dari Spreadsheet:", err);
-        document.getElementById('total-apps').textContent = "Koneksi Terputus";
+        console.error("Fetch error:", err);
+        document.getElementById('total-apps').textContent = "Gagal Terhubung";
+
+        const isLocalFile = window.location.protocol === 'file:';
         document.getElementById('appGrid').innerHTML = `
-          <div class="col-span-full py-10 text-center text-rose-400 bg-rose-500/10 rounded-2xl border border-rose-500/20">
-            <p class="font-medium text-sm">Gagal memuat data dari Google Spreadsheet.</p>
-            <p class="text-xs text-slate-400 mt-1">Pastikan Web App GAS telah di-deploy dengan akses "Anyone".</p>
+          <div class="col-span-full p-6 text-center text-rose-300 bg-rose-500/10 rounded-2xl border border-rose-500/20 space-y-2">
+            <i data-lucide="alert-circle" class="w-8 h-8 mx-auto text-rose-400 mb-2"></i>
+            <p class="font-bold text-sm">Tidak Dapat Menghubungkan ke Database</p>
+            <p class="text-xs text-slate-300 font-mono">${err.message}</p>
+            ${isLocalFile ? `
+              <div class="mt-3 p-3 bg-black/40 rounded-xl text-left text-xs text-amber-300">
+                <strong>Catatan:</strong> Browser memblokir koneksi dari file lokal (<code>file:///</code>). 
+                Silakan <strong>upload ke GitHub Pages</strong> atau uji coba via <strong>Live Server</strong>.
+              </div>
+            ` : `
+              <p class="text-xs text-slate-400 mt-2">Pastikan pengaturan deployment GAS diatur ke akses <strong>"Anyone"</strong>.</p>
+            `}
           </div>
         `;
+        lucide.createIcons();
       }
     }
 
-    // Terapkan Pengaturan dari Sheet "Pengaturan"
+    // 3. Terapkan Data Pengaturan dari Spreadsheet
     function applySettings(settings) {
       if (!settings) return;
 
-      // Title & Page Title
+      // Title & Document Title
       const title = settings.title || "Office Suite BPKAD Kab. Konawe";
       document.getElementById('app-title').textContent = title;
       document.getElementById('page-title').textContent = title;
@@ -150,7 +178,7 @@
       // Subtitle
       document.getElementById('app-subtitle').textContent = settings.subtitle || "";
 
-      // Logo Lambang Daerah
+      // Logo
       const logoEl = document.getElementById('app-logo');
       const skeletonEl = document.getElementById('logo-skeleton');
       if (settings.logo_url) {
@@ -161,11 +189,11 @@
         };
       }
 
-      // Footer
+      // Footer Copyright
       document.getElementById('footer-text').textContent = settings.footer || "©Copyright 2026 Irman_Aset. All rights reserved.";
     }
 
-    // Render Kategori
+    // 4. Render Kategori Tombol Filter
     function renderCategories() {
       const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
@@ -190,7 +218,7 @@
       renderApps();
     }
 
-    // Render Card Aplikasi
+    // 5. Render Kartu Aplikasi
     function renderApps() {
       const keyword = document.getElementById('searchInput').value.toLowerCase();
       const grid = document.getElementById('appGrid');
@@ -202,7 +230,7 @@
         return matchesCategory && matchesKeyword;
       });
 
-      document.getElementById('total-apps').textContent = `${allApps.length} Aplikasi Aktif`;
+      document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
 
       if (filtered.length === 0) {
         grid.innerHTML = `
@@ -226,7 +254,7 @@
               </div>
               <div>
                 <h3 class="font-semibold text-slate-100 text-sm group-hover:text-indigo-300 transition-colors">${app.title}</h3>
-                <span class="text-[10px] text-slate-400 uppercase tracking-wider">${app.category || 'Layanan'}</span>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider">${app.category || 'Umum'}</span>
               </div>
             </div>
 
@@ -249,10 +277,10 @@
       lucide.createIcons();
     }
 
-    // Pencarian Interaktif
+    // Input filter pencarian
     document.getElementById('searchInput').addEventListener('input', renderApps);
 
-    // Jalankan permintaan data
+    // Jalankan pemanggilan data
     fetchData();
   </script>
 </body>
