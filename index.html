@@ -49,44 +49,32 @@
       user-select: text !important;
     }
 
-    body {
-      background-color: #030712;
-      min-height: 100vh;
-      -webkit-tap-highlight-color: transparent;
-      overflow-x: hidden;
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      background-color: #030712;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Video Background Container (Layer Paling Belakang) */
-    #bg-video-wrapper {
+    /* VIDEO BACKGROUND (LAYER 0 - TIDAK MUNGKIN TERTUTUP) */
+    #bg-video {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
+      object-fit: cover;
       z-index: 0;
-      overflow: hidden;
-      display: block;
       pointer-events: none;
     }
-    #bg-video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-      filter: brightness(0.5) contrast(1.1);
-    }
 
-    /* Lapisan Gelap Tipis di atas Video agar Tulisan Sangat Jelas */
+    /* OVERLAY GELAP ELEGANT (LAYER 1 - TEKS TETAP TAJAM DIBACA) */
     #bg-overlay {
       position: fixed;
       top: 0;
@@ -94,11 +82,11 @@
       width: 100vw;
       height: 100vh;
       z-index: 1;
-      background: radial-gradient(circle at 50% 10%, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.85) 90%);
+      background: rgba(3, 7, 18, 0.45);
       pointer-events: none;
     }
 
-    /* Ambient Canvas */
+    /* AMBIENT CANVAS (LAYER 2) */
     #ambient-canvas {
       position: fixed;
       top: 0;
@@ -131,18 +119,14 @@
 
 <body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <!-- 1. Background Video Engine (Langsung Memuat Video Anda) -->
-  <div id="bg-video-wrapper">
-    <video id="bg-video" autoplay loop muted playsinline defaultMuted preload="auto">
-      <source src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4" type="video/mp4" />
-    </video>
-  </div>
+  <!-- 1. Video Langsung Dipasang di Sini -->
+  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
 
-  <!-- 2. Overlay & Partikel -->
+  <!-- 2. Overlay Transparan & Partikel Animasi -->
   <div id="bg-overlay"></div>
   <canvas id="ambient-canvas"></canvas>
 
-  <!-- 3. Konten Utama Portal (Z-Index Tinggi) -->
+  <!-- 3. Konten Utama Portal (Layer 10) -->
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
 
     <!-- HEADER RESMI -->
@@ -256,7 +240,7 @@
     <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- SCRIPT ENGINE -->
+  <!-- JAVASCRIPT ENGINE -->
   <script>
     /* =====================================================================
      * 1. PROTEKSI BOT & INSPEKSI
@@ -283,28 +267,30 @@
     })();
 
     /* =====================================================================
-     * 2. VIDEO AUTOPLAY ENGINE (DIPASTIKAN BERPUTAR)
+     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY ON INTERACTION)
      * ===================================================================== */
-    const bgVideo = document.getElementById('bg-video');
-    function forcePlayVideo() {
-      if (!bgVideo) return;
-      bgVideo.muted = true;
-      bgVideo.defaultMuted = true;
-      const playPromise = bgVideo.play();
+    const videoEl = document.getElementById('bg-video');
+    function startVideo() {
+      if (!videoEl) return;
+      videoEl.muted = true;
+      videoEl.defaultMuted = true;
+      const playPromise = videoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Jika browser memblokir autoplay, putar seketika user menyentuh/klik layar
-          const resumeOnTouch = () => {
-            bgVideo.play();
-            document.removeEventListener('click', resumeOnTouch);
-            document.removeEventListener('touchstart', resumeOnTouch);
+          // Jika browser menahan autoplay, putar seketika user mengklik, menyentuh, atau scroll
+          const triggerPlay = () => {
+            videoEl.play();
+            window.removeEventListener('click', triggerPlay);
+            window.removeEventListener('touchstart', triggerPlay);
+            window.removeEventListener('scroll', triggerPlay);
           };
-          document.addEventListener('click', resumeOnTouch, { once: true });
-          document.addEventListener('touchstart', resumeOnTouch, { once: true });
+          window.addEventListener('click', triggerPlay, { once: true });
+          window.addEventListener('touchstart', triggerPlay, { once: true });
+          window.addEventListener('scroll', triggerPlay, { once: true });
         });
       }
     }
-    forcePlayVideo();
+    startVideo();
 
     /* =====================================================================
      * 3. DATA & INITIAL STATE
@@ -474,7 +460,7 @@
     }
 
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN DINAMIS DARI SPREADSHEET
+     * 6. SINKRONISASI PENGATURAN SPREADSHEET (FLEKSIBEL)
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
@@ -489,25 +475,31 @@
       if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
       if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
 
-      // Dynamic Video / Background Updater
-      const bgVideoWrapper = document.getElementById('bg-video-wrapper');
-      if (settings.bg_body) {
-        const val = settings.bg_body.trim();
-        if (val.match(/\.(mp4|webm|ogg)$/i) || val.includes("video")) {
-          bgVideoWrapper.style.display = "block";
-          if (bgVideo.src !== val) {
-            bgVideo.src = val;
-            bgVideo.load();
-            forcePlayVideo();
+      // Mendukung key 'bg_body', 'bg_video', atau 'video'
+      const bgVal = (settings.bg_body || settings.bg_video || "").trim();
+      const overlayEl = document.getElementById('bg-overlay');
+
+      if (bgVal) {
+        if (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4")) {
+          videoEl.style.display = "block";
+          overlayEl.style.display = "block";
+          if (videoEl.src !== bgVal) {
+            videoEl.src = bgVal;
+            videoEl.load();
+            startVideo();
           }
-        } else if (val.startsWith("http")) {
-          bgVideoWrapper.style.display = "none";
-          document.body.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('${val}')`;
+        } else if (bgVal.startsWith("http")) {
+          // Jika gambar latar belakang
+          videoEl.style.display = "none";
+          overlayEl.style.display = "none";
+          document.body.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('${bgVal}')`;
           document.body.style.backgroundSize = "cover";
           document.body.style.backgroundPosition = "center";
         } else {
-          bgVideoWrapper.style.display = "none";
-          document.body.style.background = val;
+          // Jika kode warna murni
+          videoEl.style.display = "none";
+          overlayEl.style.display = "none";
+          document.body.style.background = bgVal;
         }
       }
 
@@ -565,13 +557,13 @@
       } catch (e) {}
     }, 20000);
 
-    // Render Awal Seketika (0 Detik)
+    // Booting Awal
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Sinkronisasi Live dengan Spreadsheet
+    // Background Sync
     fetchPortalDatabase();
   </script>
 </body>
