@@ -14,34 +14,28 @@
     tailwind.config = {
       darkMode: 'class',
       theme: {
-        extend: {
-          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
-        }
+        extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } }
       }
     }
   </script>
 
   <style>
-    /* Styling Dasar & Optimasi Android */
     body {
       background: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 90%);
       min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
     }
-    /* Sembunyikan scrollbar di tab kategori HP namun tetap bisa digeser */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen transition-colors duration-500">
+<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <!-- WRAPPER KONTEN -->
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6">
 
-    <!-- HEADER / BANNER -->
-    <header id="main-header" class="relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl transition-all duration-300">
-      <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row z-10 w-full sm:w-auto">
-        <!-- Logo Lambang Konawe -->
+    <!-- HEADER -->
+    <header id="main-header" class="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl shadow-2xl transition-all">
+      <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
         <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-white/5 rounded-2xl border border-white/10">
           <img id="app-logo" src="" alt="Lambang Daerah" class="h-full w-full object-contain hidden" />
           <div id="logo-skeleton" class="w-12 h-14 bg-white/10 animate-pulse rounded-lg"></div>
@@ -58,16 +52,14 @@
         </div>
       </div>
 
-      <!-- Indikator Data -->
-      <div class="z-10 flex items-center gap-2 text-xs font-medium px-3.5 py-1.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+      <div class="flex items-center gap-2 text-xs font-medium px-3.5 py-1.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-        <span id="total-apps">Sinkronisasi...</span>
+        <span id="total-apps">Menghubungkan...</span>
       </div>
     </header>
 
-    <!-- SEARCH & KATEGORI (MOBILE-OPTIMIZED) -->
+    <!-- SEARCH & KATEGORI (HP COMPATIBLE) -->
     <div class="space-y-3">
-      <!-- Search Input: Ukuran font 16px di mobile agar browser tidak auto-zoom -->
       <div class="relative">
         <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
         <input 
@@ -78,30 +70,29 @@
         />
       </div>
 
-      <!-- Kategori Filter: Bisa digeser horizontal dengan jari di HP -->
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
         <button class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium whitespace-nowrap">Semua</button>
       </div>
     </div>
 
-    <!-- GRID LAYANAN (BENTO CARD) -->
+    <!-- GRID APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
       <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
       <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
       <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse h-28"></div>
     </main>
 
-    <!-- SEKSI DISKUSI WHATSAPP -->
+    <!-- GRUP WHATSAPP -->
     <section id="waSection" class="hidden">
       <a id="waGroupLink" href="#" target="_blank" rel="noopener noreferrer" 
-         class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 shadow-lg hover:shadow-emerald-500/10 active:scale-[0.99]">
+         class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 shadow-lg active:scale-[0.99]">
         <div class="flex items-center gap-3.5">
           <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
             <i data-lucide="message-circle" class="w-6 h-6"></i>
           </div>
           <div>
             <h2 id="waGroupTitle" class="text-sm sm:text-base font-semibold text-white group-hover:text-emerald-300 transition-colors">Grup Diskusi WhatsApp</h2>
-            <p class="text-xs text-slate-400">Klik untuk bergabung dan koordinasi langsung</p>
+            <p class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas</p>
           </div>
         </div>
         <div class="flex items-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-emerald-500 text-slate-950 group-hover:bg-emerald-400 transition-all flex-shrink-0">
@@ -111,31 +102,25 @@
       </a>
     </section>
 
-    <!-- LIVE ANALITIK PORTAL -->
+    <!-- LIVE ANALITIK -->
     <section class="p-5 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl">
       <div class="flex items-center justify-between mb-3.5">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
           Live Analitik Portal
         </h3>
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-          Real-Time
-        </span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Real-Time</span>
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:gap-4">
-        <!-- Kartu 1: Total Kunjungan -->
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-          <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
-            <i data-lucide="eye" class="w-5 h-5"></i>
-          </div>
+          <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="eye" class="w-5 h-5"></i></div>
           <div>
             <div id="stat-total" class="text-lg sm:text-2xl font-bold text-white tracking-tight">0</div>
             <p class="text-[11px] text-slate-400">Total Kunjungan</p>
           </div>
         </div>
 
-        <!-- Kartu 2: Online Aktif -->
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
           <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 relative">
             <i data-lucide="users" class="w-5 h-5"></i>
@@ -156,21 +141,17 @@
     <p id="footer-text">Memuat hak cipta...</p>
   </footer>
 
-  <!-- SCRIPT LOGIKA -->
+  <!-- SCRIPT KONEKSI JSONP (ANTI-CORS & ANTI GAGAL FETCH) -->
   <script>
     // =========================================================================
     // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
     // =========================================================================
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
-    // Session ID acak untuk melacak pengunjung unik saat tab aktif
-    const sessionId = sessionStorage.getItem('portal_sid') || ('sid_' + Math.random().toString(36).substring(2, 9));
-    sessionStorage.setItem('portal_sid', sessionId);
-
     let allApps = [];
     let activeCategory = 'ALL';
 
-    // 1. Live Clock
+    // Jam Real-Time
     function startClock() {
       const clockEl = document.getElementById('live-clock');
       function update() {
@@ -185,52 +166,50 @@
     }
     startClock();
 
-    // 2. Fetch Data Lengkap dari GAS
-    async function fetchData() {
-      try {
-        const res = await fetch(`${GAS_API_URL}?sid=${sessionId}`, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-
-        if (!res.ok) throw new Error(`HTTP Status: ${res.status}`);
-
-        const json = await res.json();
-        if (json.status === "success") {
-          applyCustomization(json.settings);
-          updateAnalytics(json.analytics);
-          allApps = json.apps || [];
-          renderCategories();
-          renderApps();
-        } else {
-          throw new Error(json.message);
-        }
-      } catch (err) {
-        console.error("Fetch Error:", err);
-        document.getElementById('total-apps').textContent = "Offline";
-        const isLocal = window.location.protocol === 'file:';
-        document.getElementById('appGrid').innerHTML = `
-          <div class="col-span-full p-6 text-center text-rose-300 bg-rose-500/10 rounded-2xl border border-rose-500/20">
-            <p class="font-bold text-sm">Gagal Mengambil Data Portal</p>
-            <p class="text-xs text-slate-400 mt-1">${err.message}</p>
-            ${isLocal ? '<p class="text-[11px] text-amber-300 mt-2">Buka lewat GitHub Pages atau Live Server (bukan file:///)</p>' : ''}
-          </div>
-        `;
-        lucide.createIcons();
+    // FUNGSI CALLBACK GLOBAL JSONP
+    window.handlePortalResponse = function(json) {
+      if (json.status === "success") {
+        applyCustomization(json.settings);
+        updateAnalytics(json.analytics);
+        allApps = json.apps || [];
+        renderCategories();
+        renderApps();
+      } else {
+        renderError(json.message);
       }
+    };
+
+    // Muat data lewat Tag Script (Tidak memakai Fetch, sehingga KEBAL DIBLOKIR BROWSER)
+    function loadDataJSONP() {
+      const script = document.createElement('script');
+      script.src = `${GAS_API_URL}?callback=handlePortalResponse&_t=${Date.now()}`;
+      script.onerror = function() {
+        renderError("Koneksi ditolak oleh Google. Pastikan Web App GAS di-deploy dengan akses 'Anyone' (Siapa saja).");
+      };
+      document.body.appendChild(script);
     }
 
-    // 3. Terapkan Kostumisasi Background & Pengaturan dari Spreadsheet
+    function renderError(msg) {
+      document.getElementById('total-apps').textContent = "Offline";
+      document.getElementById('appGrid').innerHTML = `
+        <div class="col-span-full p-6 text-center text-rose-300 bg-rose-500/10 rounded-2xl border border-rose-500/20">
+          <p class="font-bold text-sm">Gagal Menghubungkan ke Spreadsheet</p>
+          <p class="text-xs text-slate-300 mt-1">${msg}</p>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Terapkan Kostumisasi
     function applyCustomization(settings) {
       if (!settings) return;
 
-      // Judul & Subjudul
       const title = settings.title || "Office Suite BPKAD Kab. Konawe";
       document.getElementById('app-title').textContent = title;
       document.getElementById('page-title').textContent = title;
       document.getElementById('app-subtitle').textContent = settings.subtitle || "";
 
-      // Logo
+      // Logo Lambang Konawe
       const logoEl = document.getElementById('app-logo');
       const skeletonEl = document.getElementById('logo-skeleton');
       if (settings.logo_url) {
@@ -241,7 +220,7 @@
         };
       }
 
-      // Kustomisasi Background Halaman
+      // Background Body
       const bodyEl = document.getElementById('body-container');
       if (settings.bg_body) {
         if (settings.bg_body.startsWith('http')) {
@@ -254,7 +233,7 @@
         }
       }
 
-      // Kustomisasi Background Header
+      // Background Header
       const headerEl = document.getElementById('main-header');
       if (settings.bg_header) {
         if (settings.bg_header.startsWith('http')) {
@@ -278,27 +257,14 @@
       document.getElementById('footer-text').textContent = settings.footer || "©Copyright 2026 Irman_Aset. All rights reserved.";
     }
 
-    // 4. Update Angka Analitik Real-Time
+    // Update Analitik
     function updateAnalytics(analytics) {
       if (!analytics) return;
       document.getElementById('stat-total').textContent = Number(analytics.total || 0).toLocaleString('id-ID');
       document.getElementById('stat-online').textContent = Number(analytics.online || 1).toLocaleString('id-ID');
     }
 
-    // Ping periodik setiap 90 detik agar status pengunjung tetap online
-    setInterval(async () => {
-      try {
-        const pingRes = await fetch(`${GAS_API_URL}?action=ping&sid=${sessionId}`, { redirect: 'follow' });
-        const pingJson = await pingRes.json();
-        if (pingJson.status === "success") {
-          updateAnalytics(pingJson.analytics);
-        }
-      } catch (e) {
-        // Abaikan error ping hening di background
-      }
-    }, 90000);
-
-    // 5. Render Kategori Tombol (Scrollable di HP)
+    // Filter Kategori
     function renderCategories() {
       const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
@@ -323,7 +289,7 @@
       renderApps();
     }
 
-    // 6. Render Daftar Aplikasi (Bento Cards Touch-Friendly)
+    // Render Kartu Aplikasi
     function renderApps() {
       const keyword = document.getElementById('searchInput').value.toLowerCase();
       const grid = document.getElementById('appGrid');
@@ -384,8 +350,8 @@
 
     document.getElementById('searchInput').addEventListener('input', renderApps);
 
-    // Muat data awal
-    fetchData();
+    // Jalankan dengan metode JSONP
+    loadDataJSONP();
   </script>
 </body>
 </html>
