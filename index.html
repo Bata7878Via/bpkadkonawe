@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-  <!-- 1. META SHIELD LENGKAP: ANTI BOT & ANTI CRAWLER -->
   <meta charset="UTF-8" />
-  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, notranslate, noimageindex" />
-  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, max-image-preview:none" />
-  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
-  <meta name="baiduspider" content="noindex, nofollow" />
-  <meta name="yandex" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta name="referrer" content="no-referrer" />
   <title id="page-title">Office Suite BPKAD Kab. Konawe</title>
 
   <!-- Tailwind CSS & Lucide Icons -->
@@ -27,8 +19,7 @@
           boxShadow: {
             'emboss': 'inset 1px 1px 2px rgba(255, 255, 255, 0.15), inset -1px -1px 3px rgba(0, 0, 0, 0.8), 0 10px 25px -5px rgba(0, 0, 0, 0.6)',
             'emboss-btn': 'inset 1px 1px 1px rgba(255, 255, 255, 0.25), inset -1px -1px 2px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0,0,0,0.4)',
-            'emboss-card': 'inset 1px 1px 1px rgba(255, 255, 255, 0.12), inset -1px -1px 2px rgba(0, 0, 0, 0.7), 0 12px 28px -5px rgba(0, 0, 0, 0.7)',
-            'emboss-active': 'inset 2px 2px 5px rgba(0, 0, 0, 0.9), inset -1px -1px 2px rgba(255, 255, 255, 0.1)'
+            'emboss-card': 'inset 1px 1px 1px rgba(255, 255, 255, 0.12), inset -1px -1px 2px rgba(0, 0, 0, 0.7), 0 12px 28px -5px rgba(0, 0, 0, 0.7)'
           }
         }
       }
@@ -36,33 +27,19 @@
   </script>
 
   <style>
-    /* Proteksi Seleksi dan Drag Dokumen */
-    * {
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
-      -webkit-user-drag: none !important;
-    }
-    input, textarea {
-      -webkit-user-select: text !important;
-      user-select: text !important;
-    }
-
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       min-height: 100vh;
       background-color: #030712;
-      -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* VIDEO BACKGROUND (LAYER 0 - TIDAK MUNGKIN TERTUTUP) */
+    /* Video Fullscreen Terbuka Penuh */
     #bg-video {
       position: fixed;
       top: 0;
@@ -74,7 +51,6 @@
       pointer-events: none;
     }
 
-    /* OVERLAY GELAP ELEGANT (LAYER 1 - TEKS TETAP TAJAM DIBACA) */
     #bg-overlay {
       position: fixed;
       top: 0;
@@ -82,51 +58,36 @@
       width: 100vw;
       height: 100vh;
       z-index: 1;
-      background: rgba(3, 7, 18, 0.45);
+      background: rgba(3, 7, 18, 0.35);
       pointer-events: none;
     }
 
-    /* AMBIENT CANVAS (LAYER 2) */
-    #ambient-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    /* Efek Kartu Emboss Tactile */
     .card-emboss {
       background: linear-gradient(145deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.15), 
                   inset -1px -1px 2px rgba(0, 0, 0, 0.7),
                   0 12px 30px -8px rgba(0, 0, 0, 0.7);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .card-emboss:hover {
-      transform: translateY(-3px) scale(1.008);
-      border-color: rgba(99, 102, 241, 0.5);
-      box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.25), 
-                  0 18px 35px -5px rgba(0, 0, 0, 0.8),
-                  0 0 25px rgba(99, 102, 241, 0.3);
     }
   </style>
 </head>
 
 <body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <!-- 1. Video Langsung Dipasang di Sini -->
-  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
-
-  <!-- 2. Overlay Transparan & Partikel Animasi -->
+  <!-- VIDEO BACKGROUND -->
+  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline></video>
   <div id="bg-overlay"></div>
-  <canvas id="ambient-canvas"></canvas>
 
-  <!-- 3. Konten Utama Portal (Layer 10) -->
+  <!-- KOTAK DIAGNOSTIK KEPALA TEKNIS (Pojok Kiri Bawah) -->
+  <div id="debug-panel" style="position:fixed;bottom:15px;left:15px;background:#000000ee;color:#00ff66;padding:12px 16px;border-radius:12px;font-family:monospace;font-size:11px;z-index:99999;border:1px solid #00ff66;max-width:90vw;box-shadow:0 0 15px rgba(0,255,102,0.3);">
+    <div style="font-weight:bold;margin-bottom:4px;color:#fff;">[PEMANTAU TEKNIS VIDEO]</div>
+    <div id="dbg-api">API GAS: Menghubungkan...</div>
+    <div id="dbg-src">File Video: Memeriksa...</div>
+    <div id="dbg-status" style="font-weight:bold;margin-top:2px;">Status: Memulai...</div>
+    <button onclick="manualPlay()" style="margin-top:8px;background:#00ff66;color:#000;font-weight:bold;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;">▶ Paksa Putar Video</button>
+  </div>
+
+  <!-- KONTEN PORTAL UTAMA -->
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
 
     <!-- HEADER RESMI -->
@@ -156,45 +117,22 @@
       </div>
     </header>
 
-    <!-- SEARCH & KATEGORI -->
+    <!-- PENCARIAN & KATEGORI -->
     <div class="space-y-3">
       <div class="relative">
         <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
         <input 
           type="text" 
           id="searchInput" 
-          autocomplete="off" 
-          spellcheck="false"
           placeholder="Cari tautan aplikasi atau layanan dinas..." 
           class="w-full pl-11 pr-4 py-3.5 bg-slate-900/80 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-xl text-white placeholder:text-slate-400 shadow-emboss"
         />
       </div>
-
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
     <!-- GRID MENU APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
-
-    <!-- GRUP DISKUSI WHATSAPP -->
-    <section id="waSection">
-      <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
-         class="group flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/30 hover:border-emerald-400/60 transition-all duration-300 shadow-emboss active:scale-[0.99]">
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 shadow-emboss-btn transition-transform">
-            <i data-lucide="message-circle" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h2 id="waGroupTitle" class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi BPKAD Konawe</h2>
-            <p id="waGroupDesc" class="text-xs text-slate-400">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emboss-btn transition-all flex-shrink-0">
-          <span>Gabung</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </div>
-      </a>
-    </section>
 
     <!-- LIVE ANALITIK PORTAL REAL-TIME -->
     <section class="p-5 rounded-3xl card-emboss backdrop-blur-2xl">
@@ -215,7 +153,7 @@
             <i data-lucide="eye" class="w-5 h-5"></i>
           </div>
           <div>
-            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">150</div>
+            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">152</div>
             <p class="text-[11px] text-slate-400 font-medium">Total Kunjungan</p>
           </div>
         </div>
@@ -240,63 +178,43 @@
     <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- JAVASCRIPT ENGINE -->
+  <!-- ENGINE JAVASCRIPT & PEMANTAU -->
   <script>
-    /* =====================================================================
-     * 1. PROTEKSI BOT & INSPEKSI
-     * ===================================================================== */
-    (function initSecurityShield() {
-      const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
-      if (isBot) {
-        document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
-        throw new Error("Bot access rejected.");
-      }
-
-      document.addEventListener('contextmenu', e => e.preventDefault());
-      document.addEventListener('dragstart', e => e.preventDefault());
-      document.addEventListener('keydown', e => {
-        if (
-          e.key === 'F12' ||
-          (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) ||
-          (e.ctrlKey && ['U','u','S','s','P','p'].includes(e.key))
-        ) {
-          e.preventDefault();
-          return false;
-        }
-      });
-    })();
-
-    /* =====================================================================
-     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY ON INTERACTION)
-     * ===================================================================== */
-    const videoEl = document.getElementById('bg-video');
-    function startVideo() {
-      if (!videoEl) return;
-      videoEl.muted = true;
-      videoEl.defaultMuted = true;
-      const playPromise = videoEl.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Jika browser menahan autoplay, putar seketika user mengklik, menyentuh, atau scroll
-          const triggerPlay = () => {
-            videoEl.play();
-            window.removeEventListener('click', triggerPlay);
-            window.removeEventListener('touchstart', triggerPlay);
-            window.removeEventListener('scroll', triggerPlay);
-          };
-          window.addEventListener('click', triggerPlay, { once: true });
-          window.addEventListener('touchstart', triggerPlay, { once: true });
-          window.addEventListener('scroll', triggerPlay, { once: true });
-        });
-      }
-    }
-    startVideo();
-
-    /* =====================================================================
-     * 3. DATA & INITIAL STATE
-     * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-    const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+    const video = document.getElementById('bg-video');
+
+    // Komponen Diagnostik
+    const dbgApi = document.getElementById('dbg-api');
+    const dbgSrc = document.getElementById('dbg-src');
+    const dbgStatus = document.getElementById('dbg-status');
+
+    // Deteksi Status Video di Browser
+    video.addEventListener('loadstart', () => { dbgStatus.innerText = "Status: Mengunduh data video..."; dbgStatus.style.color = "#ffcc00"; });
+    video.addEventListener('loadeddata', () => { dbgStatus.innerText = "Status: Video siap..."; });
+    video.addEventListener('playing', () => { dbgStatus.innerText = "Status: BERPUTAR NORMAL (Playing)!"; dbgStatus.style.color = "#00ff66"; });
+    video.addEventListener('pause', () => { dbgStatus.innerText = "Status: DITAHAN (Autoplay Dicegat Browser)"; dbgStatus.style.color = "#ffcc00"; });
+    video.addEventListener('error', () => {
+      const err = video.error;
+      let alasan = "Gagal memuat video.";
+      if (err) {
+        if (err.code === 2) alasan = "Error Jaringan (File tidak dapat dijangkau).";
+        if (err.code === 3) alasan = "File video rusak (Decode error).";
+        if (err.code === 4) alasan = "CODEC TIDAK DIDUKUNG! (Format video bukan H.264 standar, misal HEVC/H.265).";
+      }
+      dbgStatus.innerText = "Status: " + alasan;
+      dbgStatus.style.color = "#ff4444";
+    });
+
+    function manualPlay() {
+      video.muted = true;
+      video.play().then(() => {
+        dbgStatus.innerText = "Status: BERPUTAR SETELAH DITEKAN MANUAL!";
+        dbgStatus.style.color = "#00ff66";
+      }).catch(err => {
+        dbgStatus.innerText = "Gagal: " + err.message;
+        dbgStatus.style.color = "#ff4444";
+      });
+    }
 
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
@@ -310,261 +228,71 @@
     ];
     let activeCategory = 'ALL';
 
-    function safeRenderIcons() {
-      try {
-        if (window.lucide && typeof window.lucide.createIcons === 'function') {
-          window.lucide.createIcons();
-        }
-      } catch (e) {}
-    }
-
-    /* =====================================================================
-     * 4. AMBIENT PARTICLE ANIMATION
-     * ===================================================================== */
-    const canvas = document.getElementById('ambient-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function setupCanvasSize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', setupCanvasSize);
-    setupCanvasSize();
-
-    class AmbientDot {
-      constructor() { this.init(); }
-      init() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.vx = (Math.random() - 0.5) * 0.3;
-        this.vy = (Math.random() - 0.5) * 0.3;
-        this.alpha = Math.random() * 0.4 + 0.1;
-      }
-      step() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.init();
-      }
-      render() {
-        ctx.fillStyle = `rgba(129, 140, 248, ${this.alpha})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < 30; i++) particles.push(new AmbientDot());
-
-    function loopCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.step(); p.render(); });
-      requestAnimationFrame(loopCanvas);
-    }
-    loopCanvas();
-
-    /* =====================================================================
-     * 5. CLOCK & APP CARDS
-     * ===================================================================== */
-    function runLiveClock() {
+    function runClock() {
       const clockEl = document.getElementById('live-clock');
-      function update() {
-        const now = new Date();
-        clockEl.textContent = now.toLocaleDateString('id-ID', {
+      setInterval(() => {
+        clockEl.textContent = new Date().toLocaleDateString('id-ID', {
           weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
           hour: '2-digit', minute: '2-digit', second: '2-digit'
         });
-      }
-      setInterval(update, 1000);
-      update();
+      }, 1000);
     }
-    runLiveClock();
+    runClock();
 
-    function renderCategoryTabs() {
-      const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
-      const container = document.getElementById('categoryTabs');
-      container.innerHTML = categories.map(cat => `
-        <button onclick="changeCategory('${cat}')" 
-          class="px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all duration-200 ${
-            cat === activeCategory 
-              ? 'bg-indigo-600 text-white shadow-emboss-btn border-transparent scale-100' 
-              : 'bg-slate-900/70 text-slate-400 hover:text-white border border-white/5 hover:border-white/10 active:scale-95'
-          }">
-          ${cat === 'ALL' ? 'Semua Kategori' : cat}
-        </button>
-      `).join('');
-    }
-
-    function changeCategory(cat) {
-      activeCategory = cat;
-      renderCategoryTabs();
-      renderAppCards();
-    }
-
-    function trackClick(appName) {
-      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}`;
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(trackUrl);
-      } else {
-        fetch(trackUrl, { keepalive: true, mode: 'no-cors' }).catch(() => {});
-      }
-      return true;
-    }
-
-    function renderAppCards() {
-      const searchKey = (document.getElementById('searchInput').value || '').toLowerCase();
+    function renderApps() {
       const grid = document.getElementById('appGrid');
-      const filtered = allApps.filter(item => {
-        const matchCat = activeCategory === 'ALL' || (item.category && item.category.toUpperCase() === activeCategory.toUpperCase());
-        const matchKey = (item.title || '').toLowerCase().includes(searchKey) || (item.desc || '').toLowerCase().includes(searchKey);
-        return matchCat && matchKey;
-      });
-
-      document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-400 card-emboss rounded-3xl">
-            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-30 text-indigo-400"></i>
-            <p class="text-sm font-semibold">Tidak ada layanan atau aplikasi yang sesuai.</p>
-          </div>`;
-        safeRenderIcons();
-        return;
-      }
-
-      grid.innerHTML = filtered.map(app => `
-        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
-           onclick="trackClick('${app.title}')"
-           class="group p-5 rounded-2xl card-emboss backdrop-blur-xl flex flex-col justify-between active:scale-[0.98]">
+      grid.innerHTML = allApps.map(app => `
+        <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="p-5 rounded-2xl card-emboss backdrop-blur-xl flex flex-col justify-between">
           <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex items-center gap-3">
-              <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white shadow-emboss-btn transition-all duration-300">
+              <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
                 <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
               </div>
               <div>
-                <h3 class="font-bold text-slate-100 text-sm group-hover:text-indigo-300 transition-colors">${app.title}</h3>
+                <h3 class="font-bold text-slate-100 text-sm">${app.title}</h3>
                 <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">${app.category || 'Layanan'}</span>
               </div>
             </div>
-            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-white/5 text-indigo-300 border border-indigo-500/20 shadow-emboss-btn">${app.badge}</span>` : ''}
+            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-white/5 text-indigo-300 border border-indigo-500/20">${app.badge}</span>` : ''}
           </div>
-          <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">${app.desc || ''}</p>
-          <div class="flex items-center text-[11px] font-semibold text-slate-400 group-hover:text-indigo-400 transition-colors gap-1 self-end mt-auto">
+          <p class="text-xs text-slate-400 line-clamp-2 mb-4">${app.desc || ''}</p>
+          <div class="flex items-center text-[11px] font-semibold text-slate-400 gap-1 self-end mt-auto">
             <span>Akses Aplikasi</span>
-            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
           </div>
         </a>
       `).join('');
-      safeRenderIcons();
+      if (window.lucide) lucide.createIcons();
     }
+    renderApps();
 
-    /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN SPREADSHEET (FLEKSIBEL)
-     * ===================================================================== */
-    function applySpreadsheetSettings(settings) {
-      if (!settings) return;
-
-      if (settings.title) {
-        document.getElementById('app-title').textContent = settings.title;
-        document.getElementById('page-title').textContent = settings.title;
-      }
-      if (settings.subtitle) document.getElementById('app-subtitle').textContent = settings.subtitle;
-      if (settings.logo_url) document.getElementById('app-logo').src = settings.logo_url;
-      if (settings.wa_group_url) document.getElementById('waGroupLink').href = settings.wa_group_url;
-      if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
-      if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
-
-      // Mendukung key 'bg_body', 'bg_video', atau 'video'
-      const bgVal = (settings.bg_body || settings.bg_video || "").trim();
-      const overlayEl = document.getElementById('bg-overlay');
-
-      if (bgVal) {
-        if (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4")) {
-          videoEl.style.display = "block";
-          overlayEl.style.display = "block";
-          if (videoEl.src !== bgVal) {
-            videoEl.src = bgVal;
-            videoEl.load();
-            startVideo();
-          }
-        } else if (bgVal.startsWith("http")) {
-          // Jika gambar latar belakang
-          videoEl.style.display = "none";
-          overlayEl.style.display = "none";
-          document.body.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('${bgVal}')`;
-          document.body.style.backgroundSize = "cover";
-          document.body.style.backgroundPosition = "center";
-        } else {
-          // Jika kode warna murni
-          videoEl.style.display = "none";
-          overlayEl.style.display = "none";
-          document.body.style.background = bgVal;
-        }
-      }
-
-      if (settings.bg_header) {
-        document.getElementById('main-header').style.background = settings.bg_header;
-      }
-    }
-
-    function syncAnalyticsUI(analytics) {
-      if (!analytics) return;
-      if (analytics.total !== undefined) {
-        document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
-      }
-      if (analytics.online !== undefined) {
-        document.getElementById('stat-online').textContent = Number(analytics.online).toLocaleString('id-ID');
-      }
-    }
-
-    /* =====================================================================
-     * 7. KOMUNIKASI NETWORK (BACKGROUND SYNC)
-     * ===================================================================== */
-    async function fetchPortalDatabase() {
+    // Mengambil Pengaturan dari Spreadsheet
+    async function loadSettings() {
       try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}`, {
-          method: 'GET',
-          redirect: 'follow'
-        });
+        const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=mem_${Date.now()}`);
         const data = await res.json();
-        if (data.status === "success") {
-          applySpreadsheetSettings(data.settings);
-          syncAnalyticsUI(data.analytics);
-          if (data.apps && data.apps.length > 0) {
-            allApps = data.apps;
-            renderCategoryTabs();
-            renderAppCards();
+        dbgApi.innerText = "API GAS: Terhubung OK";
+
+        if (data.status === "success" && data.settings) {
+          const videoUrl = data.settings.bg_body;
+          dbgSrc.innerText = "File: " + videoUrl;
+
+          if (videoUrl && videoUrl.includes(".mp4")) {
+            video.src = videoUrl;
+            video.muted = true;
+            video.load();
+            video.play().catch(() => {
+              dbgStatus.innerText = "Status: DITAHAN BROWSER (Klik tombol Paksa Putar)";
+              dbgStatus.style.color = "#ffcc00";
+            });
           }
-          document.getElementById('sync-status').textContent = "Live Sync";
         }
-      } catch (err) {
-        document.getElementById('sync-status').textContent = "Live Sync";
+      } catch (e) {
+        dbgApi.innerText = "API GAS: Gagal menghubungi server";
+        dbgApi.style.color = "#ff4444";
       }
     }
-
-    setInterval(async () => {
-      try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-        const data = await res.json();
-        if (data.status === "success" && data.analytics) {
-          syncAnalyticsUI(data.analytics);
-          document.getElementById('sync-status').textContent = "Live Sync";
-        }
-      } catch (e) {}
-    }, 20000);
-
-    // Booting Awal
-    renderCategoryTabs();
-    renderAppCards();
-    document.getElementById('searchInput').addEventListener('input', renderAppCards);
-    safeRenderIcons();
-
-    // Background Sync
-    fetchPortalDatabase();
+    loadSettings();
   </script>
 </body>
 </html>
