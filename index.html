@@ -69,15 +69,11 @@
         />
       </div>
 
-      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
-        <!-- Render otomatis via JS -->
-      </div>
+      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
     <!-- GRID APLIKASI -->
-    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-      <!-- Render otomatis via JS -->
-    </main>
+    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4"></main>
 
     <!-- GRUP WHATSAPP -->
     <section id="waSection">
@@ -99,32 +95,37 @@
       </a>
     </section>
 
-    <!-- LIVE ANALITIK -->
+    <!-- LIVE ANALITIK REAL-TIME DENGAN STATUS DETAK JANTUNG -->
     <section class="p-5 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl">
       <div class="flex items-center justify-between mb-3.5">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
           Live Analitik Portal
         </h3>
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Real-Time</span>
+        <div class="flex items-center gap-1.5 text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span id="sync-status">Live Sync</span>
+        </div>
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:gap-4">
+        <!-- Total Kunjungan -->
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
           <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400"><i data-lucide="eye" class="w-5 h-5"></i></div>
           <div>
-            <div id="stat-total" class="text-lg sm:text-2xl font-bold text-white tracking-tight">142</div>
+            <div id="stat-total" class="text-lg sm:text-2xl font-bold text-white tracking-tight">--</div>
             <p class="text-[11px] text-slate-400">Total Kunjungan</p>
           </div>
         </div>
 
+        <!-- Online Real-Time -->
         <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
           <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 relative">
             <i data-lucide="users" class="w-5 h-5"></i>
             <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div>
-            <div id="stat-online" class="text-lg sm:text-2xl font-bold text-emerald-400 tracking-tight">3</div>
+            <div id="stat-online" class="text-lg sm:text-2xl font-bold text-emerald-400 tracking-tight">1</div>
             <p class="text-[11px] text-slate-400">Online Saat Ini</p>
           </div>
         </div>
@@ -139,48 +140,27 @@
   </footer>
 
   <script>
-    // URL Web App GAS Anda
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
-    // DATA DEFAULT RESMI BPKAD KONAWE (Tampil Instan Tanpa Delay / Layar Blank)
+    // 1. GENERATE SESSION ID UNIK PERANGKAT
+    // Setiap tab/HP memiliki nomor sesi sendiri untuk mencatat online secara nyata
+    let mySessionId = sessionStorage.getItem('bpkad_sid');
+    if (!mySessionId) {
+      mySessionId = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+      sessionStorage.setItem('bpkad_sid', mySessionId);
+    }
+
+    // Data BPKAD Siap Pakai
     let allApps = [
-      {
-        title: "SIPD-RI",
-        category: "Keuangan",
-        url: "https://sipd-ri.kemendagri.go.id",
-        icon: "landmark",
-        desc: "Sistem Informasi Pemerintahan Daerah",
-        badge: "Utama"
-      },
-      {
-        title: "Atisisbada",
-        category: "Aset",
-        url: "https://konawekab.atisisbada.id",
-        icon: "database",
-        desc: "Pengelolaan Barang Milik Daerah",
-        badge: "Daily"
-      },
-      {
-        title: "Srikandi",
-        category: "Persuratan",
-        url: "https://srikandi.arsip.go.id",
-        icon: "mail",
-        desc: "Tata Kelola Surat Dinas Digital",
-        badge: "Kantor"
-      },
-      {
-        title: "Portal Konawe",
-        category: "Pemda",
-        url: "https://konawekab.go.id",
-        icon: "globe",
-        desc: "Website Resmi Pemkab Konawe",
-        badge: "Portal"
-      }
+      { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
+      { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
+      { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
+      { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" }
     ];
 
     let activeCategory = 'ALL';
 
-    // 1. Jam Digital
+    // Jam Digital
     function startClock() {
       const clockEl = document.getElementById('live-clock');
       function update() {
@@ -195,20 +175,12 @@
     }
     startClock();
 
-    // 2. Render Kategori
+    // Render Kategori
     function renderCategories() {
       const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
-
       container.innerHTML = categories.map(cat => `
-        <button 
-          onclick="filterCategory('${cat}')" 
-          class="px-4 py-2 rounded-xl border border-white/10 font-medium whitespace-nowrap transition-all active:scale-95 ${
-            cat === activeCategory 
-              ? 'bg-indigo-600 text-white border-transparent' 
-              : 'bg-slate-900/50 text-slate-400 hover:bg-white/10'
-          }"
-        >
+        <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-xl border border-white/10 font-medium whitespace-nowrap transition-all active:scale-95 ${cat === activeCategory ? 'bg-indigo-600 text-white border-transparent' : 'bg-slate-900/50 text-slate-400 hover:bg-white/10'}">
           ${cat === 'ALL' ? 'Semua' : cat}
         </button>
       `).join('');
@@ -220,35 +192,26 @@
       renderApps();
     }
 
-    // 3. Render Kartu Aplikasi
+    // Render Aplikasi
     function renderApps() {
       const keyword = (document.getElementById('searchInput').value || '').toLowerCase();
       const grid = document.getElementById('appGrid');
-
       const filtered = allApps.filter(app => {
         const matchesCategory = activeCategory === 'ALL' || (app.category && app.category.toUpperCase() === activeCategory.toUpperCase());
-        const matchesKeyword = (app.title || '').toLowerCase().includes(keyword) || 
-                               (app.desc || '').toLowerCase().includes(keyword);
+        const matchesKeyword = (app.title || '').toLowerCase().includes(keyword) || (app.desc || '').toLowerCase().includes(keyword);
         return matchesCategory && matchesKeyword;
       });
 
       document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
 
       if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-10 text-center text-slate-500">
-            <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
-            <p class="text-sm">Aplikasi tidak ditemukan.</p>
-          </div>
-        `;
+        grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-500"><i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-40"></i><p class="text-sm">Aplikasi tidak ditemukan.</p></div>`;
         lucide.createIcons();
         return;
       }
 
       grid.innerHTML = filtered.map(app => `
-        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
-           class="group p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.07] backdrop-blur-xl transition-all duration-300 flex flex-col justify-between active:scale-[0.98]">
-          
+        <a href="${app.url}" target="_blank" rel="noopener noreferrer" class="group p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.07] backdrop-blur-xl transition-all duration-300 flex flex-col justify-between active:scale-[0.98]">
           <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex items-center gap-3">
               <div class="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 group-hover:bg-indigo-600 group-hover:text-white transition-all">
@@ -259,90 +222,53 @@
                 <span class="text-[10px] text-slate-400 uppercase tracking-wider">${app.category || 'Layanan'}</span>
               </div>
             </div>
-
-            ${app.badge ? `
-              <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-white/10 text-slate-300 border border-white/5">
-                ${app.badge}
-              </span>
-            ` : ''}
+            ${app.badge ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-white/10 text-slate-300 border border-white/5">${app.badge}</span>` : ''}
           </div>
-
           <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3">${app.desc || ''}</p>
-
           <div class="flex items-center text-[11px] font-medium text-slate-500 group-hover:text-indigo-400 transition-colors gap-1 self-end mt-auto">
             <span>Buka Akses</span>
             <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
           </div>
         </a>
       `).join('');
-
       lucide.createIcons();
     }
 
-    // 4. Terapkan Kostumisasi
+    // Terapkan Pengaturan
     function applyCustomization(settings) {
       if (!settings) return;
-
       if (settings.title) {
         document.getElementById('app-title').textContent = settings.title;
         document.getElementById('page-title').textContent = settings.title;
       }
-      if (settings.subtitle) {
-        document.getElementById('app-subtitle').textContent = settings.subtitle;
-      }
-      if (settings.logo_url) {
-        document.getElementById('app-logo').src = settings.logo_url;
-      }
-
-      // Background Halaman
-      const bodyEl = document.getElementById('body-container');
-      if (settings.bg_body) {
-        if (settings.bg_body.startsWith('http')) {
-          bodyEl.style.backgroundImage = `linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.9)), url('${settings.bg_body}')`;
-          bodyEl.style.backgroundSize = 'cover';
-          bodyEl.style.backgroundPosition = 'center';
-          bodyEl.style.backgroundAttachment = 'fixed';
-        } else {
-          bodyEl.style.background = settings.bg_body;
-        }
-      }
-
-      // Background Header
-      const headerEl = document.getElementById('main-header');
-      if (settings.bg_header) {
-        if (settings.bg_header.startsWith('http')) {
-          headerEl.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('${settings.bg_header}')`;
-          headerEl.style.backgroundSize = 'cover';
-        } else {
-          headerEl.style.background = settings.bg_header;
-        }
-      }
-
-      // WhatsApp
-      if (settings.wa_group_url) {
-        document.getElementById('waGroupLink').href = settings.wa_group_url;
-      }
-      if (settings.wa_group_text) {
-        document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
-      }
-
-      // Footer
-      if (settings.footer) {
-        document.getElementById('footer-text').textContent = settings.footer;
-      }
+      if (settings.subtitle) document.getElementById('app-subtitle').textContent = settings.subtitle;
+      if (settings.logo_url) document.getElementById('app-logo').src = settings.logo_url;
+      if (settings.wa_group_url) document.getElementById('waGroupLink').href = settings.wa_group_url;
+      if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
+      if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
     }
 
+    // Pembaruan Angka Analitik Halus (Real-Time Counter)
     function updateAnalytics(analytics) {
       if (!analytics) return;
-      if (analytics.total) document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
-      if (analytics.online) document.getElementById('stat-online').textContent = Number(analytics.online).toLocaleString('id-ID');
+      if (analytics.total !== undefined) {
+        document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
+      }
+      if (analytics.online !== undefined) {
+        const onlineEl = document.getElementById('stat-online');
+        // Berikan efek kilap warna hijau saat angka berubah
+        if (onlineEl.textContent !== String(analytics.online)) {
+          onlineEl.classList.add('text-emerald-200');
+          setTimeout(() => onlineEl.classList.remove('text-emerald-200'), 500);
+        }
+        onlineEl.textContent = Number(analytics.online).toLocaleString('id-ID');
+      }
     }
 
-    // 5. SINKRONISASI HALUS DENGAN GOOGLE SPREADSHEET (BACKGROUND SYNC)
-    async function syncDataOnline() {
+    // 2. KONEKSI PERTAMA: Ambil Data Lengkap & Daftarkan Kunjungan Baru
+    async function loadInitialData() {
       try {
-        const res = await fetch(GAS_API_URL, { method: 'GET', redirect: 'follow' });
-        if (!res.ok) return;
+        const res = await fetch(`${GAS_API_URL}?sid=${mySessionId}`, { method: 'GET', redirect: 'follow' });
         const data = await res.json();
         if (data.status === "success") {
           applyCustomization(data.settings);
@@ -354,18 +280,33 @@
           }
         }
       } catch (err) {
-        console.log("Portal menggunakan cache/data mandiri yang stabil:", err);
+        console.log("Menjalankan data stabil:", err);
       }
     }
 
-    // Render Awal Langsung Muncul
+    // 3. MESIN REAL-TIME HEARTBEAT (Kirim Sinyal Tiap 15 Detik)
+    setInterval(async () => {
+      try {
+        const res = await fetch(`${GAS_API_URL}?action=heartbeat&sid=${mySessionId}`, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+        const data = await res.json();
+        if (data.status === "success" && data.analytics) {
+          updateAnalytics(data.analytics);
+          document.getElementById('sync-status').textContent = "Live Sync";
+        }
+      } catch (e) {
+        document.getElementById('sync-status').textContent = "Reconnecting";
+      }
+    }, 15000); // 15 detik
+
+    // Inisialisasi Tampilan
     renderCategories();
     renderApps();
     lucide.createIcons();
     document.getElementById('searchInput').addEventListener('input', renderApps);
-
-    // Jalankan Sinkronisasi Online
-    syncDataOnline();
+    loadInitialData();
   </script>
 </body>
 </html>
