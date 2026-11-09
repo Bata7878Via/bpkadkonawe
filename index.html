@@ -50,15 +50,64 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030712 90%);
+      background-color: #030712;
       min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
-      transition: background 0.5s ease;
+      margin: 0;
+      padding: 0;
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Video Background Container (Layer Paling Belakang) */
+    #bg-video-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      display: block;
+      pointer-events: none;
+    }
+    #bg-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      filter: brightness(0.5) contrast(1.1);
+    }
+
+    /* Lapisan Gelap Tipis di atas Video agar Tulisan Sangat Jelas */
+    #bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      background: radial-gradient(circle at 50% 10%, rgba(3, 7, 18, 0.4) 0%, rgba(3, 7, 18, 0.85) 90%);
+      pointer-events: none;
+    }
+
+    /* Ambient Canvas */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      pointer-events: none;
+    }
 
     /* Efek Kartu Emboss Tactile */
     .card-emboss {
@@ -77,54 +126,23 @@
                   0 18px 35px -5px rgba(0, 0, 0, 0.8),
                   0 0 25px rgba(99, 102, 241, 0.3);
     }
-
-    /* Video Background Container */
-    #bg-video-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -2;
-      overflow: hidden;
-      display: none;
-    }
-    #bg-video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-      filter: brightness(0.35) contrast(1.1);
-    }
-
-    /* Ambient Canvas */
-    #ambient-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      pointer-events: none;
-    }
   </style>
 </head>
 
-<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen relative">
+<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
 
-  <!-- Background Video Engine -->
+  <!-- 1. Background Video Engine (Langsung Memuat Video Anda) -->
   <div id="bg-video-wrapper">
-    <video id="bg-video" autoplay loop muted playsinline></video>
+    <video id="bg-video" autoplay loop muted playsinline defaultMuted preload="auto">
+      <source src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4" type="video/mp4" />
+    </video>
   </div>
 
-  <!-- Ambient Particle Animation Engine -->
+  <!-- 2. Overlay & Partikel -->
+  <div id="bg-overlay"></div>
   <canvas id="ambient-canvas"></canvas>
 
+  <!-- 3. Konten Utama Portal (Z-Index Tinggi) -->
   <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
 
     <!-- HEADER RESMI -->
@@ -208,7 +226,6 @@
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:gap-4">
-        <!-- Total Kunjungan -->
         <div class="p-4 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-3.5 shadow-emboss">
           <div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-emboss-btn">
             <i data-lucide="eye" class="w-5 h-5"></i>
@@ -219,7 +236,6 @@
           </div>
         </div>
 
-        <!-- Pengunjung Online Real-Time -->
         <div class="p-4 rounded-2xl bg-black/30 border border-white/5 flex items-center gap-3.5 shadow-emboss">
           <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 relative shadow-emboss-btn">
             <i data-lucide="users" class="w-5 h-5"></i>
@@ -236,11 +252,11 @@
   </div>
 
   <!-- FOOTER -->
-  <footer class="w-full text-center text-xs text-slate-500 py-6 mt-6 relative z-10">
+  <footer class="w-full text-center text-xs text-slate-400 py-6 mt-6 relative z-10">
     <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
   </footer>
 
-  <!-- CORE JAVASCRIPT ENGINE -->
+  <!-- SCRIPT ENGINE -->
   <script>
     /* =====================================================================
      * 1. PROTEKSI BOT & INSPEKSI
@@ -267,12 +283,35 @@
     })();
 
     /* =====================================================================
-     * 2. ENDPOINT & SESSION ENGINE
+     * 2. VIDEO AUTOPLAY ENGINE (DIPASTIKAN BERPUTAR)
+     * ===================================================================== */
+    const bgVideo = document.getElementById('bg-video');
+    function forcePlayVideo() {
+      if (!bgVideo) return;
+      bgVideo.muted = true;
+      bgVideo.defaultMuted = true;
+      const playPromise = bgVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Jika browser memblokir autoplay, putar seketika user menyentuh/klik layar
+          const resumeOnTouch = () => {
+            bgVideo.play();
+            document.removeEventListener('click', resumeOnTouch);
+            document.removeEventListener('touchstart', resumeOnTouch);
+          };
+          document.addEventListener('click', resumeOnTouch, { once: true });
+          document.addEventListener('touchstart', resumeOnTouch, { once: true });
+        });
+      }
+    }
+    forcePlayVideo();
+
+    /* =====================================================================
+     * 3. DATA & INITIAL STATE
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
     const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
 
-    // DATA RESMI BPKAD (LANGSUNG TAMPIL 0 DETIK, KEMUDIAN DI-UPDATE OTOMATIS DARI SPREADSHEET)
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
       { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
@@ -294,7 +333,7 @@
     }
 
     /* =====================================================================
-     * 3. AMBIENT PARTICLE BACKGROUND ANIMATION
+     * 4. AMBIENT PARTICLE ANIMATION
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -312,10 +351,10 @@
       init() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2.2 + 0.6;
-        this.vx = (Math.random() - 0.5) * 0.35;
-        this.vy = (Math.random() - 0.5) * 0.35;
-        this.alpha = Math.random() * 0.45 + 0.15;
+        this.size = Math.random() * 2 + 0.5;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.alpha = Math.random() * 0.4 + 0.1;
       }
       step() {
         this.x += this.vx;
@@ -330,7 +369,7 @@
       }
     }
 
-    for (let i = 0; i < 35; i++) particles.push(new AmbientDot());
+    for (let i = 0; i < 30; i++) particles.push(new AmbientDot());
 
     function loopCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -340,7 +379,7 @@
     loopCanvas();
 
     /* =====================================================================
-     * 4. DIGITAL CLOCK & CARD RENDERER
+     * 5. CLOCK & APP CARDS
      * ===================================================================== */
     function runLiveClock() {
       const clockEl = document.getElementById('live-clock');
@@ -435,7 +474,7 @@
     }
 
     /* =====================================================================
-     * 5. SPREADSHEET CUSTOMIZATION ENGINE (VIDEO / THEME)
+     * 6. SINKRONISASI PENGATURAN DINAMIS DARI SPREADSHEET
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
@@ -450,28 +489,25 @@
       if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
       if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
 
-      // Background Video Engine
-      const bodyEl = document.getElementById('body-container');
+      // Dynamic Video / Background Updater
       const bgVideoWrapper = document.getElementById('bg-video-wrapper');
-      const bgVideo = document.getElementById('bg-video');
-
       if (settings.bg_body) {
         const val = settings.bg_body.trim();
-        if (val.match(/\.(mp4|webm|ogg)$/i)) {
-          bgVideo.src = val;
+        if (val.match(/\.(mp4|webm|ogg)$/i) || val.includes("video")) {
           bgVideoWrapper.style.display = "block";
-          bodyEl.style.background = "transparent";
-          bgVideo.muted = true;
-          bgVideo.play().catch(() => {});
+          if (bgVideo.src !== val) {
+            bgVideo.src = val;
+            bgVideo.load();
+            forcePlayVideo();
+          }
         } else if (val.startsWith("http")) {
           bgVideoWrapper.style.display = "none";
-          bodyEl.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.75) 0%, rgba(3, 7, 18, 0.95) 100%), url('${val}')`;
-          bodyEl.style.backgroundSize = "cover";
-          bodyEl.style.backgroundPosition = "center";
-          bodyEl.style.backgroundAttachment = "fixed";
+          document.body.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('${val}')`;
+          document.body.style.backgroundSize = "cover";
+          document.body.style.backgroundPosition = "center";
         } else {
           bgVideoWrapper.style.display = "none";
-          bodyEl.style.background = val;
+          document.body.style.background = val;
         }
       }
 
@@ -491,7 +527,7 @@
     }
 
     /* =====================================================================
-     * 6. KOMUNIKASI NETWORK (BACKGROUND SYNC)
+     * 7. KOMUNIKASI NETWORK (BACKGROUND SYNC)
      * ===================================================================== */
     async function fetchPortalDatabase() {
       try {
@@ -499,13 +535,10 @@
           method: 'GET',
           redirect: 'follow'
         });
-        
         const data = await res.json();
-
         if (data.status === "success") {
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
-
           if (data.apps && data.apps.length > 0) {
             allApps = data.apps;
             renderCategoryTabs();
@@ -514,12 +547,10 @@
           document.getElementById('sync-status').textContent = "Live Sync";
         }
       } catch (err) {
-        // Tetap menyala dengan data stabil meskipun jaringan melambat
         document.getElementById('sync-status').textContent = "Live Sync";
       }
     }
 
-    // Heartbeat Sync
     setInterval(async () => {
       try {
         const res = await fetch(`${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`, {
@@ -534,13 +565,13 @@
       } catch (e) {}
     }, 20000);
 
-    // Render Tampilan Awal (0 Detik)
+    // Render Awal Seketika (0 Detik)
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
-    
-    // Sinkronisasi Live dengan Spreadsheet di Background
+
+    // Sinkronisasi Live dengan Spreadsheet
     fetchPortalDatabase();
   </script>
 </body>
