@@ -221,7 +221,7 @@
           Live Real-Time Engine
         </h3>
         <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
           <span id="sync-status">Memuat Data...</span>
         </div>
       </div>
@@ -309,10 +309,31 @@
     startVideo();
 
     /* =====================================================================
-     * 3. DATA & INITIAL STATE
+     * 3. DATA & SESI PERSISTEN
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-    const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+
+    // Gunakan sessionStorage agar ID sesi konsisten saat di-refresh dalam satu tab
+    let RUNTIME_SID = sessionStorage.getItem('portal_sid');
+    let isNewSession = "0";
+
+    if (!RUNTIME_SID) {
+      RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+      sessionStorage.setItem('portal_sid', RUNTIME_SID);
+      isNewSession = "1"; // Tanda bahwa sesi ini baru pertama kali dibuka
+    }
+
+    // Identifikasi perangkat ringkas untuk logging
+    function getDeviceSignature() {
+      const ua = navigator.userAgent;
+      if (/android/i.test(ua)) return 'Android Device';
+      if (/iPad|iPhone|iPod/.test(ua)) return 'iOS Device';
+      if (/Windows/i.test(ua)) return 'Windows PC';
+      if (/Macintosh/i.test(ua)) return 'Mac OS';
+      if (/Linux/i.test(ua)) return 'Linux PC';
+      return 'Mobile / Other';
+    }
+    const DEVICE_INFO = getDeviceSignature();
 
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
@@ -420,13 +441,9 @@
     }
 
     function trackClick(appName) {
-      // Menambahkan timestamp anti-cache pada track click
-      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&_t=${Date.now()}`;
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(trackUrl);
-      } else {
-        fetch(trackUrl, { keepalive: true, mode: 'no-cors', cache: 'no-store' }).catch(() => {});
-      }
+      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
+      // Fetch keepalive non-blocking agar tautan tetap terbuka tanpa delay
+      fetch(trackUrl, { method: 'GET', mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
       return true;
     }
 
@@ -481,7 +498,7 @@
     }
 
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN SPREADSHEET
+     * 6. SINKRONISASI PENGATURAN SPREADSHEET & ANALITIK
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
@@ -564,13 +581,12 @@
     }
 
     /* =====================================================================
-     * 7. KOMUNIKASI NETWORK (ANTI-CACHE & STATUS REAL-TIME)
+     * 7. KOMUNIKASI NETWORK & SINKRONISASI REAL-TIME
      * ===================================================================== */
     async function fetchPortalDatabase() {
       const syncStatusEl = document.getElementById('sync-status');
       try {
-        // Cache-buster: _t=Date.now() dan cache: 'no-store' agar selalu meminta data terbaru
-        const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&_t=${Date.now()}`;
+        const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${isNewSession}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
         const res = await fetch(fetchUrl, {
           method: 'GET',
           cache: 'no-store',
@@ -580,8 +596,6 @@
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         
         const data = await res.json();
-        console.log("✅ Data diterima dari Google Sheets:", data);
-        
         if (data.status === "success") {
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
@@ -591,18 +605,21 @@
             renderAppCards();
           }
           if (syncStatusEl) syncStatusEl.textContent = "Live Sync";
+          isNewSession = "0"; // Reset flag setelah kunjungan sukses dicatat
         } else {
-          console.warn("Respon GAS gagal:", data.message);
           if (syncStatusEl) syncStatusEl.textContent = "Data Error";
         }
       } catch (err) {
-        console.error("Gagal sinkronisasi data dari Google Sheets / Apps Script:", err);
+        console.error("Gagal sinkronisasi dari Google Sheets:", err);
         if (syncStatusEl) syncStatusEl.textContent = "Offline Mode";
       }
     }
 
-    // Heartbeat setiap 20 detik (Real-time Online Ping)
-    setInterval(async () => {
+    // Ping Heartbeat Periodik (Real-Time Online Engine)
+    async function sendHeartbeat() {
+      // Jangan kirim ping jika tab sedang diminimalkan/tidak aktif untuk menghemat kuota
+      if (document.hidden) return;
+
       try {
         const pingUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}&_t=${Date.now()}`;
         const res = await fetch(pingUrl, {
@@ -613,17 +630,33 @@
         const data = await res.json();
         if (data.status === "success" && data.analytics) {
           syncAnalyticsUI(data.analytics);
+          const syncStatusEl = document.getElementById('sync-status');
+          if (syncStatusEl && syncStatusEl.textContent !== "Live Sync") {
+            syncStatusEl.textContent = "Live Sync";
+          }
         }
-      } catch (e) {}
-    }, 20000);
+      } catch (e) {
+        // Fallback senyap jika koneksi jaringan fluktuatif
+      }
+    }
 
-    // Booting Awal
+    // Interval Heartbeat diatur optimal tiap 25 detik
+    setInterval(sendHeartbeat, 25000);
+
+    // Kirim ping instan begitu tab kembali dibuka pengguna
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        sendHeartbeat();
+      }
+    });
+
+    // Booting Awal Antarmuka
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Jalankan Sinkronisasi Latar Belakang
+    // Inisialisasi Sinkronisasi Database
     fetchPortalDatabase();
   </script>
 </body>
