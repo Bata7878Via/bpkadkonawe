@@ -220,7 +220,7 @@
         </h3>
         <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
           <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Memuat Data...</span>
+          <span id="sync-status">Menghubungkan...</span>
         </div>
       </div>
 
@@ -422,8 +422,9 @@
     }
 
     function trackClick(appName) {
-      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
-      fetch(trackUrl, { method: 'GET', mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+      // Beacon via Image tag: 100% immune dari batasan CORS dan non-blocking
+      const beacon = new Image();
+      beacon.src = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
       return true;
     }
 
@@ -561,23 +562,47 @@
     }
 
     /* =====================================================================
-     * 7. JARINGAN DATA (KONEKSI RESILIEN)
+     * 7. PROTOKOL JSONP: BEBAS CORS 100% UNTUK GITHUB PAGES
      * ===================================================================== */
+    function requestJSONP(url, timeoutMs = 15000) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'gas_callback_' + Math.random().toString(36).substring(2, 9);
+        const script = document.createElement('script');
+        let timer = null;
+
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        function cleanup() {
+          if (timer) clearTimeout(timer);
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("Timeout: Google Apps Script tidak merespons dalam 15 detik."));
+        }, timeoutMs);
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("Gagal memuat script. Pastikan Deployment disetel ke 'Anyone'."));
+        };
+
+        const sep = url.includes('?') ? '&' : '?';
+        script.src = `${url}${sep}callback=${callbackName}&_t=${Date.now()}`;
+        document.head.appendChild(script);
+      });
+    }
+
     async function fetchPortalDatabase() {
       const syncStatusEl = document.getElementById('sync-status');
       try {
-        const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${isNewSession}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
-        
-        const res = await fetch(fetchUrl, {
-          method: 'GET',
-          cache: 'no-store',
-          redirect: 'follow'
-        });
-        
-        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-        
-        const data = await res.json();
-        
+        const queryUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${isNewSession}&ua=${encodeURIComponent(DEVICE_INFO)}`;
+        const data = await requestJSONP(queryUrl);
+
         if (data.status === "success") {
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
@@ -589,7 +614,7 @@
           if (syncStatusEl) syncStatusEl.textContent = "Live Sync";
           isNewSession = "0";
         } else {
-          console.error("Respon Backend Error:", data.message);
+          console.error("Kesalahan Backend:", data.message);
           if (syncStatusEl) syncStatusEl.textContent = "Data Error";
         }
       } catch (err) {
@@ -600,15 +625,9 @@
 
     async function sendHeartbeat() {
       if (document.hidden) return;
-
       try {
-        const pingUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}&_t=${Date.now()}`;
-        const res = await fetch(pingUrl, {
-          method: 'GET',
-          cache: 'no-store',
-          redirect: 'follow'
-        });
-        const data = await res.json();
+        const pingUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`;
+        const data = await requestJSONP(pingUrl);
         if (data.status === "success" && data.analytics) {
           syncAnalyticsUI(data.analytics);
           const syncStatusEl = document.getElementById('sync-status');
@@ -622,9 +641,7 @@
     setInterval(sendHeartbeat, 25000);
 
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
-        sendHeartbeat();
-      }
+      if (!document.hidden) sendHeartbeat();
     });
 
     // Booting Awal
@@ -633,7 +650,7 @@
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Jalankan Sinkronisasi Data
+    // Jalankan Sinkronisasi Data Bebas Hambatan
     fetchPortalDatabase();
   </script>
 </body>
