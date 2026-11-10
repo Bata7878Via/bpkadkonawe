@@ -1,657 +1,279 @@
-<!DOCTYPE html>
-<html lang="id" class="dark">
-<head>
-  <!-- 1. META SHIELD LENGKAP: ANTI BOT & ANTI CRAWLER -->
-  <meta charset="UTF-8" />
-  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, notranslate, noimageindex" />
-  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, max-image-preview:none" />
-  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
-  <meta name="baiduspider" content="noindex, nofollow" />
-  <meta name="yandex" content="noindex, nofollow" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta name="referrer" content="no-referrer" />
-  <title id="page-title">SI-MEPOKOASO BPKAD KONAWE</title>
+/**
+ * BACKEND API GOOGLE APPS SCRIPT (DEFINITIVE BULLETPROOF)
+ * SI-MEPOKOASO BPKAD KONAWE
+ */
 
-  <!-- Tailwind CSS & Lucide Icons -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+// =========================================================================
+// 1. KONFIGURASI SPREADSHEET
+// =========================================================================
+// Jika script dibuka via 'Ekstensi > Apps Script' di Spreadsheet, biarkan KOSONG "".
+// Jika script dibuat terpisah di script.google.com, PASTE ID Spreadsheet di bawah:
+var SPREADSHEET_ID = "";
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-          boxShadow: {
-            'aero-glass': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5), 0 16px 36px -6px rgba(0, 0, 0, 0.7)',
-            'aero-glow': '0 0 25px -4px rgba(6, 182, 212, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.5)',
-            'emboss-btn': 'inset 0 1px 1px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.7), 0 4px 14px rgba(0,0,0,0.5)',
-            'emboss-active': 'inset 2px 2px 5px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.2)'
-          }
-        }
-      }
-    }
-  </script>
+var ONLINE_THRESHOLD_MS = 3 * 60 * 1000;
+var CACHE_KEY_SESSIONS = "PORTAL_SESSIONS_MAP";
+var CACHE_KEY_SUMMARY = "PORTAL_CACHE_SUMMARY";
 
-  <style>
-    /* Proteksi Seleksi dan Drag Dokumen */
-    * {
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
-      -webkit-user-drag: none !important;
-    }
-    input, textarea {
-      -webkit-user-select: text !important;
-      user-select: text !important;
-    }
+/**
+ * JALANKAN FUNGSI INI DI EDITOR UNTUK MEMBUKA OTORISASI GOOGLE!
+ * Pilih fungsi ini di dropdown atas lalu klik tombol 'Run'.
+ */
+function TEST_DAN_OTORISASI() {
+  var ss = resolveSpreadsheet();
+  Logger.log("✅ KONEKSI BERHASIL! Nama Spreadsheet: " + ss.getName());
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    Logger.log("- Tab sheet ditemukan: " + sheets[i].getName());
+  }
+  return "Koneksi Database Sukses!";
+}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100vh;
-      background-color: #020617;
-      -webkit-tap-highlight-color: transparent;
-      overflow-x: hidden;
-    }
+function doGet(e) {
+  return handleRequest(e);
+}
 
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+function doPost(e) {
+  return handleRequest(e);
+}
 
-    /* VIDEO BACKGROUND (LAYER 0) */
-    #bg-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: 0;
-      pointer-events: none;
-    }
+function handleRequest(e) {
+  var params = (e && e.parameter) ? e.parameter : {};
+  var callback = params.callback || "";
+  var action = params.action || "init";
+  var sid = params.sid || ("anon_" + new Date().getTime());
+  var isNewSession = params.is_new === "1";
+  var appName = params.app_name || "";
+  var userAgent = params.ua || "Browser Web";
 
-    /* OVERLAY FRESH AERO TINT (LAYER 1) */
-    #bg-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
-      background: radial-gradient(circle at 50% 15%, rgba(14, 116, 144, 0.25) 0%, rgba(15, 23, 42, 0.65) 60%, rgba(2, 6, 23, 0.90) 100%);
-      backdrop-filter: blur(2px);
-      pointer-events: none;
-    }
+  try {
+    var ss = resolveSpreadsheet();
 
-    /* AMBIENT CANVAS (LAYER 2) */
-    #ambient-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    /* EFEK WINDOWS VISTA AERO GLASS & KARTU TRANSPARAN */
-    .aero-card {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(30, 58, 138, 0.25) 50%, rgba(15, 23, 42, 0.70) 100%);
-      backdrop-filter: blur(20px) saturate(190%);
-      -webkit-backdrop-filter: blur(20px) saturate(190%);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-top: 1px solid rgba(255, 255, 255, 0.38);
-      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3),
-                  inset 0 -1px 2px rgba(0, 0, 0, 0.6),
-                  0 14px 35px -6px rgba(0, 0, 0, 0.65),
-                  0 0 25px -4px rgba(6, 182, 212, 0.15);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .aero-card:hover {
-      transform: translateY(-3px) scale(1.008);
-      border-color: rgba(56, 189, 248, 0.55);
-      border-top-color: rgba(255, 255, 255, 0.75);
-      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5),
-                  0 20px 42px -6px rgba(0, 0, 0, 0.8),
-                  0 0 35px rgba(14, 165, 233, 0.3);
-    }
-  </style>
-</head>
-
-<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
-
-  <!-- 1. Video Latar Belakang -->
-  <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
-
-  <!-- 2. Overlay Transparan & Partikel Animasi -->
-  <div id="bg-overlay"></div>
-  <canvas id="ambient-canvas"></canvas>
-
-  <!-- 3. Konten Utama Portal (Layer 10) -->
-  <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
-
-    <!-- HEADER RESMI AERO GLASS -->
-    <header id="main-header" class="aero-card flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl relative overflow-hidden">
-      <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent pointer-events-none"></div>
-
-      <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
-        <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-black/40 rounded-2xl border border-white/20 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2)]">
-          <img id="app-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" alt="Logo BPKAD" class="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
-        </div>
-
-        <div class="flex-1 min-w-0">
-          <h1 id="app-title" class="text-lg sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-tight drop-shadow-sm">
-            SI-MEPOKOASO BPKAD KONAWE
-          </h1>
-          <p id="app-subtitle" class="text-xs text-cyan-200/80 font-medium mt-1">
-            (Sistem Integrasi Manajemen Elektronik Pelayanan Organisasi Keuangan dan Aset Secara Optimal)
-          </p>
-          <p id="app-subtitle2" class="text-xs text-white font-extrabold mt-1 tracking-wide">
-            Portal Layanan Terpadu BPKAD Kab. Konawe
-          </p>
-          <div class="inline-flex items-center gap-2 mt-2 px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/10 backdrop-blur-md">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-            <p id="live-clock" class="text-[11px] text-cyan-100/90 font-mono"></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-2xl bg-cyan-950/50 text-cyan-200 border border-cyan-400/30 shadow-emboss-btn backdrop-blur-md">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-        <span id="total-apps">8 Layanan Aktif</span>
-      </div>
-    </header>
-
-    <!-- SEARCH & KATEGORI -->
-    <div class="space-y-3">
-      <div class="relative">
-        <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-cyan-300 pointer-events-none"></i>
-        <input 
-          type="text" 
-          id="searchInput" 
-          autocomplete="off" 
-          spellcheck="false"
-          placeholder="Cari tautan aplikasi atau layanan dinas..." 
-          class="w-full pl-11 pr-4 py-3.5 bg-slate-900/60 border border-white/15 focus:border-cyan-400/70 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/30 backdrop-blur-2xl text-white placeholder:text-slate-400 shadow-aero-glass transition-all"
-        />
-      </div>
-
-      <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
-    </div>
-
-    <!-- GRID MENU APLIKASI -->
-    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
-
-    <!-- GRUP DISKUSI WHATSAPP -->
-    <section id="waSection">
-      <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
-         class="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/35 hover:border-emerald-400/70 transition-all duration-300 shadow-aero-glass active:scale-[0.99] backdrop-blur-2xl overflow-hidden">
-        <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none"></div>
-
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 shadow-emboss-btn transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-            <i data-lucide="message-circle" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h2 id="waGroupTitle" class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi BPKAD Konawe</h2>
-            <p id="waGroupDesc" class="text-xs text-slate-300">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all flex-shrink-0">
-          <span>Gabung</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </div>
-      </a>
-    </section>
-
-    <!-- LIVE ANALITIK PORTAL REAL-TIME -->
-    <section class="p-5 rounded-3xl aero-card relative overflow-hidden">
-      <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none"></div>
-
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-200 flex items-center gap-2">
-          <i data-lucide="activity" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
-          Live Real-Time Engine
-        </h3>
-        <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Menghubungkan...</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3 sm:gap-4">
-        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center gap-3.5 shadow-[inset_0_1px_2px_rgba(255,255,255,0.15)] backdrop-blur-xl">
-          <div class="p-3 rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 shadow-emboss-btn shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-            <i data-lucide="eye" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight drop-shadow-sm">--</div>
-            <p class="text-[11px] text-cyan-200/70 font-medium">Total Kunjungan</p>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center gap-3.5 shadow-[inset_0_1px_2px_rgba(255,255,255,0.15)] backdrop-blur-xl">
-          <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 relative shadow-emboss-btn shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          </div>
-          <div>
-            <div id="stat-online" class="text-xl sm:text-2xl font-extrabold text-emerald-400 tracking-tight drop-shadow-sm">--</div>
-            <p class="text-[11px] text-emerald-200/70 font-medium">Online Saat Ini</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="w-full text-center text-xs text-slate-400 py-6 mt-6 relative z-10">
-    <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
-  </footer>
-
-  <!-- JAVASCRIPT ENGINE -->
-  <script>
-    /* =====================================================================
-     * 1. PROTEKSI BOT
-     * ===================================================================== */
-    (function initSecurityShield() {
-      const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
-      if (isBot) {
-        document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
-        throw new Error("Bot access rejected.");
-      }
-    })();
-
-    /* =====================================================================
-     * 2. VIDEO AUTOPLAY
-     * ===================================================================== */
-    const videoEl = document.getElementById('bg-video');
-    function startVideo() {
-      if (!videoEl) return;
-      videoEl.muted = true;
-      videoEl.defaultMuted = true;
-      const playPromise = videoEl.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          const triggerPlay = () => {
-            videoEl.play();
-            window.removeEventListener('click', triggerPlay);
-            window.removeEventListener('touchstart', triggerPlay);
-          };
-          window.addEventListener('click', triggerPlay, { once: true });
-          window.addEventListener('touchstart', triggerPlay, { once: true });
-        });
-      }
-    }
-    startVideo();
-
-    /* =====================================================================
-     * 3. DATA & SESI PERSISTEN
-     * ===================================================================== */
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-
-    let RUNTIME_SID = sessionStorage.getItem('portal_sid');
-    let isNewSession = "0";
-
-    if (!RUNTIME_SID) {
-      RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
-      sessionStorage.setItem('portal_sid', RUNTIME_SID);
-      isNewSession = "1";
-    }
-
-    function getDeviceSignature() {
-      const ua = navigator.userAgent;
-      if (/android/i.test(ua)) return 'Android Device';
-      if (/iPad|iPhone|iPod/.test(ua)) return 'iOS Device';
-      if (/Windows/i.test(ua)) return 'Windows PC';
-      if (/Macintosh/i.test(ua)) return 'Mac OS';
-      if (/Linux/i.test(ua)) return 'Linux PC';
-      return 'Mobile / Other';
-    }
-    const DEVICE_INFO = getDeviceSignature();
-
-    let allApps = [
-      { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
-      { title: "ATISISBADA", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Aplikasi Teknologi Informasi Siklus Barang Daerah", badge: "Daily" },
-      { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
-      { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" },
-      { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
-      { title: "RKBMD - RKPBMD Permendagri Thn. 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "SI-PEKA BMD", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Rencana Aset Terpadu dan Akuntabel", badge: "Portal" },
-      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Sistem Informasi Manajemen Pengelolaan Barang Persediaan", badge: "Portal" }
-    ];
-    let activeCategory = 'ALL';
-
-    function safeRenderIcons() {
-      try {
-        if (window.lucide && typeof window.lucide.createIcons === 'function') {
-          window.lucide.createIcons();
-        }
-      } catch (e) {}
-    }
-
-    /* =====================================================================
-     * 4. AMBIENT CANVAS
-     * ===================================================================== */
-    const canvas = document.getElementById('ambient-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function setupCanvasSize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', setupCanvasSize);
-    setupCanvasSize();
-
-    class AmbientDot {
-      constructor() { this.init(); }
-      init() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2.2 + 0.6;
-        this.vx = (Math.random() - 0.5) * 0.35;
-        this.vy = (Math.random() - 0.5) * 0.35;
-        this.alpha = Math.random() * 0.5 + 0.15;
-        this.color = Math.random() > 0.5 ? '56, 189, 248' : '52, 211, 153';
-      }
-      step() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.init();
-      }
-      render() {
-        ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < 35; i++) particles.push(new AmbientDot());
-
-    function loopCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.step(); p.render(); });
-      requestAnimationFrame(loopCanvas);
-    }
-    loopCanvas();
-
-    /* =====================================================================
-     * 5. CLOCK & APP CARDS RENDERING
-     * ===================================================================== */
-    function runLiveClock() {
-      const clockEl = document.getElementById('live-clock');
-      function update() {
-        const now = new Date();
-        clockEl.textContent = now.toLocaleDateString('id-ID', {
-          weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', second: '2-digit'
-        });
-      }
-      setInterval(update, 1000);
-      update();
-    }
-    runLiveClock();
-
-    function renderCategoryTabs() {
-      const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
-      const container = document.getElementById('categoryTabs');
-      container.innerHTML = categories.map(cat => `
-        <button onclick="changeCategory('${cat}')" 
-          class="px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all duration-200 ${
-            cat === activeCategory 
-              ? 'bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.45)] border-t border-white/40 scale-100' 
-              : 'bg-slate-900/60 backdrop-blur-xl text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/40 active:scale-95'
-          }">
-          ${cat === 'ALL' ? 'Semua Kategori' : cat}
-        </button>
-      `).join('');
-    }
-
-    function changeCategory(cat) {
-      activeCategory = cat;
-      renderCategoryTabs();
-      renderAppCards();
-    }
-
-    function trackClick(appName) {
-      // Beacon via Image tag: 100% immune dari batasan CORS dan non-blocking
-      const beacon = new Image();
-      beacon.src = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
-      return true;
-    }
-
-    function renderAppCards() {
-      const searchKey = (document.getElementById('searchInput').value || '').toLowerCase();
-      const grid = document.getElementById('appGrid');
-      const filtered = allApps.filter(item => {
-        const matchCat = activeCategory === 'ALL' || (item.category && item.category.toUpperCase() === activeCategory.toUpperCase());
-        const matchKey = (item.title || '').toLowerCase().includes(searchKey) || (item.desc || '').toLowerCase().includes(searchKey);
-        return matchCat && matchKey;
-      });
-
-      document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-300 aero-card rounded-3xl">
-            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-40 text-cyan-400"></i>
-            <p class="text-sm font-semibold">Tidak ada layanan atau aplikasi yang sesuai.</p>
-          </div>`;
-        safeRenderIcons();
-        return;
+    if (action === "init") {
+      updateUserPresence(sid);
+      if (isNewSession) {
+        logActivitySafe(ss, "Kunjungan Baru", "Portal Utama", sid, userAgent);
       }
 
-      grid.innerHTML = filtered.map(app => `
-        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
-           onclick="trackClick('${app.title}')"
-           class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
-          
-          <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent pointer-events-none"></div>
+      var settings = getSettingsSafe(ss);
+      var apps = getAppsSafe(ss);
+      var analytics = getAnalyticsSafe(ss, settings);
 
-          <div class="flex items-start justify-between gap-3 mb-3">
-            <div class="flex items-center gap-3">
-              <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
-                <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">${app.title}</h3>
-                <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">${app.category || 'Layanan'}</span>
-              </div>
-            </div>
-            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">${app.badge}</span>` : ''}
-          </div>
-          <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">${app.desc || ''}</p>
-          <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
-            <span>Akses Aplikasi</span>
-            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
-          </div>
-        </a>
-      `).join('');
-      safeRenderIcons();
+      return sendResponse({
+        status: "success",
+        settings: settings,
+        apps: apps,
+        analytics: analytics
+      }, callback);
     }
 
-    /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN & ANALITIK
-     * ===================================================================== */
-    function applySpreadsheetSettings(settings) {
-      if (!settings) return;
+    if (action === "heartbeat") {
+      updateUserPresence(sid);
+      var settingsHb = getSettingsSafe(ss);
+      var analyticsHb = getAnalyticsSafe(ss, settingsHb);
 
-      if (settings.title) {
-        const titleEl = document.getElementById('app-title');
-        const pageTitleEl = document.getElementById('page-title');
-        if (titleEl) titleEl.textContent = settings.title;
-        if (pageTitleEl) pageTitleEl.textContent = settings.title;
-      }
-
-      if (settings.subtitle) {
-        const sub1El = document.getElementById('app-subtitle');
-        if (sub1El) sub1El.textContent = settings.subtitle;
-      }
-
-      const sub2Val = settings.subtitle2 || settings.subtitle_2 || settings.tagline;
-      if (sub2Val) {
-        const sub2El = document.getElementById('app-subtitle2');
-        if (sub2El) sub2El.textContent = sub2Val;
-      }
-
-      if (settings.logo_url) {
-        const logoEl = document.getElementById('app-logo');
-        if (logoEl) logoEl.src = settings.logo_url;
-      }
-
-      if (settings.wa_group_url) {
-        const waLinkEl = document.getElementById('waGroupLink');
-        if (waLinkEl) waLinkEl.href = settings.wa_group_url;
-      }
-      if (settings.wa_group_text) {
-        const waTextEl = document.getElementById('waGroupTitle');
-        if (waTextEl) waTextEl.textContent = settings.wa_group_text;
-      }
-
-      if (settings.footer) {
-        const footerEl = document.getElementById('footer-text');
-        if (footerEl) footerEl.textContent = settings.footer;
-      }
-
-      const bgVal = (settings.bg_body || settings.bg_video || "").trim();
-      const overlayEl = document.getElementById('bg-overlay');
-
-      if (bgVal) {
-        if (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4")) {
-          videoEl.style.display = "block";
-          overlayEl.style.display = "block";
-          if (videoEl.src !== bgVal) {
-            videoEl.src = bgVal;
-            videoEl.load();
-            startVideo();
-          }
-        } else if (bgVal.startsWith("http")) {
-          videoEl.style.display = "none";
-          overlayEl.style.display = "none";
-          document.body.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('${bgVal}')`;
-          document.body.style.backgroundSize = "cover";
-          document.body.style.backgroundPosition = "center";
-        } else {
-          videoEl.style.display = "none";
-          overlayEl.style.display = "none";
-          document.body.style.background = bgVal;
-        }
-      }
-
-      if (settings.bg_header) {
-        document.getElementById('main-header').style.background = settings.bg_header;
-      }
+      return sendResponse({
+        status: "success",
+        analytics: analyticsHb
+      }, callback);
     }
 
-    function syncAnalyticsUI(analytics) {
-      if (!analytics) return;
-      if (analytics.total !== undefined) {
-        document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
-      }
-      if (analytics.online !== undefined) {
-        document.getElementById('stat-online').textContent = Number(analytics.online).toLocaleString('id-ID');
-      }
+    if (action === "click_track") {
+      logActivitySafe(ss, "Klik Layanan", appName || "Layanan", sid, userAgent);
+      return sendResponse({ status: "success", message: "Click logged" }, callback);
     }
 
-    /* =====================================================================
-     * 7. PROTOKOL JSONP: BEBAS CORS 100% UNTUK GITHUB PAGES
-     * ===================================================================== */
-    function requestJSONP(url, timeoutMs = 15000) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'gas_callback_' + Math.random().toString(36).substring(2, 9);
-        const script = document.createElement('script');
-        let timer = null;
+    return sendResponse({ status: "error", message: "Aksi tidak valid: " + action }, callback);
 
-        window[callbackName] = function(data) {
-          cleanup();
-          resolve(data);
-        };
+  } catch (err) {
+    return sendResponse({
+      status: "error",
+      message: err.toString()
+    }, callback);
+  }
+}
 
-        function cleanup() {
-          if (timer) clearTimeout(timer);
-          delete window[callbackName];
-          if (script.parentNode) script.parentNode.removeChild(script);
-        }
+function sendResponse(data, callback) {
+  var json = JSON.stringify(data);
+  if (callback && callback.trim() !== "") {
+    return ContentService.createTextOutput(callback + "(" + json + ");")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
-        timer = setTimeout(() => {
-          cleanup();
-          reject(new Error("Timeout: Google Apps Script tidak merespons dalam 15 detik."));
-        }, timeoutMs);
+function resolveSpreadsheet() {
+  if (SPREADSHEET_ID && SPREADSHEET_ID.trim() !== "") {
+    return SpreadsheetApp.openById(SPREADSHEET_ID.trim());
+  }
+  var active = SpreadsheetApp.getActiveSpreadsheet();
+  if (active) return active;
+  throw new Error("Spreadsheet tidak terhubung! Isi SPREADSHEET_ID di baris 11 Code.gs.");
+}
 
-        script.onerror = function() {
-          cleanup();
-          reject(new Error("Gagal memuat script. Pastikan Deployment disetel ke 'Anyone'."));
-        };
+function findSheetFuzzy(ss, keyword) {
+  var sheets = ss.getSheets();
+  var kw = keyword.toLowerCase().trim();
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getName().toLowerCase().trim() === kw) return sheets[i];
+  }
+  for (var j = 0; j < sheets.length; j++) {
+    if (sheets[j].getName().toLowerCase().indexOf(kw) !== -1) return sheets[j];
+  }
+  return null;
+}
 
-        const sep = url.includes('?') ? '&' : '?';
-        script.src = `${url}${sep}callback=${callbackName}&_t=${Date.now()}`;
-        document.head.appendChild(script);
+function updateUserPresence(sid) {
+  if (!sid) return;
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get(CACHE_KEY_SESSIONS);
+  var map = {};
+  if (raw) {
+    try { map = JSON.parse(raw); } catch (e) { map = {}; }
+  }
+  var now = new Date().getTime();
+  map[sid] = now;
+
+  var cleaned = {};
+  for (var k in map) {
+    if (now - map[k] < ONLINE_THRESHOLD_MS) cleaned[k] = map[k];
+  }
+  cache.put(CACHE_KEY_SESSIONS, JSON.stringify(cleaned), 300);
+}
+
+function countOnlineUsers() {
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get(CACHE_KEY_SESSIONS);
+  if (!raw) return 1;
+  try {
+    var map = JSON.parse(raw);
+    var now = new Date().getTime();
+    var count = 0;
+    for (var k in map) {
+      if (now - map[k] < ONLINE_THRESHOLD_MS) count++;
+    }
+    return Math.max(1, count);
+  } catch (e) {
+    return 1;
+  }
+}
+
+function getSettingsSafe(ss) {
+  var sheet = findSheetFuzzy(ss, "Pengaturan");
+  var settings = {};
+  if (!sheet) return settings;
+
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    var key = data[i][0] ? data[i][0].toString().trim() : "";
+    var val = data[i][1] !== undefined ? data[i][1].toString().trim() : "";
+    if (key) settings[key] = val;
+  }
+  return settings;
+}
+
+function getAppsSafe(ss) {
+  var sheet = findSheetFuzzy(ss, "Apps");
+  var apps = [];
+  if (!sheet) return apps;
+
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    var title = data[i][0] ? data[i][0].toString().trim() : "";
+    var category = data[i][1] ? data[i][1].toString().trim() : "Layanan";
+    var url = data[i][2] ? data[i][2].toString().trim() : "#";
+    var icon = data[i][3] ? data[i][3].toString().trim() : "external-link";
+    var desc = data[i][4] ? data[i][4].toString().trim() : "";
+    var badge = data[i][5] ? data[i][5].toString().trim() : "";
+    var active = data[i][6] !== undefined ? data[i][6].toString().trim().toUpperCase() : "TRUE";
+
+    if (title && (active === "TRUE" || active === "1")) {
+      apps.push({
+        title: title,
+        category: category,
+        url: url,
+        icon: icon,
+        desc: desc,
+        badge: badge
       });
     }
+  }
+  return apps;
+}
 
-    async function fetchPortalDatabase() {
-      const syncStatusEl = document.getElementById('sync-status');
-      try {
-        const queryUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${isNewSession}&ua=${encodeURIComponent(DEVICE_INFO)}`;
-        const data = await requestJSONP(queryUrl);
+function getAnalyticsSafe(ss, settings) {
+  var cache = CacheService.getScriptCache();
+  var online = countOnlineUsers();
 
-        if (data.status === "success") {
-          applySpreadsheetSettings(data.settings);
-          syncAnalyticsUI(data.analytics);
-          if (data.apps && data.apps.length > 0) {
-            allApps = data.apps;
-            renderCategoryTabs();
-            renderAppCards();
-          }
-          if (syncStatusEl) syncStatusEl.textContent = "Live Sync";
-          isNewSession = "0";
-        } else {
-          console.error("Kesalahan Backend:", data.message);
-          if (syncStatusEl) syncStatusEl.textContent = "Data Error";
-        }
-      } catch (err) {
-        console.error("Gagal sinkronisasi data:", err);
-        if (syncStatusEl) syncStatusEl.textContent = "Offline Mode";
+  var cachedTotal = cache.get(CACHE_KEY_SUMMARY);
+  if (cachedTotal !== null) {
+    return { total: parseInt(cachedTotal, 10), online: online };
+  }
+
+  var sheet = findSheetFuzzy(ss, "Analitik");
+  var counterAwal = settings.counter_awal ? parseInt(settings.counter_awal, 10) : 150;
+  var total = counterAwal;
+
+  if (!sheet) return { total: total, online: online };
+
+  var h2Val = sheet.getRange("H2").getValue();
+  if (h2Val !== "" && !isNaN(h2Val) && Number(h2Val) > 0) {
+    total = Number(h2Val);
+  } else {
+    var lastRowA = getNextEmptyRowInColumn(sheet, 1) - 1;
+    if (lastRowA >= 2) {
+      var actRange = sheet.getRange(2, 2, lastRowA - 1, 1).getValues();
+      var c = 0;
+      for (var i = 0; i < actRange.length; i++) {
+        if (actRange[i][0] === "Kunjungan Baru") c++;
       }
+      total = counterAwal + c;
+    }
+  }
+
+  cache.put(CACHE_KEY_SUMMARY, total.toString(), 60);
+  return { total: total, online: online };
+}
+
+function logActivitySafe(ss, aktivitas, target, sid, userAgent) {
+  var sheet = findSheetFuzzy(ss, "Analitik");
+  if (!sheet) return;
+
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return;
+
+  try {
+    var settings = getSettingsSafe(ss);
+    if (settings.analytics_logging && settings.analytics_logging.toUpperCase() === "FALSE") {
+      return;
     }
 
-    async function sendHeartbeat() {
-      if (document.hidden) return;
-      try {
-        const pingUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`;
-        const data = await requestJSONP(pingUrl);
-        if (data.status === "success" && data.analytics) {
-          syncAnalyticsUI(data.analytics);
-          const syncStatusEl = document.getElementById('sync-status');
-          if (syncStatusEl && syncStatusEl.textContent !== "Live Sync") {
-            syncStatusEl.textContent = "Live Sync";
-          }
-        }
-      } catch (e) {}
+    var nextRow = getNextEmptyRowInColumn(sheet, 1);
+    sheet.getRange(nextRow, 1, 1, 5).setValues([[
+      new Date(),
+      aktivitas,
+      target,
+      sid,
+      userAgent || "Unknown"
+    ]]);
+
+    if (aktivitas === "Kunjungan Baru") {
+      CacheService.getScriptCache().remove(CACHE_KEY_SUMMARY);
     }
+  } catch (e) {
+    console.error("Gagal log:", e);
+  } finally {
+    lock.releaseLock();
+  }
+}
 
-    setInterval(sendHeartbeat, 25000);
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) sendHeartbeat();
-    });
-
-    // Booting Awal
-    renderCategoryTabs();
-    renderAppCards();
-    document.getElementById('searchInput').addEventListener('input', renderAppCards);
-    safeRenderIcons();
-
-    // Jalankan Sinkronisasi Data Bebas Hambatan
-    fetchPortalDatabase();
-  </script>
-</body>
-</html>
+function getNextEmptyRowInColumn(sheet, colIndex) {
+  var maxRows = sheet.getMaxRows();
+  var values = sheet.getRange(1, colIndex, maxRows, 1).getValues();
+  for (var i = values.length - 1; i >= 0; i--) {
+    if (values[i][0] !== "" && values[i][0] !== null && values[i][0] !== undefined) {
+      return i + 2;
+    }
+  }
+  return 2;
+}
