@@ -218,9 +218,11 @@
           <i data-lucide="activity" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
           Live Real-Time Engine
         </h3>
-        <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Tersinkronisasi</span>
+        
+        <!-- Status Badge Adaptif -->
+        <div id="sync-badge-container" class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-colors duration-300">
+          <span id="sync-ping" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span id="sync-status">Menghubungkan...</span>
         </div>
       </div>
 
@@ -264,7 +266,7 @@
       const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
       if (isBot) {
         document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
-        throw new Error("Bot access rejected.");
+        throw new Error("Bot rejected.");
       }
 
       document.addEventListener('contextmenu', e => e.preventDefault());
@@ -307,11 +309,10 @@
     startVideo();
 
     /* =====================================================================
-     * 3. DATA & INITIAL STATE
+     * 3. DATA & STATE
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-    
-    // Manajemen identitas sesi unik per browser tab
+
     let RUNTIME_SID = sessionStorage.getItem('bpkad_session_sid');
     let IS_NEW_SESSION = "0";
     if (!RUNTIME_SID) {
@@ -426,12 +427,7 @@
     }
 
     function trackClick(appName) {
-      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(trackUrl);
-      } else {
-        fetch(trackUrl, { keepalive: true, mode: 'no-cors' }).catch(() => {});
-      }
+      executeBackendRequest('click_track', { app_name: appName }).catch(() => {});
       return true;
     }
 
@@ -542,25 +538,97 @@
       }
     }
 
+    /**
+     * Update Visual Badge Status Real-Time
+     */
+    function updateStatusIndicator(state) {
+      const container = document.getElementById('sync-badge-container');
+      const ping = document.getElementById('sync-ping');
+      const text = document.getElementById('sync-status');
+
+      if (state === 'online') {
+        container.className = "flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-colors duration-300";
+        ping.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping";
+        text.textContent = "Live Sync";
+      } else if (state === 'connecting') {
+        container.className = "flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-colors duration-300";
+        ping.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
+        text.textContent = "Menghubungkan...";
+      } else {
+        container.className = "flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(244,63,94,0.25)] transition-colors duration-300";
+        ping.className = "w-1.5 h-1.5 rounded-full bg-rose-400";
+        text.textContent = "Offline Mode";
+      }
+    }
+
     /* =====================================================================
-     * 7. NETWORK ENGINE (INSTANT CACHE-BUSTED SYNC)
+     * 7. NETWORK ENGINE (DUAL DRIVER: FETCH + JSONP AUTO FALLBACK)
      * ===================================================================== */
-    async function fetchPortalDatabase() {
-      const syncStatusEl = document.getElementById('sync-status');
+    
+    // JSONP Fallback Driver: Menembus CORS 100% jika browser memblokir fetch
+    function requestJSONP(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'gas_cb_' + Math.random().toString(36).substring(2, 9);
+        const script = document.createElement('script');
+        const timeoutTimer = setTimeout(() => {
+          cleanup();
+          reject(new Error("JSONP Request Timeout"));
+        }, 12000);
+
+        function cleanup() {
+          if (window[callbackName]) delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+          clearTimeout(timeoutTimer);
+        }
+
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("JSONP Script Load Error"));
+        };
+
+        document.head.appendChild(script);
+      });
+    }
+
+    // Eksekutor Jaringan Dual-Engine
+    async function executeBackendRequest(action, customParams = {}) {
+      const query = new URLSearchParams({
+        action: action,
+        sid: RUNTIME_SID,
+        is_new: IS_NEW_SESSION,
+        ua: navigator.userAgent,
+        _t: Date.now(),
+        ...customParams
+      }).toString();
+
+      const targetUrl = `${GAS_ENDPOINT}?${query}`;
+
+      // Uji coba 1: Fetch API standar
       try {
-        // Cache-buster timestamp (_t) ditambahkan agar respon Google Sheets selalu fresh
-        const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${IS_NEW_SESSION}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
-        const res = await fetch(fetchUrl, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-        
-        if (!res.ok) throw new Error("Gagal menghubungi server database");
-        
-        const data = await res.json();
-        if (data.status === "success") {
-          // Setelah kunjungan baru terkirim, matikan flag sesi baru
-          IS_NEW_SESSION = "0";
+        const res = await fetch(targetUrl, { method: 'GET', redirect: 'follow' });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.status === "success") return json;
+        }
+      } catch (fetchErr) {
+        // Fetch diblokir browser, lanjutkan ke fallback JSONP
+      }
+
+      // Uji coba 2: JSONP Fallback (Bypass CORS)
+      return await requestJSONP(targetUrl);
+    }
+
+    async function fetchPortalDatabase() {
+      try {
+        const data = await executeBackendRequest('init');
+        if (data && data.status === "success") {
+          IS_NEW_SESSION = "0"; // Sesi berhasil tercatat
 
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
@@ -570,43 +638,43 @@
             renderCategoryTabs();
             renderAppCards();
           }
-          syncStatusEl.textContent = "Tersinkronisasi";
+          updateStatusIndicator('online');
+        } else {
+          updateStatusIndicator('offline');
         }
       } catch (err) {
-        console.warn("Gagal sinkronisasi data portal:", err);
-        syncStatusEl.textContent = "Offline Mode";
+        console.error("Koneksi analitik terputus:", err);
+        updateStatusIndicator('offline');
       }
     }
 
-    // Heartbeat online status & pembaharuan data berkala setiap 15 detik
+    // Heartbeat berkala setiap 15 detik
     setInterval(async () => {
       try {
-        const hbUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
-        const res = await fetch(hbUrl, { method: 'GET', redirect: 'follow' });
-        const data = await res.json();
-        if (data.status === "success" && data.analytics) {
+        const data = await executeBackendRequest('heartbeat');
+        if (data && data.status === "success" && data.analytics) {
           syncAnalyticsUI(data.analytics);
-          document.getElementById('sync-status').textContent = "Tersinkronisasi";
+          updateStatusIndicator('online');
         }
       } catch (e) {
-        document.getElementById('sync-status').textContent = "Offline Mode";
+        updateStatusIndicator('offline');
       }
     }, 15000);
 
-    // Otomatis sinkron ulang ketika admin/user kembali membuka tab portal
+    // Auto reconnect saat tab browser aktif kembali
     window.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         fetchPortalDatabase();
       }
     });
 
-    // Inisialisasi Pertama
+    // Inisialisasi awal UI
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Jalankan Sinkronisasi Penuh ke Backend
+    // Mulai koneksi ke Google Sheets
     fetchPortalDatabase();
   </script>
 </body>
