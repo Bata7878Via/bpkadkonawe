@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="no-referrer" />
-  <title id="page-title">Office Suite BPKAD Kab. Konawe</title>
+  <title id="page-title">SI-MEPOKOASO BPKAD KONAWE</title>
 
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -74,7 +74,7 @@
       pointer-events: none;
     }
 
-    /* OVERLAY FRESH AERO TINT (LAYER 1 - Memberikan kedalaman warna cerah khas Vista Glass) */
+    /* OVERLAY FRESH AERO TINT (LAYER 1) */
     #bg-overlay {
       position: fixed;
       top: 0;
@@ -98,13 +98,13 @@
       pointer-events: none;
     }
 
-    /* EFEK WINDOWS VISTA AERO GLASS & KARTU TRANSPARAN */
+    /* EFEK WINDOWS VISTA AERO GLASS */
     .aero-card {
       background: linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(30, 58, 138, 0.25) 50%, rgba(15, 23, 42, 0.70) 100%);
       backdrop-filter: blur(20px) saturate(190%);
       -webkit-backdrop-filter: blur(20px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.16);
-      border-top: 1px solid rgba(255, 255, 255, 0.38); /* Specular Gloss Sheen */
+      border-top: 1px solid rgba(255, 255, 255, 0.38);
       box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3),
                   inset 0 -1px 2px rgba(0, 0, 0, 0.6),
                   0 14px 35px -6px rgba(0, 0, 0, 0.65),
@@ -137,7 +137,6 @@
 
     <!-- HEADER RESMI AERO GLASS -->
     <header id="main-header" class="aero-card flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl relative overflow-hidden">
-      <!-- Specular Highlight Line Atas Khas Vista -->
       <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent pointer-events-none"></div>
 
       <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
@@ -147,10 +146,13 @@
 
         <div class="flex-1 min-w-0">
           <h1 id="app-title" class="text-lg sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-tight drop-shadow-sm">
-            Office Suite BPKAD Kab. Konawe
+            SI-MEPOKOASO BPKAD KONAWE
           </h1>
-          <p id="app-subtitle" class="text-xs text-cyan-200/80 font-medium mt-1">
-            Badan Pengelola Keuangan dan Aset Daerah
+          <p id="app-subtitle" class="text-xs text-cyan-200/90 font-medium mt-1">
+            (Sistem Integrasi Manajemen Elektronik Pelayanan Organisasi Keuangan dan Aset Secara Optimal)
+          </p>
+          <p id="app-subtitle2" class="text-[11px] text-cyan-300/70 font-normal mt-0.5">
+            Portal Layanan Terpadu BPKAD Kab. Konawe
           </p>
           <div class="inline-flex items-center gap-2 mt-2 px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/10 backdrop-blur-md">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
@@ -185,11 +187,10 @@
     <!-- GRID MENU APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
 
-    <!-- GRUP DISKUSI WHATSAPP (AERO GLASS TRANSLUCENT) -->
+    <!-- GRUP DISKUSI WHATSAPP -->
     <section id="waSection">
       <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
          class="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/35 hover:border-emerald-400/70 transition-all duration-300 shadow-aero-glass active:scale-[0.99] backdrop-blur-2xl overflow-hidden">
-        <!-- Top spec glow -->
         <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none"></div>
 
         <div class="flex items-center gap-3.5">
@@ -208,7 +209,7 @@
       </a>
     </section>
 
-    <!-- LIVE ANALITIK PORTAL REAL-TIME (AERO GLASS ENGINE) -->
+    <!-- LIVE ANALITIK PORTAL REAL-TIME -->
     <section class="p-5 rounded-3xl aero-card relative overflow-hidden">
       <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none"></div>
 
@@ -219,7 +220,7 @@
         </h3>
         <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Live Sync</span>
+          <span id="sync-status">Tersinkronisasi</span>
         </div>
       </div>
 
@@ -281,7 +282,7 @@
     })();
 
     /* =====================================================================
-     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY ON INTERACTION)
+     * 2. VIDEO AUTOPLAY HANDLER
      * ===================================================================== */
     const videoEl = document.getElementById('bg-video');
     function startVideo() {
@@ -291,7 +292,6 @@
       const playPromise = videoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Jika browser menahan autoplay, putar seketika user berinteraksi
           const triggerPlay = () => {
             videoEl.play();
             window.removeEventListener('click', triggerPlay);
@@ -310,17 +310,25 @@
      * 3. DATA & INITIAL STATE
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
-    const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+    
+    // Manajemen identitas sesi unik per browser tab
+    let RUNTIME_SID = sessionStorage.getItem('bpkad_session_sid');
+    let IS_NEW_SESSION = "0";
+    if (!RUNTIME_SID) {
+      RUNTIME_SID = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+      sessionStorage.setItem('bpkad_session_sid', RUNTIME_SID);
+      IS_NEW_SESSION = "1";
+    }
 
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
-      { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
+      { title: "ATISISBADA", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Aplikasi Teknologi Informasi Siklus Barang Daerah", badge: "Daily" },
       { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
       { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" },
       { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
-      { title: "RKBMD - RKPBMD PERMENDAGRI THN 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" }
+      { title: "RKBMD - RKPBMD Permendagri Thn. 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
+      { title: "SI-PEKA BMD", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Rencana Aset Terpadu dan Akuntabel", badge: "Portal" },
+      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Sistem Informasi Manajemen Pengelolaan Barang Persediaan", badge: "Portal" }
     ];
     let activeCategory = 'ALL';
 
@@ -333,7 +341,7 @@
     }
 
     /* =====================================================================
-     * 4. AMBIENT PARTICLE ANIMATION (AERO CYAN & EMERALD PARTICLES)
+     * 4. AMBIENT PARTICLE ANIMATION
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -355,7 +363,6 @@
         this.vx = (Math.random() - 0.5) * 0.35;
         this.vy = (Math.random() - 0.5) * 0.35;
         this.alpha = Math.random() * 0.5 + 0.15;
-        // Warna partikel cyan / emerald khas nuansa Vista
         this.color = Math.random() > 0.5 ? '56, 189, 248' : '52, 211, 153';
       }
       step() {
@@ -419,7 +426,7 @@
     }
 
     function trackClick(appName) {
-      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}`;
+      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
       if (navigator.sendBeacon) {
         navigator.sendBeacon(trackUrl);
       } else {
@@ -449,13 +456,11 @@
         return;
       }
 
-      // Format kartu persis transparansi WhatsApp dengan aksen Glossy Windows Vista Aero
       grid.innerHTML = filtered.map(app => `
         <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
            onclick="trackClick('${app.title}')"
            class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
           
-          <!-- Top Specular Highlight Khas Aero -->
           <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent pointer-events-none"></div>
 
           <div class="flex items-start justify-between gap-3 mb-3">
@@ -481,7 +486,7 @@
     }
 
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN SPREADSHEET (FLEKSIBEL)
+     * 6. SINKRONISASI PENGATURAN DATABASE SPREADSHEET
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
@@ -491,6 +496,7 @@
         document.getElementById('page-title').textContent = settings.title;
       }
       if (settings.subtitle) document.getElementById('app-subtitle').textContent = settings.subtitle;
+      if (settings.subtitle2) document.getElementById('app-subtitle2').textContent = settings.subtitle2;
       if (settings.logo_url) document.getElementById('app-logo').src = settings.logo_url;
       if (settings.wa_group_url) document.getElementById('waGroupLink').href = settings.wa_group_url;
       if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
@@ -537,43 +543,62 @@
     }
 
     /* =====================================================================
-     * 7. KOMUNIKASI NETWORK (BACKGROUND SYNC)
+     * 7. NETWORK ENGINE (INSTANT CACHE-BUSTED SYNC)
      * ===================================================================== */
     async function fetchPortalDatabase() {
+      const syncStatusEl = document.getElementById('sync-status');
       try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}`, {
+        // Cache-buster timestamp (_t) ditambahkan agar respon Google Sheets selalu fresh
+        const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${IS_NEW_SESSION}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
+        const res = await fetch(fetchUrl, {
           method: 'GET',
           redirect: 'follow'
         });
+        
+        if (!res.ok) throw new Error("Gagal menghubungi server database");
+        
         const data = await res.json();
         if (data.status === "success") {
+          // Setelah kunjungan baru terkirim, matikan flag sesi baru
+          IS_NEW_SESSION = "0";
+
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
-          if (data.apps && data.apps.length > 0) {
+
+          if (data.apps && Array.isArray(data.apps) && data.apps.length > 0) {
             allApps = data.apps;
             renderCategoryTabs();
             renderAppCards();
           }
-          document.getElementById('sync-status').textContent = "Live Sync";
+          syncStatusEl.textContent = "Tersinkronisasi";
         }
       } catch (err) {
-        document.getElementById('sync-status').textContent = "Live Sync";
+        console.warn("Gagal sinkronisasi data portal:", err);
+        syncStatusEl.textContent = "Offline Mode";
       }
     }
 
+    // Heartbeat online status & pembaharuan data berkala setiap 15 detik
     setInterval(async () => {
       try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`, {
-          method: 'GET',
-          redirect: 'follow'
-        });
+        const hbUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
+        const res = await fetch(hbUrl, { method: 'GET', redirect: 'follow' });
         const data = await res.json();
         if (data.status === "success" && data.analytics) {
           syncAnalyticsUI(data.analytics);
-          document.getElementById('sync-status').textContent = "Live Sync";
+          document.getElementById('sync-status').textContent = "Tersinkronisasi";
         }
-      } catch (e) {}
-    }, 20000);
+      } catch (e) {
+        document.getElementById('sync-status').textContent = "Offline Mode";
+      }
+    }, 15000);
+
+    // Otomatis sinkron ulang ketika admin/user kembali membuka tab portal
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        fetchPortalDatabase();
+      }
+    });
 
     // Inisialisasi Pertama
     renderCategoryTabs();
@@ -581,7 +606,7 @@
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Background Sync
+    // Jalankan Sinkronisasi Penuh ke Backend
     fetchPortalDatabase();
   </script>
 </body>
