@@ -151,7 +151,7 @@
           <p id="app-subtitle" class="text-xs text-cyan-200/90 font-medium mt-1">
             (Sistem Integrasi Manajemen Elektronik Pelayanan Organisasi Keuangan dan Aset Secara Optimal)
           </p>
-          <p id="app-subtitle2" class="text-[11px] text-white-300/70 font-medium mt-0.5">
+          <p id="app-subtitle2" class="text-[11px] text-cyan-300/70 font-normal mt-0.5">
             Portal Layanan Terpadu BPKAD Kab. Konawe
           </p>
           <div class="inline-flex items-center gap-2 mt-2 px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/10 backdrop-blur-md">
@@ -219,10 +219,9 @@
           Live Real-Time Engine
         </h3>
         
-        <!-- Status Badge Adaptif -->
         <div id="sync-badge-container" class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-colors duration-300">
           <span id="sync-ping" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Menghubungkan...</span>
+          <span id="sync-status">Live Sync</span>
         </div>
       </div>
 
@@ -309,16 +308,17 @@
     startVideo();
 
     /* =====================================================================
-     * 3. DATA & STATE
+     * 3. DATA & INITIAL STATE
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
+    // Generator SID unik dan status kunjungan baru
     let RUNTIME_SID = sessionStorage.getItem('bpkad_session_sid');
     let IS_NEW_SESSION = "0";
     if (!RUNTIME_SID) {
       RUNTIME_SID = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
       sessionStorage.setItem('bpkad_session_sid', RUNTIME_SID);
-      IS_NEW_SESSION = "1";
+      IS_NEW_SESSION = "1"; // Sesi kunjungan baru terdeteksi
     }
 
     let allApps = [
@@ -329,7 +329,7 @@
       { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
       { title: "RKBMD - RKPBMD Permendagri Thn. 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
       { title: "SI-PEKA BMD", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Rencana Aset Terpadu dan Akuntabel", badge: "Portal" },
-      { title: "Sikap Sedia", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Sistem Informasi Manajemen Pengelolaan Barang Persediaan", badge: "Portal" }
+      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Sistem Informasi Manajemen Pengelolaan Barang Persediaan", badge: "Portal" }
     ];
     let activeCategory = 'ALL';
 
@@ -342,7 +342,7 @@
     }
 
     /* =====================================================================
-     * 4. AMBIENT PARTICLE ANIMATION
+     * 4. AMBIENT CANVAS ANIMATION
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -426,8 +426,18 @@
       renderAppCards();
     }
 
+    /**
+     * Pelacakan Klik Aplikasi Anti-Hilang via Beacon & Background Fetch
+     */
     function trackClick(appName) {
-      executeBackendRequest('click_track', { app_name: appName }).catch(() => {});
+      const clickUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
+      
+      // Prioritaskan sendBeacon agar request tidak dipotong saat user pindah tab
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(clickUrl);
+      } else {
+        fetch(clickUrl, { method: 'GET', mode: 'no-cors', keepalive: true }).catch(() => {});
+      }
       return true;
     }
 
@@ -482,7 +492,7 @@
     }
 
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN DATABASE SPREADSHEET
+     * 6. SINKRONISASI PENGATURAN SPREADSHEET
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
@@ -538,9 +548,6 @@
       }
     }
 
-    /**
-     * Update Visual Badge Status Real-Time
-     */
     function updateStatusIndicator(state) {
       const container = document.getElementById('sync-badge-container');
       const ping = document.getElementById('sync-ping');
@@ -550,10 +557,6 @@
         container.className = "flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-colors duration-300";
         ping.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping";
         text.textContent = "Live Sync";
-      } else if (state === 'connecting') {
-        container.className = "flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-colors duration-300";
-        ping.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
-        text.textContent = "Menghubungkan...";
       } else {
         container.className = "flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-rose-500/15 text-rose-300 border border-rose-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(244,63,94,0.25)] transition-colors duration-300";
         ping.className = "w-1.5 h-1.5 rounded-full bg-rose-400";
@@ -562,23 +565,21 @@
     }
 
     /* =====================================================================
-     * 7. NETWORK ENGINE (DUAL DRIVER: FETCH + JSONP AUTO FALLBACK)
+     * 7. NETWORK ENGINE (DUAL DRIVER: FETCH + JSONP FALLBACK)
      * ===================================================================== */
-    
-    // JSONP Fallback Driver: Menembus CORS 100% jika browser memblokir fetch
     function requestJSONP(url) {
       return new Promise((resolve, reject) => {
         const callbackName = 'gas_cb_' + Math.random().toString(36).substring(2, 9);
         const script = document.createElement('script');
-        const timeoutTimer = setTimeout(() => {
+        const timeout = setTimeout(() => {
           cleanup();
-          reject(new Error("JSONP Request Timeout"));
-        }, 12000);
+          reject(new Error("JSONP Timeout"));
+        }, 10000);
 
         function cleanup() {
           if (window[callbackName]) delete window[callbackName];
           if (script.parentNode) script.parentNode.removeChild(script);
-          clearTimeout(timeoutTimer);
+          clearTimeout(timeout);
         }
 
         window[callbackName] = function(data) {
@@ -589,14 +590,12 @@
         script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
         script.onerror = function() {
           cleanup();
-          reject(new Error("JSONP Script Load Error"));
+          reject(new Error("JSONP Error"));
         };
-
         document.head.appendChild(script);
       });
     }
 
-    // Eksekutor Jaringan Dual-Engine
     async function executeBackendRequest(action, customParams = {}) {
       const query = new URLSearchParams({
         action: action,
@@ -609,18 +608,14 @@
 
       const targetUrl = `${GAS_ENDPOINT}?${query}`;
 
-      // Uji coba 1: Fetch API standar
       try {
         const res = await fetch(targetUrl, { method: 'GET', redirect: 'follow' });
         if (res.ok) {
           const json = await res.json();
           if (json.status === "success") return json;
         }
-      } catch (fetchErr) {
-        // Fetch diblokir browser, lanjutkan ke fallback JSONP
-      }
+      } catch (e) {}
 
-      // Uji coba 2: JSONP Fallback (Bypass CORS)
       return await requestJSONP(targetUrl);
     }
 
@@ -628,7 +623,7 @@
       try {
         const data = await executeBackendRequest('init');
         if (data && data.status === "success") {
-          IS_NEW_SESSION = "0"; // Sesi berhasil tercatat
+          IS_NEW_SESSION = "0"; // Matikan flag setelah kunjungan berhasil dicatat ke Sheets
 
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
@@ -643,12 +638,10 @@
           updateStatusIndicator('offline');
         }
       } catch (err) {
-        console.error("Koneksi analitik terputus:", err);
         updateStatusIndicator('offline');
       }
     }
 
-    // Heartbeat berkala setiap 15 detik
     setInterval(async () => {
       try {
         const data = await executeBackendRequest('heartbeat');
@@ -661,20 +654,15 @@
       }
     }, 15000);
 
-    // Auto reconnect saat tab browser aktif kembali
     window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        fetchPortalDatabase();
-      }
+      if (document.visibilityState === 'visible') fetchPortalDatabase();
     });
 
-    // Inisialisasi awal UI
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Mulai koneksi ke Google Sheets
     fetchPortalDatabase();
   </script>
 </body>
