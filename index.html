@@ -74,7 +74,7 @@
       pointer-events: none;
     }
 
-    /* OVERLAY FRESH AERO TINT (LAYER 1 - Memberikan kedalaman warna cerah khas Vista Glass) */
+    /* OVERLAY FRESH AERO TINT (LAYER 1) */
     #bg-overlay {
       position: fixed;
       top: 0;
@@ -104,7 +104,7 @@
       backdrop-filter: blur(20px) saturate(190%);
       -webkit-backdrop-filter: blur(20px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.16);
-      border-top: 1px solid rgba(255, 255, 255, 0.38); /* Specular Gloss Sheen */
+      border-top: 1px solid rgba(255, 255, 255, 0.38);
       box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3),
                   inset 0 -1px 2px rgba(0, 0, 0, 0.6),
                   0 14px 35px -6px rgba(0, 0, 0, 0.65),
@@ -137,7 +137,6 @@
 
     <!-- HEADER RESMI AERO GLASS -->
     <header id="main-header" class="aero-card flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl relative overflow-hidden">
-      <!-- Specular Highlight Line Atas Khas Vista -->
       <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent pointer-events-none"></div>
 
       <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
@@ -149,9 +148,12 @@
           <h1 id="app-title" class="text-lg sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-tight drop-shadow-sm">
             SI-MEPOKOASO BPKAD KONAWE
           </h1>
+          <!-- Subtitle 1 (Kepanjangan Akronim) -->
           <p id="app-subtitle" class="text-xs text-cyan-200/80 font-medium mt-1">
             (Sistem Integrasi Manajemen Elektronik Pelayanan Organisasi Keuangan dan Aset Secara Optimal)
-          <p id="app-subtitle" class="text-xs text-White-200/80 font-extrabold mt-2">
+          </p>
+          <!-- Subtitle 2 (Portal Layanan Terpadu) -->
+          <p id="app-subtitle2" class="text-xs text-white font-extrabold mt-1 tracking-wide">
             Portal Layanan Terpadu BPKAD Kab. Konawe
           </p>
           <div class="inline-flex items-center gap-2 mt-2 px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/10 backdrop-blur-md">
@@ -191,7 +193,6 @@
     <section id="waSection">
       <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
          class="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/35 hover:border-emerald-400/70 transition-all duration-300 shadow-aero-glass active:scale-[0.99] backdrop-blur-2xl overflow-hidden">
-        <!-- Top spec glow -->
         <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none"></div>
 
         <div class="flex items-center gap-3.5">
@@ -221,7 +222,7 @@
         </h3>
         <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Live Sync</span>
+          <span id="sync-status">Memuat Data...</span>
         </div>
       </div>
 
@@ -231,7 +232,7 @@
             <i data-lucide="eye" class="w-5 h-5"></i>
           </div>
           <div>
-            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight drop-shadow-sm">150</div>
+            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight drop-shadow-sm">--</div>
             <p class="text-[11px] text-cyan-200/70 font-medium">Total Kunjungan</p>
           </div>
         </div>
@@ -242,7 +243,7 @@
             <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
           <div>
-            <div id="stat-online" class="text-xl sm:text-2xl font-extrabold text-emerald-400 tracking-tight drop-shadow-sm">1</div>
+            <div id="stat-online" class="text-xl sm:text-2xl font-extrabold text-emerald-400 tracking-tight drop-shadow-sm">--</div>
             <p class="text-[11px] text-emerald-200/70 font-medium">Online Saat Ini</p>
           </div>
         </div>
@@ -283,7 +284,7 @@
     })();
 
     /* =====================================================================
-     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY ON INTERACTION)
+     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY)
      * ===================================================================== */
     const videoEl = document.getElementById('bg-video');
     function startVideo() {
@@ -293,7 +294,6 @@
       const playPromise = videoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Jika browser menahan autoplay, putar seketika user berinteraksi
           const triggerPlay = () => {
             videoEl.play();
             window.removeEventListener('click', triggerPlay);
@@ -316,13 +316,13 @@
 
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
-      { title: "Atisisbada", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Pengelolaan Barang Milik Daerah", badge: "Daily" },
+      { title: "ATISISBADA", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Aplikasi Teknologi Informasi Siklus Barang Daerah", badge: "Daily" },
       { title: "Srikandi", category: "Persuratan", url: "https://srikandi.arsip.go.id", icon: "mail", desc: "Tata Kelola Surat Dinas Digital", badge: "Kantor" },
       { title: "Portal Konawe", category: "Pemda", url: "https://konawekab.go.id", icon: "globe", desc: "Website Resmi Pemkab Konawe", badge: "Portal" },
       { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
-      { title: "RKBMD - RKPBMD PERMENDAGRI THN 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
-      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" }
+      { title: "RKBMD - RKPBMD Permendagri Thn. 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
+      { title: "SI-PEKA BMD", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Rencana Aset Terpadu dan Akuntabel", badge: "Portal" },
+      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Sistem Informasi Manajemen Pengelolaan Barang Persediaan", badge: "Portal" }
     ];
     let activeCategory = 'ALL';
 
@@ -335,7 +335,7 @@
     }
 
     /* =====================================================================
-     * 4. AMBIENT PARTICLE ANIMATION (AERO CYAN & EMERALD PARTICLES)
+     * 4. AMBIENT PARTICLE ANIMATION
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -357,7 +357,6 @@
         this.vx = (Math.random() - 0.5) * 0.35;
         this.vy = (Math.random() - 0.5) * 0.35;
         this.alpha = Math.random() * 0.5 + 0.15;
-        // Warna partikel cyan / emerald khas nuansa Vista
         this.color = Math.random() > 0.5 ? '56, 189, 248' : '52, 211, 153';
       }
       step() {
@@ -421,11 +420,12 @@
     }
 
     function trackClick(appName) {
-      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}`;
+      // Menambahkan timestamp anti-cache pada track click
+      const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&_t=${Date.now()}`;
       if (navigator.sendBeacon) {
         navigator.sendBeacon(trackUrl);
       } else {
-        fetch(trackUrl, { keepalive: true, mode: 'no-cors' }).catch(() => {});
+        fetch(trackUrl, { keepalive: true, mode: 'no-cors', cache: 'no-store' }).catch(() => {});
       }
       return true;
     }
@@ -451,13 +451,11 @@
         return;
       }
 
-      // Format kartu persis transparansi WhatsApp dengan aksen Glossy Windows Vista Aero
       grid.innerHTML = filtered.map(app => `
         <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
            onclick="trackClick('${app.title}')"
            class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
           
-          <!-- Top Specular Highlight Khas Aero -->
           <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent pointer-events-none"></div>
 
           <div class="flex items-start justify-between gap-3 mb-3">
@@ -483,20 +481,47 @@
     }
 
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN SPREADSHEET (FLEKSIBEL)
+     * 6. SINKRONISASI PENGATURAN SPREADSHEET
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
 
       if (settings.title) {
-        document.getElementById('app-title').textContent = settings.title;
-        document.getElementById('page-title').textContent = settings.title;
+        const titleEl = document.getElementById('app-title');
+        const pageTitleEl = document.getElementById('page-title');
+        if (titleEl) titleEl.textContent = settings.title;
+        if (pageTitleEl) pageTitleEl.textContent = settings.title;
       }
-      if (settings.subtitle) document.getElementById('app-subtitle').textContent = settings.subtitle;
-      if (settings.logo_url) document.getElementById('app-logo').src = settings.logo_url;
-      if (settings.wa_group_url) document.getElementById('waGroupLink').href = settings.wa_group_url;
-      if (settings.wa_group_text) document.getElementById('waGroupTitle').textContent = settings.wa_group_text;
-      if (settings.footer) document.getElementById('footer-text').textContent = settings.footer;
+
+      if (settings.subtitle) {
+        const sub1El = document.getElementById('app-subtitle');
+        if (sub1El) sub1El.textContent = settings.subtitle;
+      }
+
+      const sub2Val = settings.subtitle2 || settings.subtitle_2 || settings.tagline;
+      if (sub2Val) {
+        const sub2El = document.getElementById('app-subtitle2');
+        if (sub2El) sub2El.textContent = sub2Val;
+      }
+
+      if (settings.logo_url) {
+        const logoEl = document.getElementById('app-logo');
+        if (logoEl) logoEl.src = settings.logo_url;
+      }
+
+      if (settings.wa_group_url) {
+        const waLinkEl = document.getElementById('waGroupLink');
+        if (waLinkEl) waLinkEl.href = settings.wa_group_url;
+      }
+      if (settings.wa_group_text) {
+        const waTextEl = document.getElementById('waGroupTitle');
+        if (waTextEl) waTextEl.textContent = settings.wa_group_text;
+      }
+
+      if (settings.footer) {
+        const footerEl = document.getElementById('footer-text');
+        if (footerEl) footerEl.textContent = settings.footer;
+      }
 
       const bgVal = (settings.bg_body || settings.bg_video || "").trim();
       const overlayEl = document.getElementById('bg-overlay');
@@ -539,15 +564,24 @@
     }
 
     /* =====================================================================
-     * 7. KOMUNIKASI NETWORK (BACKGROUND SYNC)
+     * 7. KOMUNIKASI NETWORK (ANTI-CACHE & STATUS REAL-TIME)
      * ===================================================================== */
     async function fetchPortalDatabase() {
+      const syncStatusEl = document.getElementById('sync-status');
       try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}`, {
+        // Cache-buster: _t=Date.now() dan cache: 'no-store' agar selalu meminta data terbaru
+        const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&_t=${Date.now()}`;
+        const res = await fetch(fetchUrl, {
           method: 'GET',
+          cache: 'no-store',
           redirect: 'follow'
         });
+        
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        
         const data = await res.json();
+        console.log("✅ Data diterima dari Google Sheets:", data);
+        
         if (data.status === "success") {
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
@@ -556,34 +590,40 @@
             renderCategoryTabs();
             renderAppCards();
           }
-          document.getElementById('sync-status').textContent = "Live Sync";
+          if (syncStatusEl) syncStatusEl.textContent = "Live Sync";
+        } else {
+          console.warn("Respon GAS gagal:", data.message);
+          if (syncStatusEl) syncStatusEl.textContent = "Data Error";
         }
       } catch (err) {
-        document.getElementById('sync-status').textContent = "Live Sync";
+        console.error("Gagal sinkronisasi data dari Google Sheets / Apps Script:", err);
+        if (syncStatusEl) syncStatusEl.textContent = "Offline Mode";
       }
     }
 
+    // Heartbeat setiap 20 detik (Real-time Online Ping)
     setInterval(async () => {
       try {
-        const res = await fetch(`${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}`, {
+        const pingUrl = `${GAS_ENDPOINT}?action=heartbeat&sid=${RUNTIME_SID}&_t=${Date.now()}`;
+        const res = await fetch(pingUrl, {
           method: 'GET',
+          cache: 'no-store',
           redirect: 'follow'
         });
         const data = await res.json();
         if (data.status === "success" && data.analytics) {
           syncAnalyticsUI(data.analytics);
-          document.getElementById('sync-status').textContent = "Live Sync";
         }
       } catch (e) {}
     }, 20000);
 
-    // Inisialisasi Pertama
+    // Booting Awal
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Background Sync
+    // Jalankan Sinkronisasi Latar Belakang
     fetchPortalDatabase();
   </script>
 </body>
