@@ -265,7 +265,7 @@
       const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
       if (isBot) {
         document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
-        throw new Error("Bot rejected.");
+        throw new Error("Bot access rejected.");
       }
 
       document.addEventListener('contextmenu', e => e.preventDefault());
@@ -312,15 +312,15 @@
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
-    // Generator SID unik dan status kunjungan baru
     let RUNTIME_SID = sessionStorage.getItem('bpkad_session_sid');
     let IS_NEW_SESSION = "0";
     if (!RUNTIME_SID) {
       RUNTIME_SID = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
       sessionStorage.setItem('bpkad_session_sid', RUNTIME_SID);
-      IS_NEW_SESSION = "1"; // Sesi kunjungan baru terdeteksi
+      IS_NEW_SESSION = "1";
     }
 
+    // Default Apps (Dilengkapi nama resmi SI-MOMBURUSI)
     let allApps = [
       { title: "SIPD-RI", category: "Keuangan", url: "https://sipd-ri.kemendagri.go.id", icon: "landmark", desc: "Sistem Informasi Pemerintahan Daerah", badge: "Utama" },
       { title: "ATISISBADA", category: "Aset", url: "https://konawekab.atisisbada.id", icon: "database", desc: "Aplikasi Teknologi Informasi Siklus Barang Daerah", badge: "Daily" },
@@ -329,7 +329,7 @@
       { title: "ASN Digital", category: "Pegawai", url: "https://asndigital.bkn.go.id/", icon: "file-text", desc: "Manajemen ASN Terpadu", badge: "Portal" },
       { title: "RKBMD - RKPBMD Permendagri Thn. 2019", category: "Aset", url: "https://bata7878via.github.io/rkbm-online/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
       { title: "SI-PEKA BMD", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Rencana Aset Terpadu dan Akuntabel", badge: "Portal" },
-      { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Sistem Informasi Manajemen Pengelolaan Barang Persediaan", badge: "Portal" }
+      { title: "SI-MOMBURUSI", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "boxes", desc: "Sistem Manajemen Opname dan Monitoring Barang Persediaan Terintegrasi", badge: "Persediaan" }
     ];
     let activeCategory = 'ALL';
 
@@ -342,7 +342,7 @@
     }
 
     /* =====================================================================
-     * 4. AMBIENT CANVAS ANIMATION
+     * 4. AMBIENT PARTICLE ANIMATION
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -426,13 +426,9 @@
       renderAppCards();
     }
 
-    /**
-     * Pelacakan Klik Aplikasi Anti-Hilang via Beacon & Background Fetch
-     */
     function trackClick(appName) {
       const clickUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(navigator.userAgent)}&_t=${Date.now()}`;
       
-      // Prioritaskan sendBeacon agar request tidak dipotong saat user pindah tab
       if (navigator.sendBeacon) {
         navigator.sendBeacon(clickUrl);
       } else {
@@ -569,101 +565,4 @@
      * ===================================================================== */
     function requestJSONP(url) {
       return new Promise((resolve, reject) => {
-        const callbackName = 'gas_cb_' + Math.random().toString(36).substring(2, 9);
-        const script = document.createElement('script');
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error("JSONP Timeout"));
-        }, 10000);
-
-        function cleanup() {
-          if (window[callbackName]) delete window[callbackName];
-          if (script.parentNode) script.parentNode.removeChild(script);
-          clearTimeout(timeout);
-        }
-
-        window[callbackName] = function(data) {
-          cleanup();
-          resolve(data);
-        };
-
-        script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
-        script.onerror = function() {
-          cleanup();
-          reject(new Error("JSONP Error"));
-        };
-        document.head.appendChild(script);
-      });
-    }
-
-    async function executeBackendRequest(action, customParams = {}) {
-      const query = new URLSearchParams({
-        action: action,
-        sid: RUNTIME_SID,
-        is_new: IS_NEW_SESSION,
-        ua: navigator.userAgent,
-        _t: Date.now(),
-        ...customParams
-      }).toString();
-
-      const targetUrl = `${GAS_ENDPOINT}?${query}`;
-
-      try {
-        const res = await fetch(targetUrl, { method: 'GET', redirect: 'follow' });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.status === "success") return json;
-        }
-      } catch (e) {}
-
-      return await requestJSONP(targetUrl);
-    }
-
-    async function fetchPortalDatabase() {
-      try {
-        const data = await executeBackendRequest('init');
-        if (data && data.status === "success") {
-          IS_NEW_SESSION = "0"; // Matikan flag setelah kunjungan berhasil dicatat ke Sheets
-
-          applySpreadsheetSettings(data.settings);
-          syncAnalyticsUI(data.analytics);
-
-          if (data.apps && Array.isArray(data.apps) && data.apps.length > 0) {
-            allApps = data.apps;
-            renderCategoryTabs();
-            renderAppCards();
-          }
-          updateStatusIndicator('online');
-        } else {
-          updateStatusIndicator('offline');
-        }
-      } catch (err) {
-        updateStatusIndicator('offline');
-      }
-    }
-
-    setInterval(async () => {
-      try {
-        const data = await executeBackendRequest('heartbeat');
-        if (data && data.status === "success" && data.analytics) {
-          syncAnalyticsUI(data.analytics);
-          updateStatusIndicator('online');
-        }
-      } catch (e) {
-        updateStatusIndicator('offline');
-      }
-    }, 15000);
-
-    window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') fetchPortalDatabase();
-    });
-
-    renderCategoryTabs();
-    renderAppCards();
-    document.getElementById('searchInput').addEventListener('input', renderAppCards);
-    safeRenderIcons();
-
-    fetchPortalDatabase();
-  </script>
-</body>
-</html>
+        const callbackName = 'gas_cb_' + Math.random().toString(
