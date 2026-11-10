@@ -148,11 +148,9 @@
           <h1 id="app-title" class="text-lg sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-tight drop-shadow-sm">
             SI-MEPOKOASO BPKAD KONAWE
           </h1>
-          <!-- Subtitle 1 (Kepanjangan Akronim) -->
           <p id="app-subtitle" class="text-xs text-cyan-200/80 font-medium mt-1">
             (Sistem Integrasi Manajemen Elektronik Pelayanan Organisasi Keuangan dan Aset Secara Optimal)
           </p>
-          <!-- Subtitle 2 (Portal Layanan Terpadu) -->
           <p id="app-subtitle2" class="text-xs text-white font-extrabold mt-1 tracking-wide">
             Portal Layanan Terpadu BPKAD Kab. Konawe
           </p>
@@ -189,7 +187,7 @@
     <!-- GRID MENU APLIKASI -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
 
-    <!-- GRUP DISKUSI WHATSAPP (AERO GLASS TRANSLUCENT) -->
+    <!-- GRUP DISKUSI WHATSAPP -->
     <section id="waSection">
       <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
          class="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/35 hover:border-emerald-400/70 transition-all duration-300 shadow-aero-glass active:scale-[0.99] backdrop-blur-2xl overflow-hidden">
@@ -211,7 +209,7 @@
       </a>
     </section>
 
-    <!-- LIVE ANALITIK PORTAL REAL-TIME (AERO GLASS ENGINE) -->
+    <!-- LIVE ANALITIK PORTAL REAL-TIME -->
     <section class="p-5 rounded-3xl aero-card relative overflow-hidden">
       <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none"></div>
 
@@ -260,7 +258,7 @@
   <!-- JAVASCRIPT ENGINE -->
   <script>
     /* =====================================================================
-     * 1. PROTEKSI BOT & INSPEKSI
+     * 1. PROTEKSI BOT
      * ===================================================================== */
     (function initSecurityShield() {
       const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
@@ -268,23 +266,10 @@
         document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
         throw new Error("Bot access rejected.");
       }
-
-      document.addEventListener('contextmenu', e => e.preventDefault());
-      document.addEventListener('dragstart', e => e.preventDefault());
-      document.addEventListener('keydown', e => {
-        if (
-          e.key === 'F12' ||
-          (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) ||
-          (e.ctrlKey && ['U','u','S','s','P','p'].includes(e.key))
-        ) {
-          e.preventDefault();
-          return false;
-        }
-      });
     })();
 
     /* =====================================================================
-     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY)
+     * 2. VIDEO AUTOPLAY
      * ===================================================================== */
     const videoEl = document.getElementById('bg-video');
     function startVideo() {
@@ -298,11 +283,9 @@
             videoEl.play();
             window.removeEventListener('click', triggerPlay);
             window.removeEventListener('touchstart', triggerPlay);
-            window.removeEventListener('scroll', triggerPlay);
           };
           window.addEventListener('click', triggerPlay, { once: true });
           window.addEventListener('touchstart', triggerPlay, { once: true });
-          window.addEventListener('scroll', triggerPlay, { once: true });
         });
       }
     }
@@ -313,17 +296,15 @@
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
 
-    // Gunakan sessionStorage agar ID sesi konsisten saat di-refresh dalam satu tab
     let RUNTIME_SID = sessionStorage.getItem('portal_sid');
     let isNewSession = "0";
 
     if (!RUNTIME_SID) {
       RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
       sessionStorage.setItem('portal_sid', RUNTIME_SID);
-      isNewSession = "1"; // Tanda bahwa sesi ini baru pertama kali dibuka
+      isNewSession = "1";
     }
 
-    // Identifikasi perangkat ringkas untuk logging
     function getDeviceSignature() {
       const ua = navigator.userAgent;
       if (/android/i.test(ua)) return 'Android Device';
@@ -356,7 +337,7 @@
     }
 
     /* =====================================================================
-     * 4. AMBIENT PARTICLE ANIMATION
+     * 4. AMBIENT CANVAS
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -442,7 +423,6 @@
 
     function trackClick(appName) {
       const trackUrl = `${GAS_ENDPOINT}?action=click_track&app_name=${encodeURIComponent(appName)}&sid=${RUNTIME_SID}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
-      // Fetch keepalive non-blocking agar tautan tetap terbuka tanpa delay
       fetch(trackUrl, { method: 'GET', mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
       return true;
     }
@@ -498,7 +478,7 @@
     }
 
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN SPREADSHEET & ANALITIK
+     * 6. SINKRONISASI PENGATURAN & ANALITIK
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
@@ -581,12 +561,13 @@
     }
 
     /* =====================================================================
-     * 7. KOMUNIKASI NETWORK & SINKRONISASI REAL-TIME
+     * 7. JARINGAN DATA (KONEKSI RESILIEN)
      * ===================================================================== */
     async function fetchPortalDatabase() {
       const syncStatusEl = document.getElementById('sync-status');
       try {
         const fetchUrl = `${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}&is_new=${isNewSession}&ua=${encodeURIComponent(DEVICE_INFO)}&_t=${Date.now()}`;
+        
         const res = await fetch(fetchUrl, {
           method: 'GET',
           cache: 'no-store',
@@ -596,6 +577,7 @@
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         
         const data = await res.json();
+        
         if (data.status === "success") {
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
@@ -605,19 +587,18 @@
             renderAppCards();
           }
           if (syncStatusEl) syncStatusEl.textContent = "Live Sync";
-          isNewSession = "0"; // Reset flag setelah kunjungan sukses dicatat
+          isNewSession = "0";
         } else {
+          console.error("Respon Backend Error:", data.message);
           if (syncStatusEl) syncStatusEl.textContent = "Data Error";
         }
       } catch (err) {
-        console.error("Gagal sinkronisasi dari Google Sheets:", err);
+        console.error("Gagal sinkronisasi data:", err);
         if (syncStatusEl) syncStatusEl.textContent = "Offline Mode";
       }
     }
 
-    // Ping Heartbeat Periodik (Real-Time Online Engine)
     async function sendHeartbeat() {
-      // Jangan kirim ping jika tab sedang diminimalkan/tidak aktif untuk menghemat kuota
       if (document.hidden) return;
 
       try {
@@ -635,28 +616,24 @@
             syncStatusEl.textContent = "Live Sync";
           }
         }
-      } catch (e) {
-        // Fallback senyap jika koneksi jaringan fluktuatif
-      }
+      } catch (e) {}
     }
 
-    // Interval Heartbeat diatur optimal tiap 25 detik
     setInterval(sendHeartbeat, 25000);
 
-    // Kirim ping instan begitu tab kembali dibuka pengguna
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         sendHeartbeat();
       }
     });
 
-    // Booting Awal Antarmuka
+    // Booting Awal
     renderCategoryTabs();
     renderAppCards();
     document.getElementById('searchInput').addEventListener('input', renderAppCards);
     safeRenderIcons();
 
-    // Inisialisasi Sinkronisasi Database
+    // Jalankan Sinkronisasi Data
     fetchPortalDatabase();
   </script>
 </body>
