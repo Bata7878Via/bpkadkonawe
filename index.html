@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="no-referrer" />
-  <title id="page-title">SI-MEPOKOASO BPKAD KONAWE</title>
+  <title id="page-title">SI-MEPOKOASO BPKAD KAB. KONAWE</title>
 
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -98,9 +98,9 @@
       pointer-events: none;
     }
 
-    /* EFEK WINDOWS VISTA AERO GLASS & KARTU TRANSPARAN */
+    /* EFEK WINDOWS VISTA AERO GLASS */
     .aero-card {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.65) 0%, rgba(30, 58, 138, 0.25) 50%, rgba(15, 23, 42, 0.70) 100%);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.70) 0%, rgba(30, 58, 138, 0.28) 50%, rgba(15, 23, 42, 0.75) 100%);
       backdrop-filter: blur(20px) saturate(190%);
       -webkit-backdrop-filter: blur(20px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.16);
@@ -113,17 +113,23 @@
     }
 
     .aero-card:hover {
-      transform: translateY(-3px) scale(1.008);
       border-color: rgba(56, 189, 248, 0.55);
       border-top-color: rgba(255, 255, 255, 0.75);
-      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5),
-                  0 20px 42px -6px rgba(0, 0, 0, 0.8),
-                  0 0 35px rgba(14, 165, 233, 0.3);
+    }
+
+    .specular-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), transparent);
+      pointer-events: none;
     }
   </style>
 </head>
 
-<body id="body-container" class="text-slate-100 antialiased p-3 sm:p-6 lg:p-8 flex flex-col justify-between min-h-screen">
+<body id="body-container" class="text-slate-100 antialiased flex flex-col justify-between min-h-screen">
 
   <!-- 1. Video Latar Belakang -->
   <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto" src="https://bata7878via.github.io/bpkadkonawe/bg_video.mp4"></video>
@@ -132,46 +138,168 @@
   <div id="bg-overlay"></div>
   <canvas id="ambient-canvas"></canvas>
 
-  <!-- 3. Konten Utama Portal (Layer 10) -->
-  <div class="max-w-4xl mx-auto w-full space-y-5 sm:space-y-6 relative z-10">
+  <!-- ================= TOP BAR SEIMBANG (KIRI, TENGAH, KANAN) & KOMPATIBEL ANDROID ================= -->
+  <div class="relative z-30 bg-slate-950/85 border-b border-white/10 backdrop-blur-xl text-xs py-2.5 px-3 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 md:gap-4 text-cyan-200/90 font-medium">
+      
+      <!-- 1. SISI KIRI: Tanggal & Waktu WITA Hari Ini (Tampil Sempurna di HP & Laptop) -->
+      <div class="flex items-center justify-center md:justify-start gap-1.5 text-cyan-300 w-full md:w-auto flex-shrink-0">
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+        <span id="live-clock" class="font-mono text-[11px] sm:text-xs">Memuat waktu...</span>
+      </div>
 
-    <!-- HEADER RESMI AERO GLASS -->
-    <header id="main-header" class="aero-card flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl relative overflow-hidden">
-      <!-- Specular Highlight Line Atas Khas Vista -->
-      <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent pointer-events-none"></div>
-
-      <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
-        <div class="w-16 h-20 sm:w-16 sm:h-20 flex-shrink-0 flex items-center justify-center p-1 bg-black/40 rounded-2xl border border-white/20 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2)]">
-          <img id="app-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" alt="Logo BPKAD" class="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" />
+      <!-- 2. SISI TENGAH: Real-Time Engine Analitik (Simetris di Tengah Layar) -->
+      <div class="flex items-center justify-center gap-2 sm:gap-2.5 w-full md:w-auto flex-shrink-0">
+        <!-- Pengguna Online -->
+        <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/35 text-emerald-300 font-semibold shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="text-[10px] sm:text-[11px]">Online:</span>
+          <span id="stat-online" class="text-[10px] sm:text-[11px] font-bold text-white font-mono">1</span>
         </div>
 
-        <div class="flex-1 min-w-0">
-          <h1 id="app-title" class="text-lg sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-tight drop-shadow-sm">
-            SI-MEPOKOASO BPKAD KONAWE
+        <!-- Total Kunjungan -->
+        <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/35 text-cyan-200 font-semibold shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+          <i data-lucide="eye" class="w-3 h-3 text-cyan-400"></i>
+          <span class="text-[10px] sm:text-[11px]">Kunjungan:</span>
+          <span id="stat-total" class="text-[10px] sm:text-[11px] font-bold text-white font-mono">150</span>
+        </div>
+
+        <!-- Sinkronisasi Live Dot -->
+        <div class="flex items-center gap-1 text-[10px] text-cyan-300/70 font-mono">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span id="sync-status">Live</span>
+        </div>
+      </div>
+
+      <!-- 3. SISI KANAN: Lokasi Map BPKAD Konawe + Jam Layanan (Tidak Tersembunyi di Android) -->
+      <div class="flex items-center justify-center md:justify-end gap-3 sm:gap-4 flex-wrap w-full md:w-auto flex-shrink-0">
+        <!-- Tautan Google Maps (Sejajar dan Aktif) -->
+        <a href="https://maps.google.com/?q=BPKAD+Kabupaten+Konawe" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           title="Buka Lokasi Kantor BPKAD Konawe di Google Maps"
+           class="inline-flex items-center gap-1.5 text-slate-200 hover:text-cyan-300 transition-colors group cursor-pointer">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform flex-shrink-0"></i>
+          <span class="text-[11px] sm:text-xs font-semibold group-hover:underline decoration-cyan-400/60">
+            BPKAD Kab. Konawe, Sultra
+          </span>
+          <i data-lucide="external-link" class="w-3 h-3 text-cyan-400 opacity-70 group-hover:opacity-100 transition-opacity"></i>
+        </a>
+
+        <span class="text-white/20 hidden sm:inline">•</span>
+
+        <!-- Jam Layanan Resmi (Terlihat Jelas di HP & Laptop) -->
+        <div class="flex items-center gap-1.5 text-emerald-300 text-[11px] font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="label-jam-layanan">Senin - Jumat: 08.00 - 16.00 WITA</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= STICKY NAVBAR HEADER ================= -->
+  <header class="sticky top-0 z-30 bg-slate-900/75 border-b border-white/15 backdrop-blur-2xl shadow-aero-glass transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      
+      <!-- Sisi Kiri: Logo Konawe Proporsional + Teks Judul Utuh (Tanpa Terpotong) -->
+      <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+        <!-- Logo Pemkab Konawe -->
+        <div class="w-12 h-14 sm:w-14 sm:h-16 flex-shrink-0 flex items-center justify-center p-1 bg-black/45 rounded-2xl border border-white/20 shadow-emboss-btn backdrop-blur-md">
+          <img id="app-logo" 
+               src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" 
+               alt="Logo Kabupaten Konawe" 
+               class="max-h-full max-w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]" />
+        </div>
+
+        <!-- Hierarki Judul Lengkap: Diatur Bebas Truncate agar Seluruh Teks Tampil Utuh -->
+        <div class="flex-1 min-w-0 pr-1">
+          <!-- 1. Judul Utama -->
+          <h1 id="app-title" class="text-sm sm:text-lg lg:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-snug drop-shadow-sm">
+            SI-MEPOKOASO BPKAD KAB. KONAWE
           </h1>
-          <!-- Subtitle 1 (Kepanjangan Akronim) -->
-          <p id="app-subtitle" class="text-xs text-cyan-200/80 font-medium mt-1">
+          
+          <!-- 2. Subtitle Kepanjangan Akronim (TIDAK AKAN HILANG / TERPOTONG LAGI) -->
+          <p id="app-subtitle" class="text-[10px] sm:text-xs text-cyan-200/90 font-medium leading-relaxed mt-0.5 break-words">
             (Sistem Integrasi Manajemen Elektronik Pelayanan Organisasi Keuangan dan Aset Secara Optimal)
           </p>
-          <!-- Subtitle 2 (Portal Layanan Terpadu - ID Mandiri) -->
-          <p id="app-subtitle2" class="text-xs text-white font-extrabold mt-1 tracking-wide">
-            Portal Layanan Terpadu BPKAD Kab. Konawe
+          
+          <!-- 3. Portal Layanan Terpadu -->
+          <p id="app-subtitle2" class="text-[11px] sm:text-xs lg:text-sm text-cyan-100 font-extrabold tracking-wide leading-snug mt-0.5 drop-shadow-sm">
+            Portal Layanan Terpadu BPKAD Konawe
           </p>
-          <div class="inline-flex items-center gap-2 mt-2 px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/10 backdrop-blur-md">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-            <p id="live-clock" class="text-[11px] text-cyan-100/90 font-mono"></p>
-          </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-2xl bg-cyan-950/50 text-cyan-200 border border-cyan-400/30 shadow-emboss-btn backdrop-blur-md">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]"></span>
-        <span id="total-apps">8 Layanan Aktif</span>
-      </div>
-    </header>
+      <!-- Sisi Kanan: Tombol Navigasi Desktop -->
+      <nav class="hidden lg:flex items-center gap-2.5 flex-shrink-0">
+        <!-- Unduh Dokumen -->
+        <button onclick="openModal('modal-docs')" 
+                class="px-3.5 py-2 rounded-xl text-xs font-bold text-cyan-200 bg-slate-900/60 hover:bg-cyan-950/70 border border-cyan-400/30 hover:border-cyan-400/60 shadow-emboss-btn transition-all flex items-center gap-2 active:scale-95">
+          <i data-lucide="file-down" class="w-4 h-4 text-cyan-400"></i>
+          <span>Unduh Dokumen</span>
+        </button>
+
+        <!-- Info BPKAD (Badge Angka Merah) -->
+        <button onclick="openModal('modal-info')" 
+                class="relative px-3.5 py-2 rounded-xl text-xs font-bold text-cyan-200 bg-slate-900/60 hover:bg-cyan-950/70 border border-cyan-400/30 hover:border-cyan-400/60 shadow-emboss-btn transition-all flex items-center gap-2 active:scale-95">
+          <i data-lucide="bell" class="w-4 h-4 text-cyan-400"></i>
+          <span>Info BPKAD</span>
+          <span id="info-badge" class="hidden absolute -top-1.5 -right-1.5 px-1.5 py-0.5 min-w-[18px] text-[10px] font-black bg-rose-500 text-white rounded-full ring-2 ring-slate-900 shadow-[0_0_12px_rgba(244,63,94,0.9)] animate-pulse text-center leading-none">
+            0
+          </span>
+        </button>
+
+        <!-- Hubungi Admin (WhatsApp) -->
+        <a id="btn-wa-admin" href="#" target="_blank" rel="noopener noreferrer" 
+           class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-300 bg-slate-900/60 hover:bg-emerald-950/70 border border-emerald-500/35 hover:border-emerald-400/70 shadow-emboss-btn transition-all flex items-center gap-2 active:scale-95">
+          <i data-lucide="phone-call" class="w-4 h-4 text-emerald-400"></i>
+          <span>Hubungi Admin</span>
+        </a>
+
+        <!-- Grup Koordinasi BPKAD (WhatsApp) -->
+        <a id="btn-wa-group-nav" href="#" target="_blank" rel="noopener noreferrer" 
+           class="px-4 py-2 rounded-xl text-xs font-extrabold text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 hover:from-emerald-300 hover:to-cyan-200 shadow-[0_0_18px_rgba(16,185,129,0.45)] transition-all flex items-center gap-2 active:scale-95">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+          <span>Grup Koordinasi</span>
+        </a>
+      </nav>
+
+      <!-- Tombol Hamburger Mobile (Android / Layar Kecil) -->
+      <button onclick="toggleMobileNav()" aria-label="Buka Menu" class="lg:hidden p-2.5 rounded-xl bg-slate-900/80 border border-white/20 text-cyan-200 hover:text-white transition flex-shrink-0">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+
+    </div>
+
+    <!-- Mobile Drawer Nav (Dioptimalkan untuk Smartphone Android) -->
+    <div id="mobile-nav" class="hidden lg:hidden px-4 pb-4 pt-2 border-t border-white/10 bg-slate-950/95 backdrop-blur-2xl space-y-2 text-xs font-bold">
+      <button onclick="openModal('modal-docs'); toggleMobileNav();" class="w-full text-left p-2.5 rounded-xl text-cyan-200 bg-white/5 hover:bg-white/10 flex items-center gap-2">
+        <i data-lucide="file-down" class="w-4 h-4 text-cyan-400"></i> Unduh Dokumen
+      </button>
+      <button onclick="openModal('modal-info'); toggleMobileNav();" class="w-full text-left p-2.5 rounded-xl text-cyan-200 bg-white/5 hover:bg-white/10 flex items-center justify-between">
+        <span class="flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4 text-cyan-400"></i> Info BPKAD</span>
+        <span id="info-badge-mobile" class="hidden px-2 py-0.5 text-[10px] font-bold bg-rose-500 text-white rounded-full">0</span>
+      </button>
+      <a id="btn-wa-admin-mobile" href="#" target="_blank" class="block p-2.5 rounded-xl text-emerald-300 bg-white/5 hover:bg-white/10 flex items-center gap-2">
+        <i data-lucide="phone-call" class="w-4 h-4 text-emerald-400"></i> Hubungi Admin
+      </a>
+      <a id="btn-wa-group-mobile" href="#" target="_blank" class="block p-2.5 rounded-xl text-slate-950 bg-gradient-to-r from-emerald-400 to-cyan-300 text-center font-extrabold flex items-center justify-center gap-2">
+        <i data-lucide="message-square" class="w-4 h-4"></i> Gabung Grup Koordinasi BPKAD
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= KONTEN UTAMA PORTAL ================= -->
+  <div class="max-w-4xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-5 relative z-10">
 
     <!-- SEARCH & KATEGORI -->
     <div class="space-y-3">
+      <div class="flex items-center justify-between gap-2 px-1">
+        <span class="text-xs font-bold text-cyan-200 tracking-wide">PILIHAN LAYANAN & APLIKASI DINAS</span>
+        <span id="total-apps" class="text-[11px] font-semibold text-cyan-300/80 bg-cyan-950/60 border border-cyan-400/30 px-2.5 py-0.5 rounded-lg">8 Layanan Aktif</span>
+      </div>
+
       <div class="relative">
         <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-cyan-300 pointer-events-none"></i>
         <input 
@@ -183,82 +311,84 @@
           class="w-full pl-11 pr-4 py-3.5 bg-slate-900/60 border border-white/15 focus:border-cyan-400/70 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/30 backdrop-blur-2xl text-white placeholder:text-slate-400 shadow-aero-glass transition-all"
         />
       </div>
-
+      
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
-    <!-- GRID MENU APLIKASI -->
+    <!-- GRID MENU APLIKASI (LANGSUNG TAMPIL DARI DATA AWAL) -->
     <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
-
-    <!-- GRUP DISKUSI WHATSAPP (AERO GLASS TRANSLUCENT) -->
-    <section id="waSection">
-      <a id="waGroupLink" href="https://chat.whatsapp.com/GantiDenganLinkGrupAnda" target="_blank" rel="noopener noreferrer" 
-         class="group relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-emerald-950/60 border border-emerald-500/35 hover:border-emerald-400/70 transition-all duration-300 shadow-aero-glass active:scale-[0.99] backdrop-blur-2xl overflow-hidden">
-        <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none"></div>
-
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 shadow-emboss-btn transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-            <i data-lucide="message-circle" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h2 id="waGroupTitle" class="text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">Grup Koordinasi BPKAD Konawe</h2>
-            <p id="waGroupDesc" class="text-xs text-slate-300">Klik untuk bergabung koordinasi dinas via WhatsApp</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all flex-shrink-0">
-          <span>Gabung</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </div>
-      </a>
-    </section>
-
-    <!-- LIVE ANALITIK PORTAL REAL-TIME (AERO GLASS ENGINE) -->
-    <section class="p-5 rounded-3xl aero-card relative overflow-hidden">
-      <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent pointer-events-none"></div>
-
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-200 flex items-center gap-2">
-          <i data-lucide="activity" class="w-4 h-4 text-cyan-400 animate-pulse"></i>
-          Live Real-Time Engine
-        </h3>
-        <div class="flex items-center gap-1.5 text-[10px] px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold font-mono shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-          <span id="sync-status">Live Sync</span>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3 sm:gap-4">
-        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center gap-3.5 shadow-[inset_0_1px_2px_rgba(255,255,255,0.15)] backdrop-blur-xl">
-          <div class="p-3 rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 shadow-emboss-btn shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-            <i data-lucide="eye" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <div id="stat-total" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight drop-shadow-sm">150</div>
-            <p class="text-[11px] text-cyan-200/70 font-medium">Total Kunjungan</p>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center gap-3.5 shadow-[inset_0_1px_2px_rgba(255,255,255,0.15)] backdrop-blur-xl">
-          <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 relative shadow-emboss-btn shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          </div>
-          <div>
-            <div id="stat-online" class="text-xl sm:text-2xl font-extrabold text-emerald-400 tracking-tight drop-shadow-sm">1</div>
-            <p class="text-[11px] text-emerald-200/70 font-medium">Online Saat Ini</p>
-          </div>
-        </div>
-      </div>
-    </section>
 
   </div>
 
-  <!-- FOOTER -->
-  <footer class="w-full text-center text-xs text-slate-400 py-6 mt-6 relative z-10">
-    <p id="footer-text" class="font-medium tracking-wide">©Copyright 2026 Irman_Aset. All rights reserved.</p>
+  <!-- ================= MODAL: UNDUH DOKUMEN ================= -->
+  <div id="modal-docs" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="aero-card max-w-2xl w-full rounded-3xl p-6 relative border border-white/20 shadow-aero-glass overflow-hidden max-h-[85vh] flex flex-col">
+      <div class="specular-line"></div>
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+            <i data-lucide="folder-down" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Pusat Unduhan Dokumen & Regulasi</h3>
+            <p class="text-xs text-cyan-200/70">Format SPJ, petunjuk teknis aset, dan regulasi resmi</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-docs')" class="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="docsListContainer" class="overflow-y-auto space-y-3 flex-grow pr-1"></div>
+
+      <div class="pt-4 border-t border-white/10 mt-4 flex justify-end">
+        <button onclick="closeModal('modal-docs')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: INFO BPKAD ================= -->
+  <div id="modal-info" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="aero-card max-w-2xl w-full rounded-3xl p-6 relative border border-white/20 shadow-aero-glass overflow-hidden max-h-[85vh] flex flex-col">
+      <div class="specular-line"></div>
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Informasi & Pengumuman BPKAD</h3>
+            <p class="text-xs text-cyan-200/70">Pemberitahuan terkini pelayanan pengelolaan keuangan & aset daerah</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-info')" class="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/10 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="infoListContainer" class="overflow-y-auto space-y-3 flex-grow pr-1"></div>
+
+      <div class="pt-4 border-t border-white/10 mt-4 flex justify-end">
+        <button onclick="closeModal('modal-info')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER RESMI ================= -->
+  <footer class="w-full text-center py-6 mt-10 relative z-20 border-t border-white/15 bg-slate-950/80 backdrop-blur-xl">
+    <p id="footer-text" class="text-xs sm:text-sm font-semibold text-slate-200 tracking-wide drop-shadow-md">
+      &copy;Copyright 2026 Irman_Aset. All rights reserved.
+    </p>
+    <p class="text-[11px] text-cyan-300/80 font-medium mt-1">
+      Badan Pengelola Keuangan dan Aset Daerah &bull; Pemerintah Kabupaten Konawe
+    </p>
   </footer>
 
-  <!-- JAVASCRIPT ENGINE -->
+  <!-- ================= LOGIKA JAVASCRIPT LENGKAP ================= -->
   <script>
     /* =====================================================================
      * 1. PROTEKSI BOT & INSPEKSI
@@ -285,7 +415,7 @@
     })();
 
     /* =====================================================================
-     * 2. PEMUTAR VIDEO MANDIRI (FORCE AUTOPLAY ON INTERACTION)
+     * 2. VIDEO PLAYER MANDIRI
      * ===================================================================== */
     const videoEl = document.getElementById('bg-video');
     function startVideo() {
@@ -310,9 +440,9 @@
     startVideo();
 
     /* =====================================================================
-     * 3. DATA & INITIAL STATE
+     * 3. DATA & URL CODE.GS TERBARU
      * ===================================================================== */
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycby_Kkx_y1wbxoo1b07ezUsLSyTUiIAgSHSFNIJYbfTpqpgcRMkHMoQQsMtiNDKDSDP0SA/exec";
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwkHjYACdZop98u6sM-GWX-JJi4VbWgNvDdragVC0mYC2IUV1LJElPA9HM1b3ABxRg1vA/exec";
     const RUNTIME_SID = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
 
     let allApps = [
@@ -325,6 +455,18 @@
       { title: "RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023", category: "Aset", url: "https://bata7878via.github.io/rkpbmd_enterprise/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" },
       { title: "Aplikasi Persediaan", category: "Aset", url: "https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/", icon: "database", desc: "Penginputan RKBMD dan RKPBMD", badge: "Portal" }
     ];
+
+    let allDocs = [
+      { id: "DOC-01", judul: "Format Standar SPJ Keuangan SKPD 2026", kategori: "Template SPJ", ukuran: "1.8 MB", tahun: "2026", url: "https://drive.google.com" },
+      { id: "DOC-02", judul: "Petunjuk Teknis Rekonsiliasi Aset BMD", kategori: "Juknis Aset", ukuran: "3.2 MB", tahun: "2026", url: "https://drive.google.com" },
+      { id: "DOC-03", judul: "Perbup Standar Satuan Harga (SSH) Konawe", kategori: "Regulasi", ukuran: "4.7 MB", tahun: "2025", url: "https://drive.google.com" }
+    ];
+
+    let allInfos = [
+      { id: "INF-01", judul: "Batas Akhir Rekonsiliasi APBD Triwulan I", tanggal: "10 Nov 2026", isi: "Diberitahukan kepada seluruh bendahara pengeluaran SKPD agar segera menuntaskan input SPJ sebelum akhir bulan berjalan.", kategori: "Pengumuman" },
+      { id: "INF-02", judul: "Pemeliharaan Server Sistem SIPD RI", tanggal: "08 Nov 2026", isi: "Akses sinkronisasi data keuangan akan mengalami pemeliharaan terjadwal pada akhir pekan.", kategori: "Teknis" }
+    ];
+
     let activeCategory = 'ALL';
 
     function safeRenderIcons() {
@@ -336,7 +478,7 @@
     }
 
     /* =====================================================================
-     * 4. AMBIENT PARTICLE ANIMATION (AERO CYAN & EMERALD PARTICLES)
+     * 4. AMBIENT PARTICLE ANIMATION
      * ===================================================================== */
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
@@ -383,25 +525,55 @@
     loopCanvas();
 
     /* =====================================================================
-     * 5. CLOCK & APP CARDS RENDERING
+     * 5. CLOCK KOMPATIBEL UNIVERSAL (ANDROID & DESKTOP)
      * ===================================================================== */
     function runLiveClock() {
       const clockEl = document.getElementById('live-clock');
       function update() {
-        const now = new Date();
-        clockEl.textContent = now.toLocaleDateString('id-ID', {
-          weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', second: '2-digit'
-        });
+        try {
+          const now = new Date();
+          const options = { timeZone: "Asia/Makassar", hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+          const timePart = new Intl.DateTimeFormat("id-ID", options).format(now);
+          const datePart = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+          if (clockEl) clockEl.textContent = `${datePart} • ${timePart} WITA`;
+        } catch (e) {
+          if (clockEl) clockEl.textContent = new Date().toTimeString().split(' ')[0] + " WITA";
+        }
       }
       setInterval(update, 1000);
       update();
     }
     runLiveClock();
 
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        safeRenderIcons();
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function toggleMobileNav() {
+      const nav = document.getElementById('mobile-nav');
+      if (nav) nav.classList.toggle('hidden');
+    }
+
+    /* =====================================================================
+     * 6. RENDERING APLIKASI, DOKUMEN & NOTIFIKASI
+     * ===================================================================== */
     function renderCategoryTabs() {
       const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
+      if (!container) return;
       container.innerHTML = categories.map(cat => `
         <button onclick="changeCategory('${cat}')" 
           class="px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all duration-200 ${
@@ -431,15 +603,19 @@
     }
 
     function renderAppCards() {
-      const searchKey = (document.getElementById('searchInput').value || '').toLowerCase();
+      const searchInput = document.getElementById('searchInput');
+      const searchKey = (searchInput ? searchInput.value : '').toLowerCase();
       const grid = document.getElementById('appGrid');
+      if (!grid) return;
+
       const filtered = allApps.filter(item => {
         const matchCat = activeCategory === 'ALL' || (item.category && item.category.toUpperCase() === activeCategory.toUpperCase());
         const matchKey = (item.title || '').toLowerCase().includes(searchKey) || (item.desc || '').toLowerCase().includes(searchKey);
         return matchCat && matchKey;
       });
 
-      document.getElementById('total-apps').textContent = `${allApps.length} Layanan Aktif`;
+      const totalAppsEl = document.getElementById('total-apps');
+      if (totalAppsEl) totalAppsEl.textContent = `${allApps.length} Layanan Aktif`;
 
       if (filtered.length === 0) {
         grid.innerHTML = `
@@ -456,7 +632,7 @@
            onclick="trackClick('${app.title}')"
            class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
           
-          <div class="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-300/40 to-transparent pointer-events-none"></div>
+          <div class="specular-line"></div>
 
           <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex items-center gap-3">
@@ -480,13 +656,90 @@
       safeRenderIcons();
     }
 
+    function renderDocs(docs) {
+      if (docs && docs.length > 0) allDocs = docs;
+      const container = document.getElementById('docsListContainer');
+      if (!container) return;
+
+      if (!allDocs || allDocs.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Belum ada dokumen yang dipublikasikan.</p>`;
+        return;
+      }
+
+      container.innerHTML = allDocs.map(doc => `
+        <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-3 hover:border-cyan-400/40 transition">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-white">${doc.judul}</h4>
+              <p class="text-[11px] text-cyan-200/60">${doc.kategori} • ${doc.ukuran} • ${doc.tahun}</p>
+            </div>
+          </div>
+          <a href="${doc.url}" target="_blank" rel="noopener noreferrer" 
+             class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.4)] transition flex items-center gap-1.5 flex-shrink-0">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Unduh</span>
+          </a>
+        </div>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    function renderInfos(infos) {
+      if (infos && infos.length > 0) allInfos = infos;
+      const badgeEl = document.getElementById('info-badge');
+      const badgeMobile = document.getElementById('info-badge-mobile');
+      const container = document.getElementById('infoListContainer');
+
+      if (allInfos && allInfos.length > 0) {
+        const textCount = allInfos.length > 99 ? '99+' : allInfos.length;
+        if (badgeEl) {
+          badgeEl.textContent = textCount;
+          badgeEl.classList.remove('hidden');
+          badgeEl.classList.add('inline-flex');
+        }
+        if (badgeMobile) {
+          badgeMobile.textContent = textCount;
+          badgeMobile.classList.remove('hidden');
+        }
+      } else {
+        if (badgeEl) {
+          badgeEl.classList.add('hidden');
+          badgeEl.classList.remove('inline-flex');
+        }
+        if (badgeMobile) badgeMobile.classList.add('hidden');
+      }
+
+      if (!container) return;
+
+      if (!allInfos || allInfos.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Tidak ada pengumuman terbaru saat ini.</p>`;
+        return;
+      }
+
+      container.innerHTML = allInfos.map(info => `
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-rose-400/40 transition space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              ${info.kategori || 'Pengumuman'}
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">${info.tanggal}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">${info.judul}</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">${info.isi}</p>
+        </div>
+      `).join('');
+      safeRenderIcons();
+    }
+
     /* =====================================================================
-     * 6. SINKRONISASI PENGATURAN SPREADSHEET (MENDUKUNG SUBTITLE 1 & 2)
+     * 7. SINKRONISASI PENGATURAN SPREADSHEET
      * ===================================================================== */
     function applySpreadsheetSettings(settings) {
       if (!settings) return;
 
-      // 1. Update Judul Portal & Title Browser
       if (settings.title) {
         const titleEl = document.getElementById('app-title');
         const pageTitleEl = document.getElementById('page-title');
@@ -494,87 +747,75 @@
         if (pageTitleEl) pageTitleEl.textContent = settings.title;
       }
 
-      // 2. Update Subtitle 1 (Kepanjangan Akronim)
       if (settings.subtitle) {
         const sub1El = document.getElementById('app-subtitle');
         if (sub1El) sub1El.textContent = settings.subtitle;
       }
 
-      // 3. Update Subtitle 2 (Portal Layanan Terpadu - mendukung key: subtitle2, subtitle_2, atau tagline)
       const sub2Val = settings.subtitle2 || settings.subtitle_2 || settings.tagline;
       if (sub2Val) {
         const sub2El = document.getElementById('app-subtitle2');
         if (sub2El) sub2El.textContent = sub2Val;
       }
 
-      // 4. Update Logo
       if (settings.logo_url) {
         const logoEl = document.getElementById('app-logo');
         if (logoEl) logoEl.src = settings.logo_url;
       }
 
-      // 5. Update WhatsApp Link & Keterangan
-      if (settings.wa_group_url) {
-        const waLinkEl = document.getElementById('waGroupLink');
-        if (waLinkEl) waLinkEl.href = settings.wa_group_url;
-      }
-      if (settings.wa_group_text) {
-        const waTextEl = document.getElementById('waGroupTitle');
-        if (waTextEl) waTextEl.textContent = settings.wa_group_text;
+      if (settings.wa_admin_phone) {
+        const msg = encodeURIComponent(settings.wa_admin_text || "Halo Admin BPKAD Konawe, saya ingin berkonsultasi.");
+        const phone = settings.wa_admin_phone.replace(/\D/g, '');
+        const waAdminUrl = `https://wa.me/${phone}?text=${msg}`;
+        
+        const navWa = document.getElementById('btn-wa-admin');
+        const mobWa = document.getElementById('btn-wa-admin-mobile');
+        if (navWa) navWa.href = waAdminUrl;
+        if (mobWa) mobWa.href = waAdminUrl;
       }
 
-      // 6. Update Footer
+      const groupUrl = settings.wa_group_url || "#";
+      const navGroup = document.getElementById('btn-wa-group-nav');
+      const mobGroup = document.getElementById('btn-wa-group-mobile');
+      if (navGroup) navGroup.href = groupUrl;
+      if (mobGroup) mobGroup.href = groupUrl;
+
+      if (settings.jam_layanan) {
+        const jamEl = document.getElementById('label-jam-layanan');
+        if (jamEl) jamEl.textContent = settings.jam_layanan;
+      }
+
       if (settings.footer) {
         const footerEl = document.getElementById('footer-text');
         if (footerEl) footerEl.textContent = settings.footer;
       }
 
-      // 7. Pengaturan Background (Video / Gambar / Warna)
       const bgVal = (settings.bg_body || settings.bg_video || "").trim();
-      const overlayEl = document.getElementById('bg-overlay');
-
-      if (bgVal) {
-        if (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4")) {
-          videoEl.style.display = "block";
-          overlayEl.style.display = "block";
-          if (videoEl.src !== bgVal) {
-            videoEl.src = bgVal;
-            videoEl.load();
-            startVideo();
-          }
-        } else if (bgVal.startsWith("http")) {
-          videoEl.style.display = "none";
-          overlayEl.style.display = "none";
-          document.body.style.backgroundImage = `radial-gradient(circle at 50% 0%, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('${bgVal}')`;
-          document.body.style.backgroundSize = "cover";
-          document.body.style.backgroundPosition = "center";
-        } else {
-          videoEl.style.display = "none";
-          overlayEl.style.display = "none";
-          document.body.style.background = bgVal;
+      if (bgVal && (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4"))) {
+        if (videoEl.src !== bgVal) {
+          videoEl.src = bgVal;
+          videoEl.load();
+          startVideo();
         }
-      }
-
-      if (settings.bg_header) {
-        document.getElementById('main-header').style.background = settings.bg_header;
       }
     }
 
     function syncAnalyticsUI(analytics) {
       if (!analytics) return;
       if (analytics.total !== undefined) {
-        document.getElementById('stat-total').textContent = Number(analytics.total).toLocaleString('id-ID');
+        const totalEl = document.getElementById('stat-total');
+        if (totalEl) totalEl.textContent = Number(analytics.total).toLocaleString('id-ID');
       }
       if (analytics.online !== undefined) {
-        document.getElementById('stat-online').textContent = Number(analytics.online).toLocaleString('id-ID');
+        const onlineEl = document.getElementById('stat-online');
+        if (onlineEl) onlineEl.textContent = Number(analytics.online).toLocaleString('id-ID');
       }
     }
 
     /* =====================================================================
-     * 7. KOMUNIKASI NETWORK (BACKGROUND SYNC DENGAN DEBUG LOG)
+     * 8. NETWORK SYNC & REALTIME HEARTBEAT
      * ===================================================================== */
     async function fetchPortalDatabase() {
-      const syncStatusEl = document.getElementById('sync-status');
       try {
         const res = await fetch(`${GAS_ENDPOINT}?action=init&sid=${RUNTIME_SID}`, {
           method: 'GET',
@@ -588,20 +829,18 @@
         if (data.status === "success") {
           applySpreadsheetSettings(data.settings);
           syncAnalyticsUI(data.analytics);
+          
           if (data.apps && data.apps.length > 0) {
             allApps = data.apps;
             renderCategoryTabs();
             renderAppCards();
           }
-          if (syncStatusEl) syncStatusEl.textContent = "Live Sync";
-        } else {
-          console.warn("Respon GAS tidak sukses:", data);
-          if (syncStatusEl) syncStatusEl.textContent = "Data Error";
+          
+          if (data.docs && data.docs.length > 0) renderDocs(data.docs);
+          if (data.infos && data.infos.length > 0) renderInfos(data.infos);
         }
       } catch (err) {
-        console.error("Gagal sinkronisasi data dari Google Sheets / Apps Script:", err);
-        // Menampilkan pesan akurat saat gagal koneksi agar tidak membingungkan
-        if (syncStatusEl) syncStatusEl.textContent = "Offline Mode";
+        console.warn("Memuat mode cache offline:", err);
       }
     }
 
@@ -618,13 +857,18 @@
       } catch (e) {}
     }, 20000);
 
-    // Inisialisasi Pertama
+    /* =====================================================================
+     * 9. BOOTSTRAP INITIAL RUN
+     * ===================================================================== */
     renderCategoryTabs();
     renderAppCards();
-    document.getElementById('searchInput').addEventListener('input', renderAppCards);
-    safeRenderIcons();
+    renderDocs(allDocs);
+    renderInfos(allInfos);
 
-    // Background Sync ke Database Google Sheet
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.addEventListener('input', renderAppCards);
+
+    safeRenderIcons();
     fetchPortalDatabase();
   </script>
 </body>
