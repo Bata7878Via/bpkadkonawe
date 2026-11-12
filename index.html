@@ -223,7 +223,7 @@
 
         <!-- Hierarki Judul Lengkap -->
         <div class="flex-1 min-w-0 pr-1">
-          <h1 id="app-title" class="text-sm sm:lg lg:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-snug drop-shadow-sm">
+          <h1 id="app-title" class="text-sm sm:text-lg lg:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-snug drop-shadow-sm">
             SI-MEPOKOASO BPKAD KAB. KONAWE
           </h1>
           <p id="app-subtitle" class="text-[10px] sm:text-xs text-cyan-200/90 font-medium leading-relaxed mt-0.5 break-words">
@@ -462,14 +462,16 @@
       if (btnHeader) { btnHeader.classList.remove('hidden'); btnHeader.classList.add('inline-flex'); }
       if (btnMobile) { btnMobile.classList.remove('hidden'); btnMobile.classList.add('flex'); }
 
-      const isDismissed = localStorage.getItem('mepokoaso_pwa_dismissed');
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      try {
+        const isDismissed = localStorage.getItem('mepokoaso_pwa_dismissed');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-      if (!isStandalone && !isDismissed) {
-        setTimeout(() => {
-          openPwaDialog();
-        }, 1500);
-      }
+        if (!isStandalone && !isDismissed) {
+          setTimeout(() => {
+            openPwaDialog();
+          }, 1500);
+        }
+      } catch (err) {}
     });
 
     function openPwaDialog() {
@@ -487,7 +489,9 @@
         dialog.classList.add('hidden');
         dialog.classList.remove('flex');
       }
-      localStorage.setItem('mepokoaso_pwa_dismissed', 'true');
+      try {
+        localStorage.setItem('mepokoaso_pwa_dismissed', 'true');
+      } catch (e) {}
     }
 
     async function acceptPwaInstall() {
@@ -567,19 +571,24 @@
     startVideo();
 
     /* =====================================================================
-     * 4. DATA & MANAJEMEN SESI ANALITIK (PERSISTENT & ACCURATE)
+     * 4. DATA & MANAJEMEN SESI (SAFE STORAGE SHIELD)
      * ===================================================================== */
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbykQP5_-ymefPbfNCz8wvX9tIaWoZvAhKuq_ufpIZ_7NtX06M_iAckY4ft3lGPuTIv8/exec";
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwkHjYACdZop98u6sM-GWX-JJi4VbWgNvDdragVC0mYC2IUV1LJElPA9HM1b3ABxRg1vA/exec";
 
-    // Manajemen Session ID berbasis sessionStorage:
-    // Mencegah akumulasi kunjungan palsu saat refresh browser di tab yang sama
     function initSessionData() {
-      let currentSid = sessionStorage.getItem('mepokoaso_session_id');
+      let currentSid = null;
       let isNew = false;
-      if (!currentSid) {
-        currentSid = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
-        sessionStorage.setItem('mepokoaso_session_id', currentSid);
-        isNew = true; // Kunjungan baru riil
+      try {
+        currentSid = sessionStorage.getItem('mepokoaso_session_id');
+        if (!currentSid) {
+          currentSid = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+          sessionStorage.setItem('mepokoaso_session_id', currentSid);
+          isNew = true;
+        }
+      } catch (e) {
+        // Fallback memori jika storage diblokir peramban
+        currentSid = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+        isNew = true;
       }
       return { sid: currentSid, isNew: isNew };
     }
@@ -722,4 +731,391 @@
           class="px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all duration-200 ${
             cat === activeCategory 
               ? 'bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.45)] border-t border-white/40 scale-100' 
-              : 'bg-slate-900/60 backdrop-blur-xl text-slate-300 hover:text-white border border-whi
+              : 'bg-slate-900/60 backdrop-blur-xl text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/40 active:scale-95'
+          }">
+          ${cat === 'ALL' ? 'Semua Kategori' : cat}
+        </button>
+      `).join('');
+    }
+
+    function changeCategory(cat) {
+      activeCategory = cat;
+      renderCategoryTabs();
+      renderAppCards();
+    }
+
+    function trackClick(appName) {
+      const trackParams = {
+        action: 'click_track',
+        app_name: appName,
+        sid: RUNTIME_SID,
+        ua: navigator.userAgent || 'Web Browser',
+        _t: Date.now()
+      };
+      
+      const trackUrl = `${GAS_ENDPOINT}?${new URLSearchParams(trackParams).toString()}`;
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(trackUrl);
+      } else {
+        fetch(trackUrl, { keepalive: true, mode: 'no-cors' }).catch(() => {});
+      }
+      return true;
+    }
+
+    function renderAppCards() {
+      const searchInput = document.getElementById('searchInput');
+      const searchKey = (searchInput ? searchInput.value : '').toLowerCase();
+      const grid = document.getElementById('appGrid');
+      if (!grid) return;
+
+      const filtered = allApps.filter(item => {
+        const matchCat = activeCategory === 'ALL' || (item.category && item.category.toUpperCase() === activeCategory.toUpperCase());
+        const matchKey = (item.title || '').toLowerCase().includes(searchKey) || (item.desc || '').toLowerCase().includes(searchKey);
+        return matchCat && matchKey;
+      });
+
+      const totalAppsEl = document.getElementById('total-apps');
+      if (totalAppsEl) totalAppsEl.textContent = `${allApps.length} Layanan Aktif`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-300 aero-card rounded-3xl">
+            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-40 text-cyan-400"></i>
+            <p class="text-sm font-semibold">Tidak ada layanan atau aplikasi yang sesuai.</p>
+          </div>`;
+        safeRenderIcons();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(app => `
+        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
+           onclick="trackClick('${app.title}')"
+           class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+          
+          <div class="specular-line"></div>
+
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+                <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">${app.title}</h3>
+                <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">${app.category || 'Layanan'}</span>
+              </div>
+            </div>
+            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">${app.badge}</span>` : ''}
+          </div>
+          <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">${app.desc || ''}</p>
+          <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+            <span>Akses Aplikasi</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+          </div>
+        </a>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    function renderDocs(docs) {
+      if (docs && docs.length > 0) allDocs = docs;
+      const container = document.getElementById('docsListContainer');
+      if (!container) return;
+
+      if (!allDocs || allDocs.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Belum ada dokumen yang dipublikasikan.</p>`;
+        return;
+      }
+
+      container.innerHTML = allDocs.map(doc => `
+        <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-3 hover:border-cyan-400/40 transition">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-white">${doc.judul}</h4>
+              <p class="text-[11px] text-cyan-200/60">${doc.kategori} • ${doc.ukuran} • ${doc.tahun}</p>
+            </div>
+          </div>
+          <a href="${doc.url}" target="_blank" rel="noopener noreferrer" 
+             class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.4)] transition flex items-center gap-1.5 flex-shrink-0">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Unduh</span>
+          </a>
+        </div>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    function renderInfos(infos) {
+      if (infos && infos.length > 0) allInfos = infos;
+      const badgeEl = document.getElementById('info-badge');
+      const badgeMobile = document.getElementById('info-badge-mobile');
+      const container = document.getElementById('infoListContainer');
+
+      if (allInfos && allInfos.length > 0) {
+        const textCount = allInfos.length > 99 ? '99+' : allInfos.length;
+        if (badgeEl) {
+          badgeEl.textContent = textCount;
+          badgeEl.classList.remove('hidden');
+          badgeEl.classList.add('inline-flex');
+        }
+        if (badgeMobile) {
+          badgeMobile.textContent = textCount;
+          badgeMobile.classList.remove('hidden');
+        }
+      } else {
+        if (badgeEl) {
+          badgeEl.classList.add('hidden');
+          badgeEl.classList.remove('inline-flex');
+        }
+        if (badgeMobile) badgeMobile.classList.add('hidden');
+      }
+
+      if (!container) return;
+
+      if (!allInfos || allInfos.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Tidak ada pengumuman terbaru saat ini.</p>`;
+        return;
+      }
+
+      container.innerHTML = allInfos.map(info => `
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-rose-400/40 transition space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              ${info.kategori || 'Pengumuman'}
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">${info.tanggal}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">${info.judul}</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">${info.isi}</p>
+        </div>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    /* =====================================================================
+     * 8. SINKRONISASI PENGATURAN SPREADSHEET
+     * ===================================================================== */
+    function applySpreadsheetSettings(settings) {
+      if (!settings) return;
+
+      if (settings.title) {
+        const titleEl = document.getElementById('app-title');
+        const pageTitleEl = document.getElementById('page-title');
+        if (titleEl) titleEl.textContent = settings.title;
+        if (pageTitleEl) pageTitleEl.textContent = settings.title;
+      }
+
+      if (settings.subtitle) {
+        const sub1El = document.getElementById('app-subtitle');
+        if (sub1El) sub1El.textContent = settings.subtitle;
+      }
+
+      const sub2Val = settings.subtitle2 || settings.subtitle_2 || settings.tagline;
+      if (sub2Val) {
+        const sub2El = document.getElementById('app-subtitle2');
+        if (sub2El) sub2El.textContent = sub2Val;
+      }
+
+      if (settings.logo_url) {
+        const logoEl = document.getElementById('app-logo');
+        if (logoEl) logoEl.src = settings.logo_url;
+      }
+
+      if (settings.wa_admin_phone) {
+        const msg = encodeURIComponent(settings.wa_admin_text || "Halo Admin BPKAD Konawe, saya ingin berkonsultasi.");
+        const phone = String(settings.wa_admin_phone).replace(/\D/g, '');
+        const waAdminUrl = `https://wa.me/${phone}?text=${msg}`;
+        
+        const navWa = document.getElementById('btn-wa-admin');
+        const mobWa = document.getElementById('btn-wa-admin-mobile');
+        if (navWa) navWa.href = waAdminUrl;
+        if (mobWa) mobWa.href = waAdminUrl;
+      }
+
+      const groupUrl = settings.wa_group_url || "#";
+      const navGroup = document.getElementById('btn-wa-group-nav');
+      const mobGroup = document.getElementById('btn-wa-group-mobile');
+      if (navGroup) navGroup.href = groupUrl;
+      if (mobGroup) mobGroup.href = groupUrl;
+
+      if (settings.jam_layanan) {
+        const jamEl = document.getElementById('label-jam-layanan');
+        if (jamEl) jamEl.textContent = settings.jam_layanan;
+      }
+
+      if (settings.footer) {
+        const footerEl = document.getElementById('footer-text');
+        if (footerEl) footerEl.textContent = settings.footer;
+      }
+
+      const bgVal = (settings.bg_body || settings.bg_video || "").trim();
+      if (bgVal && (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4"))) {
+        if (videoEl && videoEl.src !== bgVal) {
+          videoEl.src = bgVal;
+          videoEl.load();
+          startVideo();
+        }
+      }
+    }
+
+    function syncAnalyticsUI(analytics) {
+      if (!analytics) return;
+      if (analytics.total !== undefined) {
+        const totalEl = document.getElementById('stat-total');
+        if (totalEl) totalEl.textContent = Number(analytics.total).toLocaleString('id-ID');
+      }
+      if (analytics.online !== undefined) {
+        const onlineEl = document.getElementById('stat-online');
+        if (onlineEl) onlineEl.textContent = Number(analytics.online).toLocaleString('id-ID');
+      }
+    }
+
+    /* =====================================================================
+     * 9. DUAL-ENGINE NETWORK CLIENT (FETCH + BULLETPROOF JSONP FALLBACK)
+     * ===================================================================== */
+    function callGasApi(paramsObj) {
+      return new Promise((resolve, reject) => {
+        const queryParams = new URLSearchParams(paramsObj);
+        const fetchUrl = `${GAS_ENDPOINT}?${queryParams.toString()}`;
+
+        // 1. Upayakan via standard fetch() terlebih dahulu
+        fetch(fetchUrl, { method: 'GET', redirect: 'follow' })
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+            return res.json();
+          })
+          .then(data => {
+            resolve(data);
+          })
+          .catch(err => {
+            // 2. Jika fetch diblokir CORS / AdBlock, fallback otomatis ke JSONP (100% Bebas CORS)
+            console.warn("Fetch diblokir CORS/Network, beralih ke JSONP Engine...", err);
+            
+            const callbackName = 'gas_cb_' + Math.random().toString(36).substring(2, 8) + '_' + Date.now();
+            paramsObj.callback = callbackName;
+            
+            const jsonpUrl = `${GAS_ENDPOINT}?${new URLSearchParams(paramsObj).toString()}`;
+            const script = document.createElement('script');
+            script.src = jsonpUrl;
+            script.async = true;
+
+            const timer = setTimeout(() => {
+              cleanup();
+              reject(new Error("Timeout memuat data"));
+            }, 12000);
+
+            function cleanup() {
+              clearTimeout(timer);
+              if (script.parentNode) script.parentNode.removeChild(script);
+              delete window[callbackName];
+            }
+
+            window[callbackName] = function(data) {
+              cleanup();
+              resolve(data);
+            };
+
+            script.onerror = function() {
+              cleanup();
+              reject(new Error("JSONP Request Error"));
+            };
+
+            document.head.appendChild(script);
+          });
+      });
+    }
+
+    async function fetchPortalDatabase() {
+      const syncEl = document.getElementById('sync-status');
+      try {
+        if (syncEl) syncEl.textContent = "Sync...";
+        
+        const data = await callGasApi({
+          action: 'init',
+          sid: RUNTIME_SID,
+          is_new: IS_NEW_VISITOR ? '1' : '0',
+          ua: navigator.userAgent || 'Web Browser',
+          _t: Date.now()
+        });
+
+        if (data && data.status === "success") {
+          applySpreadsheetSettings(data.settings);
+          syncAnalyticsUI(data.analytics);
+          
+          if (data.apps && data.apps.length > 0) {
+            allApps = data.apps;
+            renderCategoryTabs();
+            renderAppCards();
+          }
+          
+          if (data.docs && data.docs.length > 0) renderDocs(data.docs);
+          if (data.infos && data.infos.length > 0) renderInfos(data.infos);
+
+          if (syncEl) syncEl.textContent = "Live";
+        }
+      } catch (err) {
+        console.warn("Koneksi cloud offline / menggunakan cache lokal:", err);
+        if (syncEl) syncEl.textContent = "Offline";
+      }
+    }
+
+    async function triggerHeartbeat() {
+      try {
+        const data = await callGasApi({
+          action: 'heartbeat',
+          sid: RUNTIME_SID,
+          _t: Date.now()
+        });
+        if (data && data.status === "success" && data.analytics) {
+          syncAnalyticsUI(data.analytics);
+          const syncEl = document.getElementById('sync-status');
+          if (syncEl) syncEl.textContent = "Live";
+        }
+      } catch (e) {}
+    }
+
+    // Polling setiap 10 detik agar pembaruan data sangat responsif
+    setInterval(triggerHeartbeat, 10000);
+
+    // Kirim sinyal keluar seketika saat tab/browser ditutup
+    function sendLeaveBeacon() {
+      if (!RUNTIME_SID) return;
+      const leaveUrl = `${GAS_ENDPOINT}?action=leave&sid=${encodeURIComponent(RUNTIME_SID)}&_t=${Date.now()}`;
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(leaveUrl);
+      } else {
+        fetch(leaveUrl, { method: 'POST', keepalive: true, mode: 'no-cors' }).catch(() => {});
+      }
+    }
+
+    window.addEventListener('pagehide', sendLeaveBeacon);
+    window.addEventListener('beforeunload', sendLeaveBeacon);
+
+    // Saat tab browser kembali dilihat, sinkronkan data langsung detik itu juga
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        triggerHeartbeat();
+      }
+    });
+
+    /* =====================================================================
+     * 10. BOOTSTRAP INITIAL RUN (ZERO-LATENCY RENDER)
+     * ===================================================================== */
+    // Render langsung data lokal agar kartu aplikasi tidak pernah kosong
+    renderCategoryTabs();
+    renderAppCards();
+    renderDocs(allDocs);
+    renderInfos(allInfos);
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.addEventListener('input', renderAppCards);
+
+    safeRenderIcons();
+    
+    // Sinkronisasikan dengan Google Apps Script & Google Sheets
+    fetchPortalDatabase();
+  </script>
+</body>
+</html>
