@@ -571,9 +571,10 @@
     startVideo();
 
     /* =====================================================================
-     * 4. DATA & MANAJEMEN SESI (SAFE STORAGE SHIELD)
+     * 4. DATA & MANAJEMEN SESI (DENGAN ENDPOINT TERBARU)
      * ===================================================================== */
-    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwkHjYACdZop98u6sM-GWX-JJi4VbWgNvDdragVC0mYC2IUV1LJElPA9HM1b3ABxRg1vA/exec";
+    // URL Web App Deployment Google Apps Script Terbaru Anda
+    const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbykQP5_-ymefPbfNCz8wvX9tIaWoZvAhKuq_ufpIZ_7NtX06M_iAckY4ft3lGPuTIv8/exec";
 
     function initSessionData() {
       let currentSid = null;
@@ -1093,29 +1094,4 @@
     window.addEventListener('pagehide', sendLeaveBeacon);
     window.addEventListener('beforeunload', sendLeaveBeacon);
 
-    // Saat tab browser kembali dilihat, sinkronkan data langsung detik itu juga
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        triggerHeartbeat();
-      }
-    });
-
-    /* =====================================================================
-     * 10. BOOTSTRAP INITIAL RUN (ZERO-LATENCY RENDER)
-     * ===================================================================== */
-    // Render langsung data lokal agar kartu aplikasi tidak pernah kosong
-    renderCategoryTabs();
-    renderAppCards();
-    renderDocs(allDocs);
-    renderInfos(allInfos);
-
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) searchInput.addEventListener('input', renderAppCards);
-
-    safeRenderIcons();
-    
-    // Sinkronisasikan dengan Google Apps Script & Google Sheets
-    fetchPortalDatabase();
-  </script>
-</body>
-</html>
+    // Saat tab browser kembali dilihat, sinkronk
