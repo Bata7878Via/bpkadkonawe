@@ -1,19 +1,8 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-  <!-- 1. META SHIELD LENGKAP: ANTI BOT & ANTI CRAWLER -->
   <meta charset="UTF-8" />
-  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noodp, notranslate, noimageindex" />
-  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, max-image-preview:none" />
-  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet" />
-  <meta name="baiduspider" content="noindex, nofollow" />
-  <meta name="yandex" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  
-  <!-- DIPERBAIKI: Mengizinkan handshake cross-origin yang aman dengan server Google Apps Script -->
-  <meta name="referrer" content="strict-origin-when-cross-origin" />
-  
   <title id="page-title">SI-MEPOKOASO BPKAD KAB. KONAWE</title>
 
   <!-- PWA & MOBILE APP META TAGS -->
@@ -48,19 +37,7 @@
   </script>
 
   <style>
-    /* Proteksi Seleksi dan Drag Dokumen */
-    * {
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
-      -webkit-user-drag: none !important;
-    }
-    input, textarea {
-      -webkit-user-select: text !important;
-      user-select: text !important;
-    }
-
+    /* Proteksi seleksi dan drag telah dinonaktifkan sepenuhnya */
     html, body {
       margin: 0;
       padding: 0;
@@ -178,14 +155,13 @@
 
         <!-- Sinkronisasi Live Dot -->
         <div class="flex items-center gap-1 text-[10px] text-cyan-300/70 font-mono">
-          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-          <span id="sync-status">Live</span>
+          <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span id="sync-status">Menghubungkan...</span>
         </div>
       </div>
 
       <!-- 3. SISI KANAN: Lokasi Map BPKAD Konawe + Jam Layanan -->
       <div class="flex items-center justify-center md:justify-end gap-3 sm:gap-4 flex-wrap w-full md:w-auto flex-shrink-0">
-        <!-- Tautan Google Maps -->
         <a href="https://maps.google.com/?q=BPKAD+Kabupaten+Konawe" 
            target="_blank" 
            rel="noopener noreferrer" 
@@ -200,7 +176,6 @@
 
         <span class="text-white/20 hidden sm:inline">•</span>
 
-        <!-- Jam Layanan Resmi -->
         <div class="flex items-center gap-1.5 text-emerald-300 text-[11px] font-medium">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="label-jam-layanan">Senin - Jumat: 08.00 - 16.00 WITA</span>
@@ -214,9 +189,8 @@
   <header class="sticky top-0 z-30 bg-slate-900/75 border-b border-white/15 backdrop-blur-2xl shadow-aero-glass transition-all">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
       
-      <!-- Sisi Kiri: Logo Konawe Proporsional + Teks Judul Utuh -->
+      <!-- Sisi Kiri: Logo Konawe + Judul -->
       <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-        <!-- Logo Pemkab Konawe -->
         <div class="w-12 h-14 sm:w-14 sm:h-16 flex-shrink-0 flex items-center justify-center p-1 bg-black/45 rounded-2xl border border-white/20 shadow-emboss-btn backdrop-blur-md">
           <img id="app-logo" 
                src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" 
@@ -224,7 +198,6 @@
                class="max-h-full max-w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]" />
         </div>
 
-        <!-- Hierarki Judul Lengkap -->
         <div class="flex-1 min-w-0 pr-1">
           <h1 id="app-title" class="text-sm sm:text-lg lg:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-sky-200 bg-clip-text text-transparent leading-snug drop-shadow-sm">
             SI-MEPOKOASO BPKAD KAB. KONAWE
@@ -240,21 +213,18 @@
 
       <!-- Sisi Kanan: Tombol Navigasi Desktop -->
       <nav class="hidden lg:flex items-center gap-2.5 flex-shrink-0">
-        <!-- Tombol Pasang Aplikasi (PWA Trigger) -->
         <button id="btn-install-header" onclick="triggerPwaInstall()" 
                 class="hidden px-3.5 py-2 rounded-xl text-xs font-bold text-amber-300 bg-slate-900/60 hover:bg-amber-950/70 border border-amber-400/40 hover:border-amber-400/80 shadow-emboss-btn transition-all items-center gap-2 active:scale-95">
           <i data-lucide="download-cloud" class="w-4 h-4 text-amber-400"></i>
           <span>Pasang App</span>
         </button>
 
-        <!-- Unduh Dokumen -->
         <button onclick="openModal('modal-docs')" 
                 class="px-3.5 py-2 rounded-xl text-xs font-bold text-cyan-200 bg-slate-900/60 hover:bg-cyan-950/70 border border-cyan-400/30 hover:border-cyan-400/60 shadow-emboss-btn transition-all flex items-center gap-2 active:scale-95">
           <i data-lucide="file-down" class="w-4 h-4 text-cyan-400"></i>
           <span>Unduh Dokumen</span>
         </button>
 
-        <!-- Info BPKAD (Badge Angka Merah) -->
         <button onclick="openModal('modal-info')" 
                 class="relative px-3.5 py-2 rounded-xl text-xs font-bold text-cyan-200 bg-slate-900/60 hover:bg-cyan-950/70 border border-cyan-400/30 hover:border-cyan-400/60 shadow-emboss-btn transition-all flex items-center gap-2 active:scale-95">
           <i data-lucide="bell" class="w-4 h-4 text-cyan-400"></i>
@@ -264,14 +234,12 @@
           </span>
         </button>
 
-        <!-- Hubungi Admin (WhatsApp) -->
         <a id="btn-wa-admin" href="#" target="_blank" rel="noopener noreferrer" 
            class="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-300 bg-slate-900/60 hover:bg-emerald-950/70 border border-emerald-500/35 hover:border-emerald-400/70 shadow-emboss-btn transition-all flex items-center gap-2 active:scale-95">
           <i data-lucide="phone-call" class="w-4 h-4 text-emerald-400"></i>
           <span>Hubungi Admin</span>
         </a>
 
-        <!-- Grup Koordinasi BPKAD (WhatsApp) -->
         <a id="btn-wa-group-nav" href="#" target="_blank" rel="noopener noreferrer" 
            class="px-4 py-2 rounded-xl text-xs font-extrabold text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 hover:from-emerald-300 hover:to-cyan-200 shadow-[0_0_18px_rgba(16,185,129,0.45)] transition-all flex items-center gap-2 active:scale-95">
           <i data-lucide="message-square" class="w-4 h-4"></i>
@@ -286,13 +254,11 @@
 
     </div>
 
-    <!-- Mobile Drawer Nav (Android) -->
+    <!-- Mobile Drawer Nav -->
     <div id="mobile-nav" class="hidden lg:hidden px-4 pb-4 pt-2 border-t border-white/10 bg-slate-950/95 backdrop-blur-2xl space-y-2 text-xs font-bold">
-      <!-- Tombol Pasang di Mobile Drawer -->
       <button id="btn-install-mobile" onclick="triggerPwaInstall(); toggleMobileNav();" class="hidden w-full text-left p-2.5 rounded-xl text-amber-300 bg-amber-500/15 border border-amber-400/30 items-center gap-2">
         <i data-lucide="download-cloud" class="w-4 h-4 text-amber-400"></i> Pasang Aplikasi di Layar Utama HP
       </button>
-
       <button onclick="openModal('modal-docs'); toggleMobileNav();" class="w-full text-left p-2.5 rounded-xl text-cyan-200 bg-white/5 hover:bg-white/10 flex items-center gap-2">
         <i data-lucide="file-down" class="w-4 h-4 text-cyan-400"></i> Unduh Dokumen
       </button>
@@ -334,8 +300,186 @@
       <div id="categoryTabs" class="flex gap-2 overflow-x-auto no-scrollbar py-1 text-xs"></div>
     </div>
 
-    <!-- GRID MENU APLIKASI (LANGSUNG TAMPIL DARI DATA AWAL) -->
-    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></main>
+    <!-- GRID MENU APLIKASI (DITANAM LANGSUNG SEJAK AWAL: TIDAK AKAN HILANG) -->
+    <main id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      
+      <!-- 1. SIPD-RI -->
+      <a href="https://sipd-ri.kemendagri.go.id" target="_blank" rel="noopener noreferrer" onclick="trackClick('SIPD-RI')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="landmark" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">SIPD-RI</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Keuangan</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Utama</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Sistem Informasi Pemerintahan Daerah</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 2. Atisisbada -->
+      <a href="https://konawekab.atisisbada.id" target="_blank" rel="noopener noreferrer" onclick="trackClick('Atisisbada')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">Atisisbada</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Aset</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Daily</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Pengelolaan Barang Milik Daerah</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 3. Srikandi -->
+      <a href="https://srikandi.arsip.go.id" target="_blank" rel="noopener noreferrer" onclick="trackClick('Srikandi')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="mail" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">Srikandi</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Persuratan</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Kantor</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Tata Kelola Surat Dinas Digital</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 4. Portal Konawe -->
+      <a href="https://konawekab.go.id" target="_blank" rel="noopener noreferrer" onclick="trackClick('Portal Konawe')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="globe" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">Portal Konawe</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Pemda</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Portal</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Website Resmi Pemkab Konawe</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 5. ASN Digital -->
+      <a href="https://asndigital.bkn.go.id/" target="_blank" rel="noopener noreferrer" onclick="trackClick('ASN Digital')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="file-text" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">ASN Digital</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Pegawai</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Portal</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Manajemen ASN Terpadu</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 6. RKBMD Permendagri 2019 -->
+      <a href="https://bata7878via.github.io/rkbm-online/" target="_blank" rel="noopener noreferrer" onclick="trackClick('RKBMD - RKPBMD PERMENDAGRI THN 2019')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">RKBMD - RKPBMD PERMENDAGRI THN 2019</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Aset</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Portal</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Penginputan RKBMD dan RKPBMD</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 7. RKBMD Permendagri 2023 -->
+      <a href="https://bata7878via.github.io/rkpbmd_enterprise/" target="_blank" rel="noopener noreferrer" onclick="trackClick('RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">RPBMD & RKPBMD PERMENDAGRI NO.61 TAHUN 2023</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Aset</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Portal</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Penginputan RKBMD dan RKPBMD</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 8. Aplikasi Persediaan -->
+      <a href="https://bata7878via.github.io/Halaman-Dalam-Masa-Pengembangan/" target="_blank" rel="noopener noreferrer" onclick="trackClick('Aplikasi Persediaan')" class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+        <div class="specular-line"></div>
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+              <i data-lucide="database" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">Aplikasi Persediaan</h3>
+              <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">Aset</span>
+            </div>
+          </div>
+          <span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">Portal</span>
+        </div>
+        <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">Penginputan RKBMD dan RKPBMD</p>
+        <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+          <span>Akses Aplikasi</span>
+          <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+        </div>
+      </a>
+
+    </main>
 
   </div>
 
@@ -343,30 +487,17 @@
   <div id="pwa-install-dialog" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="aero-card max-w-md w-full rounded-3xl p-6 relative border border-cyan-400/40 shadow-aero-glass overflow-hidden flex flex-col text-center animate-fade-in">
       <div class="specular-line"></div>
-
-      <!-- Ikon & Logo App -->
       <div class="mx-auto w-16 h-18 p-1.5 bg-black/50 rounded-2xl border border-white/20 shadow-emboss-btn mb-4 flex items-center justify-center">
         <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Lambang_Kabupaten_Konawe.png" alt="Logo Konawe" class="max-h-full max-w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]" />
       </div>
-
-      <h3 class="text-base sm:text-lg font-extrabold text-white leading-tight">
-        Pasang Aplikasi SI-MEPOKOASO?
-      </h3>
-      
-      <p class="text-xs text-cyan-200/80 mt-2 leading-relaxed px-2">
-        Pasang pintasan resmi portal BPKAD Kabupaten Konawe di layar utama HP Android atau Desktop Laptop Anda untuk akses yang lebih cepat tanpa perlu membuka browser.
-      </p>
-
-      <!-- Tombol Konfirmasi PWA -->
+      <h3 class="text-base sm:text-lg font-extrabold text-white leading-tight">Pasang Aplikasi SI-MEPOKOASO?</h3>
+      <p class="text-xs text-cyan-200/80 mt-2 leading-relaxed px-2">Pasang pintasan resmi portal BPKAD Kabupaten Konawe di layar utama HP atau Laptop untuk akses lebih cepat.</p>
       <div class="mt-6 flex flex-col sm:flex-row gap-2.5">
-        <button onclick="acceptPwaInstall()" 
-                class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 hover:from-emerald-300 hover:to-cyan-200 shadow-[0_0_18px_rgba(16,185,129,0.45)] transition-all flex items-center justify-center gap-2 active:scale-95">
+        <button onclick="acceptPwaInstall()" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 hover:from-emerald-300 hover:to-cyan-200 shadow-[0_0_18px_rgba(16,185,129,0.45)] transition-all flex items-center justify-center gap-2 active:scale-95">
           <i data-lucide="download" class="w-4 h-4"></i>
           <span>Ya, Pasang Aplikasi</span>
         </button>
-        
-        <button onclick="dismissPwaInstall()" 
-                class="py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-900/60 border border-white/10 hover:bg-slate-800 transition">
+        <button onclick="dismissPwaInstall()" class="py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-900/60 border border-white/10 hover:bg-slate-800 transition">
           Nanti Saja
         </button>
       </div>
@@ -391,13 +522,9 @@
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-
       <div id="docsListContainer" class="overflow-y-auto space-y-3 flex-grow pr-1"></div>
-
       <div class="pt-4 border-t border-white/10 mt-4 flex justify-end">
-        <button onclick="closeModal('modal-docs')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
-          Tutup
-        </button>
+        <button onclick="closeModal('modal-docs')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">Tutup</button>
       </div>
     </div>
   </div>
@@ -420,13 +547,9 @@
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-
       <div id="infoListContainer" class="overflow-y-auto space-y-3 flex-grow pr-1"></div>
-
       <div class="pt-4 border-t border-white/10 mt-4 flex justify-end">
-        <button onclick="closeModal('modal-info')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">
-          Tutup
-        </button>
+        <button onclick="closeModal('modal-info')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition">Tutup</button>
       </div>
     </div>
   </div>
@@ -444,117 +567,25 @@
   <!-- ================= LOGIKA JAVASCRIPT LENGKAP ================= -->
   <script>
     /* =====================================================================
-     * 1. PEMBERSIH CACHE & REGISTRASI PWA (MENCEGAH KUNCIAN CACHE LAMA)
+     * 1. PEMBERSIH SERVICE WORKER & CACHE NUKER (MEMBUNUH KUNCIAN CACHE LAMA)
      * ===================================================================== */
-    let deferredPrompt = null;
-
-    // Bersihkan service worker lama yang mungkin menyimpan cache HTML rusak
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        for (let registration of registrations) {
-          registration.update();
-        }
-      });
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-
-      const btnHeader = document.getElementById('btn-install-header');
-      const btnMobile = document.getElementById('btn-install-mobile');
-      if (btnHeader) { btnHeader.classList.remove('hidden'); btnHeader.classList.add('inline-flex'); }
-      if (btnMobile) { btnMobile.classList.remove('hidden'); btnMobile.classList.add('flex'); }
-
-      try {
-        const isDismissed = localStorage.getItem('mepokoaso_pwa_dismissed');
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-        if (!isStandalone && !isDismissed) {
-          setTimeout(() => {
-            openPwaDialog();
-          }, 1500);
-        }
-      } catch (err) {}
-    });
-
-    function openPwaDialog() {
-      const dialog = document.getElementById('pwa-install-dialog');
-      if (dialog) {
-        dialog.classList.remove('hidden');
-        dialog.classList.add('flex');
-        safeRenderIcons();
-      }
-    }
-
-    function dismissPwaInstall() {
-      const dialog = document.getElementById('pwa-install-dialog');
-      if (dialog) {
-        dialog.classList.add('hidden');
-        dialog.classList.remove('flex');
-      }
-      try {
-        localStorage.setItem('mepokoaso_pwa_dismissed', 'true');
-      } catch (e) {}
-    }
-
-    async function acceptPwaInstall() {
-      dismissPwaInstall();
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('Pilihan pengguna:', outcome);
-        deferredPrompt = null;
-      }
-    }
-
-    function triggerPwaInstall() {
-      if (deferredPrompt) {
-        acceptPwaInstall();
-      } else {
-        openPwaDialog();
-      }
-    }
-
-    window.addEventListener('appinstalled', () => {
-      console.log('Aplikasi sukses terpasang di sistem!');
-      deferredPrompt = null;
-      const btnHeader = document.getElementById('btn-install-header');
-      const btnMobile = document.getElementById('btn-install-mobile');
-      if (btnHeader) btnHeader.classList.add('hidden');
-      if (btnMobile) btnMobile.classList.add('hidden');
-    });
-
-    /* =====================================================================
-     * 2. PROTEKSI BOT & INSPEKSI (DILENGKAPI SAFETY GUARD)
-     * ===================================================================== */
-    (function initSecurityShield() {
-      try {
-        const isBot = navigator.webdriver || window.__nightmare || window.callPhantom || window._phantom || /HeadlessChrome/i.test(navigator.userAgent);
-        if (isBot) {
-          document.documentElement.innerHTML = "<h2 style='color:#fff;text-align:center;margin-top:20%'>403 - Akses Ditolak</h2>";
-          throw new Error("Bot access rejected.");
-        }
-
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('dragstart', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-          if (
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) ||
-            (e.ctrlKey && ['U','u','S','s','P','p'].includes(e.key))
-          ) {
-            e.preventDefault();
-            return false;
+    (function killStaleServiceWorkers() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (let reg of regs) {
+            reg.unregister(); // Hapus paksa service worker lama
           }
-        });
-      } catch (err) {
-        console.warn("Security notice:", err);
+        }).catch(() => {});
+      }
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name); // Hapus seluruh file cache browser lama
+        }).catch(() => {});
       }
     })();
 
     /* =====================================================================
-     * 3. VIDEO PLAYER MANDIRI
+     * 2. VIDEO PLAYER MANDIRI
      * ===================================================================== */
     const videoEl = document.getElementById('bg-video');
     function startVideo() {
@@ -564,40 +595,38 @@
       const playPromise = videoEl.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          const triggerPlay = () => {
+          const trigger = () => {
             videoEl.play();
-            window.removeEventListener('click', triggerPlay);
-            window.removeEventListener('touchstart', triggerPlay);
-            window.removeEventListener('scroll', triggerPlay);
+            window.removeEventListener('click', trigger);
+            window.removeEventListener('touchstart', trigger);
           };
-          window.addEventListener('click', triggerPlay, { once: true });
-          window.addEventListener('touchstart', triggerPlay, { once: true });
-          window.addEventListener('scroll', triggerPlay, { once: true });
+          window.addEventListener('click', trigger, { once: true });
+          window.addEventListener('touchstart', trigger, { once: true });
         });
       }
     }
     startVideo();
 
     /* =====================================================================
-     * 4. DATA & MANAJEMEN SESI (DENGAN ENDPOINT TERBARU)
+     * 3. DATA & MANAJEMEN SESI ANALITIK
      * ===================================================================== */
     const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbykQP5_-ymefPbfNCz8wvX9tIaWoZvAhKuq_ufpIZ_7NtX06M_iAckY4ft3lGPuTIv8/exec";
 
     function initSessionData() {
-      let currentSid = null;
+      let sid = null;
       let isNew = false;
       try {
-        currentSid = sessionStorage.getItem('mepokoaso_session_id');
-        if (!currentSid) {
-          currentSid = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
-          sessionStorage.setItem('mepokoaso_session_id', currentSid);
+        sid = sessionStorage.getItem('mepokoaso_session_id');
+        if (!sid) {
+          sid = 'sid_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+          sessionStorage.setItem('mepokoaso_session_id', sid);
           isNew = true;
         }
       } catch (e) {
-        currentSid = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
+        sid = 'mem_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
         isNew = true;
       }
-      return { sid: currentSid, isNew: isNew };
+      return { sid: sid, isNew: isNew };
     }
 
     const SESSION_INFO = initSessionData();
@@ -618,4 +647,510 @@
     let allDocs = [
       { id: "DOC-01", judul: "Format Standar SPJ Keuangan SKPD 2026", kategori: "Template SPJ", ukuran: "1.8 MB", tahun: "2026", url: "https://drive.google.com" },
       { id: "DOC-02", judul: "Petunjuk Teknis Rekonsiliasi Aset BMD", kategori: "Juknis Aset", ukuran: "3.2 MB", tahun: "2026", url: "https://drive.google.com" },
-      { id: "DOC-03", judul: "Perbup Standar
+      { id: "DOC-03", judul: "Perbup Standar Satuan Harga (SSH) Konawe", kategori: "Regulasi", ukuran: "4.7 MB", tahun: "2025", url: "https://drive.google.com" }
+    ];
+
+    let allInfos = [
+      { id: "INF-01", judul: "Batas Akhir Rekonsiliasi APBD Triwulan I", tanggal: "10 Nov 2026", isi: "Diberitahukan kepada seluruh bendahara pengeluaran SKPD agar segera menuntaskan input SPJ sebelum akhir bulan berjalan.", kategori: "Pengumuman" },
+      { id: "INF-02", judul: "Pemeliharaan Server Sistem SIPD RI", tanggal: "08 Nov 2026", isi: "Akses sinkronisasi data keuangan akan mengalami pemeliharaan terjadwal pada akhir pekan.", kategori: "Teknis" }
+    ];
+
+    let activeCategory = 'ALL';
+
+    function safeRenderIcons() {
+      try {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch (e) {}
+    }
+
+    /* =====================================================================
+     * 4. AMBIENT PARTICLE ANIMATION
+     * ===================================================================== */
+    const canvas = document.getElementById('ambient-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+
+      function setupCanvasSize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', setupCanvasSize);
+      setupCanvasSize();
+
+      class AmbientDot {
+        constructor() { this.init(); }
+        init() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2.2 + 0.6;
+          this.vx = (Math.random() - 0.5) * 0.35;
+          this.vy = (Math.random() - 0.5) * 0.35;
+          this.alpha = Math.random() * 0.5 + 0.15;
+          this.color = Math.random() > 0.5 ? '56, 189, 248' : '52, 211, 153';
+        }
+        step() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.init();
+        }
+        render() {
+          ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      for (let i = 0; i < 35; i++) particles.push(new AmbientDot());
+
+      function loopCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.step(); p.render(); });
+        requestAnimationFrame(loopCanvas);
+      }
+      loopCanvas();
+    }
+
+    /* =====================================================================
+     * 5. CLOCK KOMPATIBEL UNIVERSAL
+     * ===================================================================== */
+    function runLiveClock() {
+      const clockEl = document.getElementById('live-clock');
+      function update() {
+        try {
+          const now = new Date();
+          const options = { timeZone: "Asia/Makassar", hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+          const timePart = new Intl.DateTimeFormat("id-ID", options).format(now);
+          const datePart = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+          if (clockEl) clockEl.textContent = `${datePart} • ${timePart} WITA`;
+        } catch (e) {
+          if (clockEl) clockEl.textContent = new Date().toTimeString().split(' ')[0] + " WITA";
+        }
+      }
+      setInterval(update, 1000);
+      update();
+    }
+    runLiveClock();
+
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        safeRenderIcons();
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function toggleMobileNav() {
+      const nav = document.getElementById('mobile-nav');
+      if (nav) nav.classList.toggle('hidden');
+    }
+
+    /* =====================================================================
+     * 6. RENDERING APLIKASI, DOKUMEN & NOTIFIKASI
+     * ===================================================================== */
+    function renderCategoryTabs() {
+      const categories = ['ALL', ...new Set(allApps.map(a => a.category).filter(Boolean))];
+      const container = document.getElementById('categoryTabs');
+      if (!container) return;
+      container.innerHTML = categories.map(cat => `
+        <button onclick="changeCategory('${cat}')" 
+          class="px-4 py-2 rounded-xl font-bold whitespace-nowrap transition-all duration-200 ${
+            cat === activeCategory 
+              ? 'bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.45)] border-t border-white/40 scale-100' 
+              : 'bg-slate-900/60 backdrop-blur-xl text-slate-300 hover:text-white border border-white/10 hover:border-cyan-400/40 active:scale-95'
+          }">
+          ${cat === 'ALL' ? 'Semua Kategori' : cat}
+        </button>
+      `).join('');
+    }
+
+    function changeCategory(cat) {
+      activeCategory = cat;
+      renderCategoryTabs();
+      renderAppCards();
+    }
+
+    function trackClick(appName) {
+      const trackParams = {
+        action: 'click_track',
+        app_name: appName,
+        sid: RUNTIME_SID,
+        ua: navigator.userAgent || 'Web Browser',
+        _t: Date.now()
+      };
+      
+      const trackUrl = `${GAS_ENDPOINT}?${new URLSearchParams(trackParams).toString()}`;
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(trackUrl);
+      } else {
+        fetch(trackUrl, { keepalive: true, mode: 'no-cors' }).catch(() => {});
+      }
+      return true;
+    }
+
+    function renderAppCards() {
+      const searchInput = document.getElementById('searchInput');
+      const searchKey = (searchInput ? searchInput.value : '').toLowerCase();
+      const grid = document.getElementById('appGrid');
+      if (!grid) return;
+
+      const filtered = allApps.filter(item => {
+        const matchCat = activeCategory === 'ALL' || (item.category && item.category.toUpperCase() === activeCategory.toUpperCase());
+        const matchKey = (item.title || '').toLowerCase().includes(searchKey) || (item.desc || '').toLowerCase().includes(searchKey);
+        return matchCat && matchKey;
+      });
+
+      const totalAppsEl = document.getElementById('total-apps');
+      if (totalAppsEl) totalAppsEl.textContent = `${allApps.length} Layanan Aktif`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-300 aero-card rounded-3xl">
+            <i data-lucide="search-x" class="w-12 h-12 mx-auto mb-3 opacity-40 text-cyan-400"></i>
+            <p class="text-sm font-semibold">Tidak ada layanan atau aplikasi yang sesuai.</p>
+          </div>`;
+        safeRenderIcons();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(app => `
+        <a href="${app.url}" target="_blank" rel="noopener noreferrer" 
+           onclick="trackClick('${app.title}')"
+           class="group relative p-5 rounded-2xl bg-gradient-to-br from-slate-900/65 via-sky-950/40 to-slate-900/70 border border-white/15 hover:border-cyan-400/50 backdrop-blur-2xl shadow-aero-glass flex flex-col justify-between active:scale-[0.98] transition-all duration-300 overflow-hidden">
+          
+          <div class="specular-line"></div>
+
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-400/35 text-cyan-300 group-hover:from-cyan-500 group-hover:to-blue-600 group-hover:text-white shadow-emboss-btn group-hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300">
+                <i data-lucide="${app.icon || 'external-link'}" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors drop-shadow-sm">${app.title}</h3>
+                <span class="text-[10px] text-cyan-200/70 uppercase tracking-widest font-semibold">${app.category || 'Layanan'}</span>
+              </div>
+            </div>
+            ${app.badge ? `<span class="text-[10px] px-2.5 py-1 rounded-md font-bold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 shadow-emboss-btn">${app.badge}</span>` : ''}
+          </div>
+          <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-4">${app.desc || ''}</p>
+          <div class="flex items-center text-[11px] font-semibold text-cyan-300/80 group-hover:text-cyan-300 transition-colors gap-1 self-end mt-auto">
+            <span>Akses Aplikasi</span>
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+          </div>
+        </a>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    function renderDocs(docs) {
+      if (docs && docs.length > 0) allDocs = docs;
+      const container = document.getElementById('docsListContainer');
+      if (!container) return;
+
+      if (!allDocs || allDocs.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Belum ada dokumen yang dipublikasikan.</p>`;
+        return;
+      }
+
+      container.innerHTML = allDocs.map(doc => `
+        <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-3 hover:border-cyan-400/40 transition">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-white">${doc.judul}</h4>
+              <p class="text-[11px] text-cyan-200/60">${doc.kategori} • ${doc.ukuran} • ${doc.tahun}</p>
+            </div>
+          </div>
+          <a href="${doc.url}" target="_blank" rel="noopener noreferrer" 
+             class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.4)] transition flex items-center gap-1.5 flex-shrink-0">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Unduh</span>
+          </a>
+        </div>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    function renderInfos(infos) {
+      if (infos && infos.length > 0) allInfos = infos;
+      const badgeEl = document.getElementById('info-badge');
+      const badgeMobile = document.getElementById('info-badge-mobile');
+      const container = document.getElementById('infoListContainer');
+
+      if (allInfos && allInfos.length > 0) {
+        const textCount = allInfos.length > 99 ? '99+' : allInfos.length;
+        if (badgeEl) {
+          badgeEl.textContent = textCount;
+          badgeEl.classList.remove('hidden');
+          badgeEl.classList.add('inline-flex');
+        }
+        if (badgeMobile) {
+          badgeMobile.textContent = textCount;
+          badgeMobile.classList.remove('hidden');
+        }
+      } else {
+        if (badgeEl) {
+          badgeEl.classList.add('hidden');
+          badgeEl.classList.remove('inline-flex');
+        }
+        if (badgeMobile) badgeMobile.classList.add('hidden');
+      }
+
+      if (!container) return;
+
+      if (!allInfos || allInfos.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Tidak ada pengumuman terbaru saat ini.</p>`;
+        return;
+      }
+
+      container.innerHTML = allInfos.map(info => `
+        <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-rose-400/40 transition space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              ${info.kategori || 'Pengumuman'}
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">${info.tanggal}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">${info.judul}</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">${info.isi}</p>
+        </div>
+      `).join('');
+      safeRenderIcons();
+    }
+
+    /* =====================================================================
+     * 7. SINKRONISASI PENGATURAN SPREADSHEET
+     * ===================================================================== */
+    function applySpreadsheetSettings(settings) {
+      if (!settings) return;
+
+      if (settings.title) {
+        const titleEl = document.getElementById('app-title');
+        const pageTitleEl = document.getElementById('page-title');
+        if (titleEl) titleEl.textContent = settings.title;
+        if (pageTitleEl) pageTitleEl.textContent = settings.title;
+      }
+
+      if (settings.subtitle) {
+        const sub1El = document.getElementById('app-subtitle');
+        if (sub1El) sub1El.textContent = settings.subtitle;
+      }
+
+      const sub2Val = settings.subtitle2 || settings.subtitle_2 || settings.tagline;
+      if (sub2Val) {
+        const sub2El = document.getElementById('app-subtitle2');
+        if (sub2El) sub2El.textContent = sub2Val;
+      }
+
+      if (settings.logo_url) {
+        const logoEl = document.getElementById('app-logo');
+        if (logoEl) logoEl.src = settings.logo_url;
+      }
+
+      if (settings.wa_admin_phone) {
+        const msg = encodeURIComponent(settings.wa_admin_text || "Halo Admin BPKAD Konawe, saya ingin berkonsultasi.");
+        const phone = String(settings.wa_admin_phone).replace(/\D/g, '');
+        const waAdminUrl = `https://wa.me/${phone}?text=${msg}`;
+        
+        const navWa = document.getElementById('btn-wa-admin');
+        const mobWa = document.getElementById('btn-wa-admin-mobile');
+        if (navWa) navWa.href = waAdminUrl;
+        if (mobWa) mobWa.href = waAdminUrl;
+      }
+
+      const groupUrl = settings.wa_group_url || "#";
+      const navGroup = document.getElementById('btn-wa-group-nav');
+      const mobGroup = document.getElementById('btn-wa-group-mobile');
+      if (navGroup) navGroup.href = groupUrl;
+      if (mobGroup) mobGroup.href = groupUrl;
+
+      if (settings.jam_layanan) {
+        const jamEl = document.getElementById('label-jam-layanan');
+        if (jamEl) jamEl.textContent = settings.jam_layanan;
+      }
+
+      if (settings.footer) {
+        const footerEl = document.getElementById('footer-text');
+        if (footerEl) footerEl.textContent = settings.footer;
+      }
+
+      const bgVal = (settings.bg_body || settings.bg_video || "").trim();
+      if (bgVal && (bgVal.match(/\.(mp4|webm|ogg)$/i) || bgVal.includes(".mp4"))) {
+        if (videoEl && videoEl.src !== bgVal) {
+          videoEl.src = bgVal;
+          videoEl.load();
+          startVideo();
+        }
+      }
+    }
+
+    function syncAnalyticsUI(analytics) {
+      if (!analytics) return;
+      if (analytics.total !== undefined) {
+        const totalEl = document.getElementById('stat-total');
+        if (totalEl) totalEl.textContent = Number(analytics.total).toLocaleString('id-ID');
+      }
+      if (analytics.online !== undefined) {
+        const onlineEl = document.getElementById('stat-online');
+        if (onlineEl) onlineEl.textContent = Number(analytics.online).toLocaleString('id-ID');
+      }
+    }
+
+    /* =====================================================================
+     * 8. NETWORK CLIENT TANPA BLOKIR (DUAL ENGINE: FETCH + JSONP)
+     * ===================================================================== */
+    function callGasApi(paramsObj) {
+      return new Promise((resolve, reject) => {
+        const queryParams = new URLSearchParams(paramsObj);
+        const fetchUrl = `${GAS_ENDPOINT}?${queryParams.toString()}`;
+
+        // Coba via standard fetch
+        fetch(fetchUrl, { method: 'GET', redirect: 'follow' })
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+            return res.json();
+          })
+          .then(data => resolve(data))
+          .catch(err => {
+            // Jika fetch gagal (karena CORS / network), gunakan jalur JSONP bebas batasan
+            const callbackName = 'gas_cb_' + Math.random().toString(36).substring(2, 8) + '_' + Date.now();
+            paramsObj.callback = callbackName;
+            
+            const jsonpUrl = `${GAS_ENDPOINT}?${new URLSearchParams(paramsObj).toString()}`;
+            const script = document.createElement('script');
+            script.src = jsonpUrl;
+            script.async = true;
+
+            const timer = setTimeout(() => {
+              cleanup();
+              reject(new Error("Timeout memuat data"));
+            }, 12000);
+
+            function cleanup() {
+              clearTimeout(timer);
+              if (script.parentNode) script.parentNode.removeChild(script);
+              delete window[callbackName];
+            }
+
+            window[callbackName] = function(data) {
+              cleanup();
+              resolve(data);
+            };
+
+            script.onerror = function() {
+              cleanup();
+              reject(new Error("Gagal memuat JSONP"));
+            };
+
+            document.head.appendChild(script);
+          });
+      });
+    }
+
+    async function fetchPortalDatabase() {
+      const syncEl = document.getElementById('sync-status');
+      const syncDot = document.getElementById('sync-dot');
+      try {
+        if (syncEl) syncEl.textContent = "Sync...";
+
+        const data = await callGasApi({
+          action: 'init',
+          sid: RUNTIME_SID,
+          is_new: IS_NEW_VISITOR ? '1' : '0',
+          ua: navigator.userAgent || 'Web Browser',
+          _t: Date.now()
+        });
+
+        if (data && data.status === "success") {
+          applySpreadsheetSettings(data.settings);
+          syncAnalyticsUI(data.analytics);
+          
+          if (data.apps && data.apps.length > 0) {
+            allApps = data.apps;
+            renderCategoryTabs();
+            renderAppCards();
+          }
+          
+          if (data.docs && data.docs.length > 0) renderDocs(data.docs);
+          if (data.infos && data.infos.length > 0) renderInfos(data.infos);
+
+          if (syncEl) syncEl.textContent = "Live";
+          if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse";
+        }
+      } catch (err) {
+        console.warn("Koneksi gagal:", err);
+        if (syncEl) syncEl.textContent = "Offline (Cache)";
+        if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400";
+      }
+    }
+
+    async function triggerHeartbeat() {
+      try {
+        const data = await callGasApi({
+          action: 'heartbeat',
+          sid: RUNTIME_SID,
+          _t: Date.now()
+        });
+        if (data && data.status === "success" && data.analytics) {
+          syncAnalyticsUI(data.analytics);
+          const syncEl = document.getElementById('sync-status');
+          if (syncEl) syncEl.textContent = "Live";
+        }
+      } catch (e) {}
+    }
+
+    // Polling setiap 10 detik agar pembaruan data sangat responsif
+    setInterval(triggerHeartbeat, 10000);
+
+    // Kirim sinyal keluar seketika saat tab/browser ditutup
+    function sendLeaveBeacon() {
+      if (!RUNTIME_SID) return;
+      const leaveUrl = `${GAS_ENDPOINT}?action=leave&sid=${encodeURIComponent(RUNTIME_SID)}&_t=${Date.now()}`;
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(leaveUrl);
+      } else {
+        fetch(leaveUrl, { method: 'POST', keepalive: true, mode: 'no-cors' }).catch(() => {});
+      }
+    }
+
+    window.addEventListener('pagehide', sendLeaveBeacon);
+    window.addEventListener('beforeunload', sendLeaveBeacon);
+
+    // Saat tab browser kembali dilihat, sinkronkan data langsung detik itu juga
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        triggerHeartbeat();
+      }
+    });
+
+    /* =====================================================================
+     * 9. BOOTSTRAP INITIAL RUN
+     * ===================================================================== */
+    renderCategoryTabs();
+    renderDocs(allDocs);
+    renderInfos(allInfos);
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.addEventListener('input', renderAppCards);
+
+    safeRenderIcons();
+    
+    // Hubungkan langsung ke Google Sheets API
+    fetchPortalDatabase();
+  </script>
+</body>
+</html>
